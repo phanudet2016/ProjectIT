@@ -66,9 +66,42 @@
                     <option>รักษา</option>
                     <option>วินิจฉัย</option>
                   </select>
-                  <button class="button-add btn btn-success"><b>+</b> เพิ่มรายการ</button>
-                </div>
 
+                  <!-- ADD Device !-->
+                  <button type="button" class="btn button-add btn btn-success" data-toggle="modal" data-target="#myModal"><b>+</b> เพิ่มรายการ</button>
+                  <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
+                        </div>
+                        <div class="modal-body">
+                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
+                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
+                          <select class="selectpicker" v-model="unitEqm">
+                            <option disabled value="">หน่วย</option>
+                            <option>เครื่อง</option>
+                            <option>ชุด</option>
+                          </select>
+                          <select class="selectpicker" v-model="categoryEqm">
+                            <option disabled value="">ประเภท</option>
+                            <option>สนับสนุน</option>
+                            <option>วินิจฉัยและรักษา</option>
+                            <option>รักษา</option>
+                            <option>วินิจฉัย</option>
+                          </select>
+                        </div>
+                        <div class="modal-footer">
+                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ADD Device !-->
+
+                </div>
               </h4>
               <p class="card-text">รวม : {{num}} รายการ</p>
               <!--TABLE!-->
@@ -87,15 +120,15 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>#</td>
-                    <td>#</td>
-                    <td style="text-align: center;">#</td>
-                    <td style="text-align: center;">#</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">#</td>
-                    <td>#</td>
+                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
+                    <td>{{index+1}}</td>
+                    <td>{{equipment.nameEqm}}</td>
+                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
+                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                    <td>{{equipment.unitEqm}}</td>
                     <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                    <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
                   </tr>
                 </tbody>
               </table>
@@ -111,6 +144,8 @@
 </template>
 
 <script>
+import {equipmentRef} from './firebase'
+
 export default {
   name: 'home',
   data () {
@@ -118,6 +153,25 @@ export default {
       user: 'Admin',
       num: 0,
       category: ''
+    }
+  },
+  firebase: {
+    equipments: equipmentRef
+  },
+  methods: {
+    submitEqm () {
+      equipmentRef.push({
+        nameEqm: this.nameEqm,
+        amountEqm: this.amountEqm,
+        borrowedEqm: 0,
+        balanceEqm: this.amountEqm,
+        unitEqm: this.unitEqm,
+        categoryEqm: this.categoryEqm,
+        editEqm: false
+      })
+    },
+    removeEqm (key) {
+      equipmentRef.child(key).remove()
     }
   }
 }
