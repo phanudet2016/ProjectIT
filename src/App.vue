@@ -21,7 +21,4 @@ export default {
   padding: 0px;
   margin: 0px;
 }
-body {
-  background: #f6f7fb;
-}
 </style>

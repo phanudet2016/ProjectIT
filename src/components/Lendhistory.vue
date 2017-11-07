@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>หน้าหลัก</p>
+          <p>ประวัติการยืม</p>
         </li>
         <li class="user-login">
           <p>Login : {{user}}</p>
@@ -15,7 +15,7 @@
       <p class="navbar-brand">UI SERVICE CARE</p>
       <br><br><br><br><br>
       <ul>
-        <li class="selected">
+        <li>
           <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/">หน้าหลัก</router-link>
         </li>
@@ -23,7 +23,7 @@
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
-        <li>
+        <li class="selected">
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
@@ -57,7 +57,7 @@
           <div class="card">
             <div class="card-block">
               <h4 class="card-title">
-                แสดงรายการเครื่องมือที่เปิดให้ยืม
+                ประวัติการยืม
                 <div class="button-add">
                   <select v-model="category" class="selectBox">
                     <option disabled value="">ประเภท</option>
@@ -147,7 +147,7 @@
 import {equipmentRef} from './firebase'
 
 export default {
-  name: 'home',
+  name: 'lendhistory',
   data () {
     return {
       user: 'Admin',

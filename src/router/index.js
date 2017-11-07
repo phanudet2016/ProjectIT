@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-import Fire from '@/components/Fire'
+import Listtable from '@/components/Listtable'
+import Lendhistory from '@/components/Lendhistory'
 
 Vue.use(Router)
 
@@ -13,9 +14,14 @@ export default new Router({
       component: Home
     },
     {
-      path: '/fire',
-      name: 'fire',
-      component: Fire
+      path: '/listtable',
+      name: 'listtable',
+      component: Listtable
+    },
+    {
+      path: '/lendhistory',
+      name: 'lendhistory',
+      component: Lendhistory
     }
   ]
 })

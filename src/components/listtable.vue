@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>หน้าหลัก</p>
+          <p>รายการอุปกรณ์</p>
         </li>
         <li class="user-login">
           <p>Login : {{user}}</p>
@@ -15,11 +15,11 @@
       <p class="navbar-brand">UI SERVICE CARE</p>
       <br><br><br><br><br>
       <ul>
-        <li class="selected">
+        <li>
           <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/">หน้าหลัก</router-link>
         </li>
-        <li>
+        <li class="selected">
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
@@ -59,14 +59,15 @@
               <h4 class="card-title">
                 แสดงรายการเครื่องมือที่เปิดให้ยืม
                 <div class="button-add">
-                  <select v-model="category" class="selectBox">
+                  <select class="selectBox" v-model="category">
                     <option disabled value="">ประเภท</option>
                     <option>สนับสนุน</option>
                     <option>วินิจฉัยและรักษา</option>
                     <option>รักษา</option>
                     <option>วินิจฉัย</option>
+                    <option>ทั้งหมด</option>
                   </select>
-
+                  <span></span>
                   <!-- ADD Device !-->
                   <button type="button" class="btn button-add btn btn-success" data-toggle="modal" data-target="#myModal"><b>+</b> เพิ่มรายการ</button>
                   <div class="modal fade" id="myModal" role="dialog">
@@ -109,7 +110,7 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="100px">ลำดับ</th>
+                    <th width="100px">#</th>
                     <th width="800px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">จำนวน</th>
                     <th width="118px" style="text-align: center;">ถูกยืม</th>
@@ -120,15 +121,35 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
-                    <td>{{index+1}}</td>
-                    <td>{{equipment.nameEqm}}</td>
-                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
-                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                    <td>{{equipment.unitEqm}}</td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                    <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                  <tr v-if="category === ''" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
+                      <td>#</td>
+                      <td>{{equipment.nameEqm}}</td>
+                      <td style="text-align: center;">{{equipment.amountEqm}}</td>
+                      <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                      <td>{{equipment.unitEqm}}</td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
+                      <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                  </tr>
+                  <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
+                      <td>#</td>
+                      <td>{{equipment.nameEqm}}</td>
+                      <td style="text-align: center;">{{equipment.amountEqm}}</td>
+                      <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                      <td>{{equipment.unitEqm}}</td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
+                      <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                  </tr>
+                  <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
+                      <td>#</td>
+                      <td>{{equipment.nameEqm}}</td>
+                      <td style="text-align: center;">{{equipment.amountEqm}}</td>
+                      <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                      <td>{{equipment.unitEqm}}</td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
+                      <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
                   </tr>
                 </tbody>
               </table>
@@ -147,7 +168,7 @@
 import {equipmentRef} from './firebase'
 
 export default {
-  name: 'home',
+  name: 'listtable',
   data () {
     return {
       user: 'Admin',
@@ -164,7 +185,7 @@ export default {
   },
   computed: {
     realtimeplus: function () {
-      return this.num1
+      return this.countIndex++
     }
   },
   methods: {
@@ -315,7 +336,6 @@ nav ul li a:hover {
 
 .selected {
   background: #596166;
-
 }
 /*----------------------------------------------------------------------------------*/
 
