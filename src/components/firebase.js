@@ -1,13 +1,16 @@
 import { initializeApp } from 'firebase'
 
 const app = initializeApp({
-  apiKey: 'AIzaSyBpkoZ_P1UenoaUBV3PR5kXOGEIp56IIhs',
-  authDomain: 'projectit-c357b.firebaseapp.com',
-  databaseURL: 'https://projectit-c357b.firebaseio.com',
-  projectId: 'projectit-c357b',
-  storageBucket: 'projectit-c357b.appspot.com',
-  messagingSenderId: '736030153954'
+  apiKey: 'AIzaSyCnkwco1-0ZiC82eVmgsfhPYvF2ZrvEpZk',
+  authDomain: 'projectospital.firebaseapp.com',
+  databaseURL: 'https://projectospital.firebaseio.com',
+  projectId: 'projectospital',
+  storageBucket: 'projectospital.appspot.com',
+  messagingSenderId: '969365951070'
 })
 
+export const auth = app.auth()
 export const db = app.database()
 export const equipmentRef = db.ref('equipments')
+export const userRef = db.ref('users')
+export const approvetableRef = db.ref('approvetable')

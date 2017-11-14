@@ -6,7 +6,7 @@
           <p>รายการอุปกรณ์</p>
         </li>
         <li class="user-login">
-          <p>Login : {{user}}</p>
+          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
@@ -17,7 +17,7 @@
       <ul>
         <li>
           <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/">หน้าหลัก</router-link>
+          <router-link to="/home">หน้าหลัก</router-link>
         </li>
         <li class="selected">
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
@@ -29,7 +29,7 @@
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">รายการรออนุมัติ</a>
+          <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -45,7 +45,7 @@
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
-          <a href="#">ออกจากระบบ</a>
+          <a href="#" @click="submitLogout()">ออกจากระบบ</a>
         </li>
       </ul>
     </nav>
@@ -104,7 +104,7 @@
 
                 </div>
               </h4>
-              <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
+              <p class="card-text">รวม : 10 รายการ</p>
               <!--TABLE!-->
               <br>
               <table class="table table-hover table-striped">
@@ -165,28 +165,35 @@
 </template>
 
 <script>
-import {equipmentRef} from './firebase'
+import {equipmentRef, auth, userRef} from './firebase'
 
 export default {
   name: 'listtable',
   data () {
     return {
-      user: 'Admin',
-      num: 0,
-      num1: 1,
-      num2: 2,
+      name: '',
       category: '',
+      amountEqm: '',
+      nameEqm: '',
       unitEqm: '',
-      categoryEqm: ''
+      categoryEqm: '',
+      firstname: '',
+      lastname: ''
     }
+  },
+  created () {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.firstname = this.users.find(users => users.email === user.email).firstname
+        this.lastname = this.users.find(users => users.email === user.email).lastname
+      } else {
+        console.log('not logged in')
+      }
+    })
   },
   firebase: {
-    equipments: equipmentRef
-  },
-  computed: {
-    realtimeplus: function () {
-      return this.countIndex++
-    }
+    equipments: equipmentRef,
+    users: userRef
   },
   methods: {
     submitEqm () {
@@ -202,6 +209,10 @@ export default {
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
+    },
+    submitLogout () {
+      auth.signOut()
+      this.$router.push('/')
     }
   }
 }
@@ -347,4 +358,7 @@ nav ul li a:hover {
   font-size: 14px;
 }
 /*----------------------------------------------------------------------------------*/
+td {
+  font-size: 16px;
+}
 </style>

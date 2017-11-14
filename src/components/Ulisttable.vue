@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ประวัติการยืม</p>
+          <p>ยืมเครื่องแพทย์</p>
         </li>
         <li class="user-login">
           <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
@@ -16,32 +16,28 @@
       <br><br><br><br><br>
       <ul>
         <li>
-          <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/home">หน้าหลัก</router-link>
-        </li>
-        <li>
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/listtable">รายการอุปกรณ์</router-link>
-        </li>
-        <li class="selected">
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/lendhistory">ประวัติการยืม</router-link>
+          <i class="glyphicon glyphicon-wrench" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/uhome">ยืมเครื่องแพทย์</router-link>
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/approve">รายการรออนุมัติ</router-link>
+          <router-link to="/uapprove">รายการรออนุมัติ</router-link>
+        </li>
+        <li class="selected">
+          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/ulendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/urequest">แจ้งความต้องการใช้อุปกรณ์</router-link>
         </li>
         <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/ualert">การแจ้งเตือน์</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -57,7 +53,7 @@
           <div class="card">
             <div class="card-block">
               <h4 class="card-title">
-                ประวัติการยืม
+                แสดงรายการเครื่องมือที่เปิดให้ยืม
                 <div class="button-add">
                   <select v-model="category" class="selectBox">
                     <option disabled value="">ประเภท</option>
@@ -67,7 +63,39 @@
                     <option>วินิจฉัย</option>
                   </select>
 
-
+                  <!-- ADD Device !-->
+                  <button type="button" class="btn button-add btn btn-success" data-toggle="modal" data-target="#myModal"><b>+</b> เพิ่มรายการ</button>
+                  <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
+                        </div>
+                        <div class="modal-body">
+                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
+                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
+                          <select class="selectBox" v-model="unitEqm">
+                            <option disabled value="">หน่วย</option>
+                            <option>เครื่อง</option>
+                            <option>ชุด</option>
+                          </select>
+                          <select class="selectBox" v-model="categoryEqm">
+                            <option disabled value="">ประเภท</option>
+                            <option>สนับสนุน</option>
+                            <option>วินิจฉัยและรักษา</option>
+                            <option>รักษา</option>
+                            <option>วินิจฉัย</option>
+                          </select>
+                        </div>
+                        <div class="modal-footer">
+                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ADD Device !-->
 
                 </div>
               </h4>
@@ -83,8 +111,6 @@
                     <th width="118px" style="text-align: center;">ถูกยืม</th>
                     <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
                     <th width="100px">หน่วย</th>
-                    <th width="80px" style="text-align: center;">แก้ไข</th>
-                    <th width="80px" style="text-align: center;">ลบ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -95,8 +121,6 @@
                     <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
                     <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                     <td>{{equipment.unitEqm}}</td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                    <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-remove" style="color:red;"></span></td>
                   </tr>
                 </tbody>
               </table>
@@ -115,25 +139,22 @@
 import {equipmentRef, auth, userRef} from './firebase'
 
 export default {
-  name: 'lendhistory',
+  name: 'ulisttable',
   data () {
     return {
-      user: 'Admin',
-      num: 0,
-      num1: 1,
-      num2: 2,
       category: '',
       unitEqm: '',
       categoryEqm: '',
+      nameEqm: '',
+      amountEqm: '',
+      names: '',
       firstname: '',
-      lastname: '',
-      em: ''
+      lastname: ''
     }
   },
   created () {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.em = user.email
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
       } else {

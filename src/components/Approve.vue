@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ประวัติการยืม</p>
+          <p>รายการรออนุมัติ</p>
         </li>
         <li class="user-login">
           <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
@@ -23,11 +23,11 @@
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
-        <li class="selected">
+        <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
-        <li>
+        <li class="selected">
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
@@ -57,19 +57,7 @@
           <div class="card">
             <div class="card-block">
               <h4 class="card-title">
-                ประวัติการยืม
-                <div class="button-add">
-                  <select v-model="category" class="selectBox">
-                    <option disabled value="">ประเภท</option>
-                    <option>สนับสนุน</option>
-                    <option>วินิจฉัยและรักษา</option>
-                    <option>รักษา</option>
-                    <option>วินิจฉัย</option>
-                  </select>
-
-
-
-                </div>
+                แสดงรายการรออนุมัติ
               </h4>
               <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
               <!--TABLE!-->
@@ -78,29 +66,29 @@
                 <thead>
                   <tr>
                     <th width="100px">ลำดับ</th>
-                    <th width="800px">ชื่ออุปกรณ์</th>
-                    <th width="118px" style="text-align: center;">จำนวน</th>
-                    <th width="118px" style="text-align: center;">ถูกยืม</th>
-                    <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
-                    <th width="100px">หน่วย</th>
-                    <th width="80px" style="text-align: center;">แก้ไข</th>
-                    <th width="80px" style="text-align: center;">ลบ</th>
+                    <th width="700px">ชื่ออุปกรณ์</th>
+                    <th width="118px">วันที่</th>
+                    <th width="100px">ผู้ยืม</th>
+                    <th width="100px">แผนก</th>
+                    <th width="100px">HN No.</th>
+                    <th width="100px">จำนวน</th>
+                    <th width="100px" style="text-align: center;background: #9968db; color: #ffffff;">สถานะการยืม</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
-                    <td>{{index+1}}</td>
-                    <td>{{equipment.nameEqm}}</td>
-                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
-                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                    <td>{{equipment.unitEqm}}</td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                    <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-remove" style="color:red;"></span></td>
+                  <tr v-for="approvetable of approvetables" v-bind:key="approvetable['.key']">
+                      <td>#</td>
+                      <td>{{approvetable.nameLend}}</td>
+                      <td>{{approvetable.dateLend}}</td>
+                      <td>{{approvetable.firstname}} {{approvetable.lastname}}</td>
+                      <td>{{approvetable.departmentLend}}</td>
+                      <td>{{approvetable.HnNo}}</td>
+                      <td>{{approvetable.amountLend}}</td>
+                      <td style="text-align: center;background: #9968db; color: #ffffff;">{{approvetable.statusLend}}</td>
                   </tr>
                 </tbody>
               </table>
-              <!--TABLE!-->
+            <!--TABLE!-->
             </div>
           </div>
           </div>
@@ -112,28 +100,23 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef} from './firebase'
 
 export default {
-  name: 'lendhistory',
+  name: 'approve',
   data () {
     return {
-      user: 'Admin',
-      num: 0,
-      num1: 1,
-      num2: 2,
       category: '',
       unitEqm: '',
       categoryEqm: '',
+      user: '',
       firstname: '',
-      lastname: '',
-      em: ''
+      lastname: ''
     }
   },
   created () {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.em = user.email
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
       } else {
@@ -143,7 +126,8 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    approvetables: approvetableRef
   },
   computed: {
     realtimeplus: function () {
@@ -314,4 +298,8 @@ nav ul li a:hover {
   font-size: 14px;
 }
 /*----------------------------------------------------------------------------------*/
+
+td {
+  font-size: 14px;
+}
 </style>

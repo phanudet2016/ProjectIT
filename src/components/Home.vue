@@ -6,7 +6,7 @@
           <p>หน้าหลัก</p>
         </li>
         <li class="user-login">
-          <p>Login : {{user}}</p>
+          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
@@ -17,7 +17,7 @@
       <ul>
         <li class="selected">
           <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/">หน้าหลัก</router-link>
+          <router-link to="/home">หน้าหลัก</router-link>
         </li>
         <li>
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
@@ -29,7 +29,7 @@
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">รายการรออนุมัติ</a>
+          <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -45,7 +45,7 @@
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
-          <a href="#">ออกจากระบบ</a>
+          <a href="#" @click="submitLogout()">ออกจากระบบ</a>
         </li>
       </ul>
     </nav>
@@ -144,7 +144,7 @@
 </template>
 
 <script>
-import {equipmentRef} from './firebase'
+import {equipmentRef, auth, userRef} from './firebase'
 
 export default {
   name: 'home',
@@ -156,11 +156,26 @@ export default {
       num2: 2,
       category: '',
       unitEqm: '',
-      categoryEqm: ''
+      categoryEqm: '',
+      nameEqm: '',
+      amountEqm: '',
+      firstname: '',
+      lastname: ''
     }
   },
+  created () {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.firstname = this.users.find(users => users.email === user.email).firstname
+        this.lastname = this.users.find(users => users.email === user.email).lastname
+      } else {
+        console.log('not logged in')
+      }
+    })
+  },
   firebase: {
-    equipments: equipmentRef
+    equipments: equipmentRef,
+    users: userRef
   },
   computed: {
     realtimeplus: function () {
@@ -181,6 +196,10 @@ export default {
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
+    },
+    submitLogout () {
+      auth.signOut()
+      this.$router.push('/')
     }
   }
 }

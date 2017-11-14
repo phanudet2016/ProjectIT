@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ประวัติการยืม</p>
+          <p>ยืมเครื่องแพทย์</p>
         </li>
         <li class="user-login">
           <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
@@ -16,32 +16,28 @@
       <br><br><br><br><br>
       <ul>
         <li>
-          <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/home">หน้าหลัก</router-link>
-        </li>
-        <li>
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/listtable">รายการอุปกรณ์</router-link>
-        </li>
-        <li class="selected">
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/lendhistory">ประวัติการยืม</router-link>
+          <i class="glyphicon glyphicon-wrench" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/uhome">ยืมเครื่องแพทย์</router-link>
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/approve">รายการรออนุมัติ</router-link>
+          <router-link to="/uapprove">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
+          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
         <li>
-          <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/ulendhistory">ประวัติการยืม</router-link>
+        </li>
+        <li class="selected">
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/urequest">แจ้งความต้องการใช้อุปกรณ์</router-link>
         </li>
         <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/ualert">การแจ้งเตือน์</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -56,51 +52,8 @@
           <div class="col-md">
           <div class="card">
             <div class="card-block">
-              <h4 class="card-title">
-                ประวัติการยืม
-                <div class="button-add">
-                  <select v-model="category" class="selectBox">
-                    <option disabled value="">ประเภท</option>
-                    <option>สนับสนุน</option>
-                    <option>วินิจฉัยและรักษา</option>
-                    <option>รักษา</option>
-                    <option>วินิจฉัย</option>
-                  </select>
-
-
-
-                </div>
-              </h4>
-              <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
-              <!--TABLE!-->
-              <br>
-              <table class="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th width="100px">ลำดับ</th>
-                    <th width="800px">ชื่ออุปกรณ์</th>
-                    <th width="118px" style="text-align: center;">จำนวน</th>
-                    <th width="118px" style="text-align: center;">ถูกยืม</th>
-                    <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
-                    <th width="100px">หน่วย</th>
-                    <th width="80px" style="text-align: center;">แก้ไข</th>
-                    <th width="80px" style="text-align: center;">ลบ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
-                    <td>{{index+1}}</td>
-                    <td>{{equipment.nameEqm}}</td>
-                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
-                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                    <td>{{equipment.unitEqm}}</td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                    <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-remove" style="color:red;"></span></td>
-                  </tr>
-                </tbody>
-              </table>
-              <!--TABLE!-->
+              <h4 class="card-title">แจ้งความต้องการใช้อุปกรณ์</h4>
+              <p class="card-text" style="color:#9A9A9A;">(แจ้งความต้องการใช้อุปกรณ์ทางการแพทย์ในกรณ์ที่ไม่เพียงพอต่อการยืม)</p>
             </div>
           </div>
           </div>
@@ -115,25 +68,22 @@
 import {equipmentRef, auth, userRef} from './firebase'
 
 export default {
-  name: 'lendhistory',
+  name: 'urequest',
   data () {
     return {
-      user: 'Admin',
-      num: 0,
-      num1: 1,
-      num2: 2,
       category: '',
       unitEqm: '',
       categoryEqm: '',
+      nameEqm: '',
+      amountEqm: '',
+      names: '',
       firstname: '',
-      lastname: '',
-      em: ''
+      lastname: ''
     }
   },
   created () {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.em = user.email
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
       } else {
@@ -184,11 +134,6 @@ export default {
   width: 82%;
   margin-left: 35px;
   border: 1px solid #dddddd;
-}
-
-.button-add {
-  float: right;
-  margin-left: 10px;
 }
 
 .content {
