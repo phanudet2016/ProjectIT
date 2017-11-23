@@ -24,12 +24,12 @@
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/lendhistory">ประวัติการยืม</router-link>
-        </li>
-        <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
+        </li>
+        <li>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -56,83 +56,6 @@
           <div class="col-md">
           <div class="card">
             <div class="card-block">
-              <h4 class="card-title">
-                แสดงรายการเครื่องมือที่เปิดให้ยืม
-                <div class="button-add">
-                  <select v-model="category" class="selectBox">
-                    <option disabled value="">ประเภท</option>
-                    <option>สนับสนุน</option>
-                    <option>วินิจฉัยและรักษา</option>
-                    <option>รักษา</option>
-                    <option>วินิจฉัย</option>
-                  </select>
-
-                  <!-- ADD Device !-->
-                  <button type="button" class="btn button-add btn btn-success" data-toggle="modal" data-target="#myModal"><b>+</b> เพิ่มรายการ</button>
-                  <div class="modal fade" id="myModal" role="dialog">
-                    <div class="modal-dialog">
-                      <!-- Modal content-->
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
-                        </div>
-                        <div class="modal-body">
-                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
-                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
-                          <select class="selectBox" v-model="unitEqm">
-                            <option disabled value="">หน่วย</option>
-                            <option>เครื่อง</option>
-                            <option>ชุด</option>
-                          </select>
-                          <select class="selectBox" v-model="categoryEqm">
-                            <option disabled value="">ประเภท</option>
-                            <option>สนับสนุน</option>
-                            <option>วินิจฉัยและรักษา</option>
-                            <option>รักษา</option>
-                            <option>วินิจฉัย</option>
-                          </select>
-                        </div>
-                        <div class="modal-footer">
-                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- ADD Device !-->
-
-                </div>
-              </h4>
-              <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
-              <!--TABLE!-->
-              <br>
-              <table class="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th width="100px">ลำดับ</th>
-                    <th width="800px">ชื่ออุปกรณ์</th>
-                    <th width="118px" style="text-align: center;">จำนวน</th>
-                    <th width="118px" style="text-align: center;">ถูกยืม</th>
-                    <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
-                    <th width="100px">หน่วย</th>
-                    <th width="80px" style="text-align: center;">แก้ไข</th>
-                    <th width="80px" style="text-align: center;">ลบ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
-                    <td>{{index+1}}</td>
-                    <td>{{equipment.nameEqm}}</td>
-                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
-                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                    <td>{{equipment.unitEqm}}</td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                    <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
-                  </tr>
-                </tbody>
-              </table>
-              <!--TABLE!-->
             </div>
           </div>
           </div>
@@ -171,6 +94,7 @@ export default {
       } else {
         console.log('not logged in')
       }
+      console.log(user)
     })
   },
   firebase: {

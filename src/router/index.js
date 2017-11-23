@@ -12,11 +12,17 @@ import Ulendhistory from '@/components/Ulendhistory'
 import Urequest from '@/components/Urequest'
 import Ualert from '@/components/Ualert'
 import Uapprove from '@/components/Uapprove'
+import Eqmtable from '@/components/Eqmtable'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/eqmtable/:id',
+      name: 'eqmttable',
+      component: Eqmtable
+    },
     {
       path: '/uapprove',
       name: 'uapprove',

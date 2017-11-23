@@ -3,10 +3,10 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ประวัติการยืม</p>
+          <p><router-link to="/listtable">รายการอุปกรณ์</router-link> / {{nameEqm}}</p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
+          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
@@ -19,17 +19,17 @@
           <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/home">หน้าหลัก</router-link>
         </li>
-        <li>
+        <li class="selected">
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
-          <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/approve">รายการรออนุมัติ</router-link>
-        </li class="selected">
-        <li class="selected">
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
+        </li>
+        <li>
+          <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -53,39 +53,46 @@
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md">
+          <div class="col-md-9">
           <div class="card">
             <div class="card-block">
               <h4 class="card-title">
-                ประวัติการยืม
+                {{nameEqm}}
               </h4>
-              <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
-              <!--TABLE!-->
+
               <br>
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="50px">วันที่ยืม</th>
-                    <th width="118px">ชื่ออุปกรณ์</th>
-                    <th width="118px">ชื่อผู้ยืม</th>
-                    <th width="118px" style="text-align: center;">จำนวนที่ยืม</th>
-                    <th width="100px" style="text-align: center; background: #9968db; color: #ffffff;">คืนแล้ว</th>
+                    <th width="100px">ID Deivice</th>
+                    <th width="800px">หมายเลขเครื่อง</th>
+                    <th width="100px">สถานะ</th>
+                    <th width="150px">ผู้ยืม</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(history, index) of historys" v-bind:key="history['.key']">
-                    <td>{{history.date}}</td>
-                    <td>{{history.nameEqm}}</td>
-                    <td>{{history.firstname}} {{history.lastname}}</td>
-                    <td style="text-align: center;">{{history.amount}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{history.returnedEqm}}</td>
+                  <tr v-for="arrayEqms in arrayEqm">
+                    <td>{{arrayEqms.id}}</td>
+                    <td>{{arrayEqms.number}}</td>
+                    <td>{{arrayEqms.status}}</td>
+                    <td>{{arrayEqms.nameLend}} {{arrayEqms.lastnameLend}}</td>
                   </tr>
                 </tbody>
               </table>
-              <!--TABLE!-->
+
             </div>
           </div>
           </div>
+          <!--
+          <div class="col-sm-3">
+          <div class="card">
+            <div class="card-block">
+              <h4 class="card-title">
+                แสดงรายการเครื่องมือที่เปิดให้ยืมss
+              </h4>
+            </div>
+          </div>
+          </div>!-->
         </div>
       </div>
     </div>
@@ -94,57 +101,46 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, historyRef} from './firebase'
+import {equipmentRef, auth, userRef} from './firebase'
 
 export default {
-  name: 'lendhistory',
+  name: 'eqmtable',
   data () {
     return {
-      user: 'Admin',
-      num: 0,
-      num1: 1,
-      num2: 2,
+      name: '',
       category: '',
+      amountEqm: '',
+      count: '',
+      nameEqm: '',
       unitEqm: '',
       categoryEqm: '',
       firstname: '',
       lastname: '',
-      em: ''
+      msgLogout: 'ออกจากระบบ',
+      editName: '',
+      editCategory: '',
+      editID: '',
+      key: '',
+      arrayEqm: []
     }
   },
   created () {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        this.em = user.email
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
       } else {
         console.log('not logged in')
       }
     })
+    this.arrayEqm = this.equipments.find(equipments => equipments['.key'] === this.$route.params.id).equipmentID
+    this.nameEqm = this.equipments.find(equipments => equipments['.key'] === this.$route.params.id).nameEqm
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef,
-    historys: historyRef
-  },
-  computed: {
-    realtimeplus: function () {
-      return this.num1
-    }
+    users: userRef
   },
   methods: {
-    submitEqm () {
-      equipmentRef.push({
-        nameEqm: this.nameEqm,
-        amountEqm: this.amountEqm,
-        borrowedEqm: 0,
-        balanceEqm: this.amountEqm,
-        unitEqm: this.unitEqm,
-        categoryEqm: this.categoryEqm,
-        editEqm: false
-      })
-    },
     removeEqm (key) {
       equipmentRef.child(key).remove()
     },
@@ -158,13 +154,16 @@ export default {
 
 <style scoped>
 /*--------------------------------------- CONTENT ----------------------------------*/
+.row {
+  width: 80%;
+}
 .card {
   padding: .75rem 1.25rem;
   margin-bottom: 0;
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  width: 100%;
   margin-left: 35px;
   border: 1px solid #dddddd;
 }
@@ -285,7 +284,6 @@ nav ul li a:hover {
 
 .selected {
   background: #596166;
-
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -297,4 +295,7 @@ nav ul li a:hover {
   font-size: 14px;
 }
 /*----------------------------------------------------------------------------------*/
+td {
+  font-size: 14px;
+}
 </style>

@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ยืมเครื่องแพทย์</p>
+          <p>รายการเครื่องมือที่ยืมมา</p>
         </li>
         <li class="user-login">
           <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
@@ -50,83 +50,34 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md">
-          <div class="card">
-            <div class="card-block">
-              <h4 class="card-title">
-                แสดงรายการเครื่องมือที่เปิดให้ยืม
-                <div class="button-add">
-                  <select v-model="category" class="selectBox">
-                    <option disabled value="">ประเภท</option>
-                    <option>สนับสนุน</option>
-                    <option>วินิจฉัยและรักษา</option>
-                    <option>รักษา</option>
-                    <option>วินิจฉัย</option>
-                  </select>
-
-                  <!-- ADD Device !-->
-                  <button type="button" class="btn button-add btn btn-success" data-toggle="modal" data-target="#myModal"><b>+</b> เพิ่มรายการ</button>
-                  <div class="modal fade" id="myModal" role="dialog">
-                    <div class="modal-dialog">
-                      <!-- Modal content-->
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
-                        </div>
-                        <div class="modal-body">
-                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
-                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
-                          <select class="selectBox" v-model="unitEqm">
-                            <option disabled value="">หน่วย</option>
-                            <option>เครื่อง</option>
-                            <option>ชุด</option>
-                          </select>
-                          <select class="selectBox" v-model="categoryEqm">
-                            <option disabled value="">ประเภท</option>
-                            <option>สนับสนุน</option>
-                            <option>วินิจฉัยและรักษา</option>
-                            <option>รักษา</option>
-                            <option>วินิจฉัย</option>
-                          </select>
-                        </div>
-                        <div class="modal-footer">
-                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- ADD Device !-->
-
-                </div>
-              </h4>
-              <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
+            <div class="card">
+              <div class="card-block">
+                <h4 class="card-title">
+                  รายการเครื่องมือที่ยืมมา
+                </h4>
+                <!--TABLE!-->
+                <br>
+                <table class="table table-hover table-striped">
+                  <thead>
+                    <tr>
+                      <th width="700px">ชื่ออุปกรณ์</th>
+                      <th width="125px">วันที่</th>
+                      <th width="100px">ยืม</th>
+                      <th width="100px" style="text-align: center;">รับแล้ว</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-if="scan.firstname == firstname && scan.lastname == lastname" v-for="(scan, index) of scans" v-bind:key="scan['.key']">
+                        <td>{{scan.nameLend}}</td>
+                        <td>{{scan.dateLend}}</td>
+                        <td>{{scan.amountLend}}</td>
+                        <td style="text-align: center; background: #9968db; color: #ffffff;">{{scan.accepted}}</td>
+                    </tr>
+                  </tbody>
+                </table>
               <!--TABLE!-->
-              <br>
-              <table class="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th width="100px">ลำดับ</th>
-                    <th width="800px">ชื่ออุปกรณ์</th>
-                    <th width="118px" style="text-align: center;">จำนวน</th>
-                    <th width="118px" style="text-align: center;">ถูกยืม</th>
-                    <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
-                    <th width="100px">หน่วย</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
-                    <td>{{index+1}}</td>
-                    <td>{{equipment.nameEqm}}</td>
-                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
-                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                    <td>{{equipment.unitEqm}}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <!--TABLE!-->
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -136,7 +87,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef} from './firebase'
 
 export default {
   name: 'ulisttable',
@@ -164,7 +115,9 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    approvetables: approvetableRef,
+    scans: scanRef
   },
   computed: {
     realtimeplus: function () {

@@ -6,7 +6,7 @@
           <p>รายการอุปกรณ์</p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
+          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
@@ -24,12 +24,12 @@
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/lendhistory">ประวัติการยืม</router-link>
-        </li>
-        <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
+        </li>
+        <li>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -104,56 +104,79 @@
 
                 </div>
               </h4>
-              <p class="card-text">รวม : 10 รายการ</p>
+             <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
               <br>
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="100px">#</th>
                     <th width="800px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">จำนวน</th>
                     <th width="118px" style="text-align: center;">ถูกยืม</th>
                     <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
                     <th width="100px">หน่วย</th>
                     <th width="80px" style="text-align: center;">แก้ไข</th>
-                    <th width="80px" style="text-align: center;">ลบ</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-if="category === ''" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
-                      <td>#</td>
-                      <td>{{equipment.nameEqm}}</td>
+                      <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
                       <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
-                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                      <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
                   <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
-                      <td>#</td>
-                      <td>{{equipment.nameEqm}}</td>
+                      <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
                       <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
-                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                      <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
                   <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
-                      <td>#</td>
-                      <td>{{equipment.nameEqm}}</td>
+                      <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
                       <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
-                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;"></span></td>
-                      <td style="text-align: center;"><span @click="removeEqm(equipment['.key'])" class="glyphicon glyphicon-trash" style="color:red;"></span></td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
                 </tbody>
               </table>
               <!--TABLE!-->
+              <!-- Edit Device !-->
+              <div class="modal fade" id="myModall" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">เพิ่มรายการใหม่</h4>
+                    </div>
+                    <div class="modal-body">
+                      <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="editName"/><br>
+                      <select class="selectBox" v-model="editUnitEqm">
+                        <option disabled value="">หน่วย</option>
+                        <option>เครื่อง</option>
+                        <option>ชุด</option>
+                      </select>
+                      <select class="selectBox" v-model="editCategory">
+                        <option disabled value="">ประเภท</option>
+                        <option>สนับสนุน</option>
+                        <option>วินิจฉัยและรักษา</option>
+                        <option>รักษา</option>
+                        <option>วินิจฉัย</option>
+                      </select>
+                    </div>
+                    <div class="modal-footer">
+                      <button @click="submitEditEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Edit Device !-->
             </div>
           </div>
           </div>
@@ -171,14 +194,23 @@ export default {
   name: 'listtable',
   data () {
     return {
+      id: '',
       name: '',
       category: '',
       amountEqm: '',
+      count: '',
       nameEqm: '',
       unitEqm: '',
       categoryEqm: '',
       firstname: '',
-      lastname: ''
+      lastname: '',
+      msgLogout: 'ออกจากระบบ',
+      editName: '',
+      editCategory: '',
+      editID: '',
+      key: '',
+      params: 'sss',
+      editUnitEqm: ''
     }
   },
   created () {
@@ -197,6 +229,29 @@ export default {
   },
   methods: {
     submitEqm () {
+      var s
+      var id = []
+      if (this.categoryEqm === 'สนับสนุน') {
+        s = '01'
+      } else if (this.categoryEqm === 'วินิจฉัยและรักษา') {
+        s = '02'
+      } else if (this.categoryEqm === 'รักษา') {
+        s = '03'
+      } else if (this.categoryEqm === 'วินิจฉัย') {
+        s = '04'
+      }
+      this.count = this.amountEqm * 1 + 1
+      for (var i = 1; i < this.count; i++) {
+        var insertID = {
+          id: s + i,
+          number: i,
+          lastnameLend: '',
+          nameLend: '',
+          status: ''
+        }
+        id.push(insertID)
+      }
+
       equipmentRef.push({
         nameEqm: this.nameEqm,
         amountEqm: this.amountEqm,
@@ -204,7 +259,21 @@ export default {
         balanceEqm: this.amountEqm,
         unitEqm: this.unitEqm,
         categoryEqm: this.categoryEqm,
-        editEqm: false
+        editEqm: false,
+        equipmentID: id
+      })
+    },
+    editEqm (key) {
+      this.editName = this.equipments.find(equipments => equipments['.key'] === key).nameEqm
+      this.editID = this.equipments.find(equipments => equipments['.key'] === key).equipmentID
+      this.key = key
+      console.log(this.editID)
+    },
+    submitEditEqm () {
+      equipmentRef.child(this.key).update({
+        nameEqm: this.editName,
+        categoryEqm: this.editCategory,
+        unitEqm: this.editUnitEqm
       })
     },
     removeEqm (key) {
@@ -359,6 +428,6 @@ nav ul li a:hover {
 }
 /*----------------------------------------------------------------------------------*/
 td {
-  font-size: 16px;
+  font-size: 14px;
 }
 </style>

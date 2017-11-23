@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ยืมเครื่องแพทย์</p>
+          <p>ประวัติการยืม</p>
         </li>
         <li class="user-login">
           <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
@@ -53,74 +53,29 @@
           <div class="card">
             <div class="card-block">
               <h4 class="card-title">
-                แสดงรายการเครื่องมือที่เปิดให้ยืม
-                <div class="button-add">
-                  <select v-model="category" class="selectBox">
-                    <option disabled value="">ประเภท</option>
-                    <option>สนับสนุน</option>
-                    <option>วินิจฉัยและรักษา</option>
-                    <option>รักษา</option>
-                    <option>วินิจฉัย</option>
-                  </select>
-
-                  <!-- ADD Device !-->
-                  <button type="button" class="btn button-add btn btn-success" data-toggle="modal" data-target="#myModal"><b>+</b> เพิ่มรายการ</button>
-                  <div class="modal fade" id="myModal" role="dialog">
-                    <div class="modal-dialog">
-                      <!-- Modal content-->
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
-                        </div>
-                        <div class="modal-body">
-                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
-                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
-                          <select class="selectBox" v-model="unitEqm">
-                            <option disabled value="">หน่วย</option>
-                            <option>เครื่อง</option>
-                            <option>ชุด</option>
-                          </select>
-                          <select class="selectBox" v-model="categoryEqm">
-                            <option disabled value="">ประเภท</option>
-                            <option>สนับสนุน</option>
-                            <option>วินิจฉัยและรักษา</option>
-                            <option>รักษา</option>
-                            <option>วินิจฉัย</option>
-                          </select>
-                        </div>
-                        <div class="modal-footer">
-                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- ADD Device !-->
-
-                </div>
+                ประวัติการยืม
               </h4>
-              <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
               <!--TABLE!-->
               <br>
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="100px">ลำดับ</th>
-                    <th width="800px">ชื่ออุปกรณ์</th>
-                    <th width="118px" style="text-align: center;">จำนวน</th>
-                    <th width="118px" style="text-align: center;">ถูกยืม</th>
-                    <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
-                    <th width="100px">หน่วย</th>
+                    <th width="50px">วันที่ยืม</th>
+                    <th width="50px">วันที่คืน</th>
+                    <th width="118px">ชื่ออุปกรณ์</th>
+                    <th width="118px">ชื่อผู้ยืม</th>
+                    <th width="118px" style="text-align: center;">จำนวนที่ยืม</th>
+                    <th width="100px" style="text-align: center; background: #9968db; color: #ffffff;">คืนแล้ว</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(equipment, index) of equipments" v-bind:key="equipment['.key']">
-                    <td>{{index+1}}</td>
-                    <td>{{equipment.nameEqm}}</td>
-                    <td style="text-align: center;">{{equipment.amountEqm}}</td>
-                    <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                    <td>{{equipment.unitEqm}}</td>
+                  <tr v-if="history.firstname == firstname && history.lastname == lastname" v-for="(history, index) of historys" v-bind:key="history['.key']">                   
+                    <td>{{history.date}}</td>
+                    <td>{{history.returnedDate}}</td>
+                    <td>{{history.nameEqm}}</td>
+                    <td>{{history.firstname}} {{history.lastname}}</td>
+                    <td style="text-align: center;">{{history.amount}}</td>
+                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{history.returnedEqm}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -136,7 +91,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, historyRef} from './firebase'
 
 export default {
   name: 'ulisttable',
@@ -164,7 +119,8 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    historys: historyRef
   },
   computed: {
     realtimeplus: function () {
@@ -202,7 +158,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  width: 70%;
   margin-left: 35px;
   border: 1px solid #dddddd;
 }

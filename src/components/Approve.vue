@@ -23,13 +23,13 @@
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
-        <li>
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/lendhistory">ประวัติการยืม</router-link>
-        </li>
         <li class="selected">
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
+        </li>
+        <li>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -59,13 +59,12 @@
               <h4 class="card-title">
                 แสดงรายการรออนุมัติ
               </h4>
-              <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
+              <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
               <br>
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="100px">ลำดับ</th>
                     <th width="700px">ชื่ออุปกรณ์</th>
                     <th width="118px">วันที่</th>
                     <th width="100px">ผู้ยืม</th>
@@ -76,15 +75,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="approvetable of approvetables" v-bind:key="approvetable['.key']">
-                      <td>#</td>
+                  <tr v-for="(approvetable, index) of approvetables" v-bind:key="approvetable['.key']">
                       <td>{{approvetable.nameLend}}</td>
                       <td>{{approvetable.dateLend}}</td>
                       <td>{{approvetable.firstname}} {{approvetable.lastname}}</td>
                       <td>{{approvetable.departmentLend}}</td>
                       <td>{{approvetable.HnNo}}</td>
                       <td>{{approvetable.amountLend}}</td>
-                      <td style="text-align: center;background: #9968db; color: #ffffff;">{{approvetable.statusLend}}</td>
+                      <td>
+                        <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;">{{approvetable.statusLend}}
+                            <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                              <li><a @click="status('อนุมัติ',approvetable['.key'])">อนุมัติ</a></li>
+                              <li><a @click="status('ไม่อนุมัติ',approvetable['.key'])">ไม่อนุมัติ</a></li>
+                            </ul>
+                          </div>
+                      </td>
                   </tr>
                 </tbody>
               </table>
@@ -100,7 +107,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, lendRef, scanRef} from './firebase'
 
 export default {
   name: 'approve',
@@ -111,7 +118,17 @@ export default {
       categoryEqm: '',
       user: '',
       firstname: '',
-      lastname: ''
+      lastname: '',
+      statusLend: '',
+
+      nameLendeqm: '',
+      dateLendeqm: '',
+      firstnameeqm: '',
+      lastnameeqm: '',
+      departmentLendeqm: '',
+      HnNoeqm: '',
+      amountLendeqm: '',
+      categoryLendeqm: ''
     }
   },
   created () {
@@ -127,7 +144,8 @@ export default {
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    approvetables: approvetableRef
+    approvetables: approvetableRef,
+    lendeqm: lendRef
   },
   computed: {
     realtimeplus: function () {
@@ -145,6 +163,32 @@ export default {
         categoryEqm: this.categoryEqm,
         editEqm: false
       })
+    },
+    status (status, key) {
+      approvetableRef.child(key).update({statusLend: status})
+
+      this.categoryLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).categoryLend
+      this.nameLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).nameLend
+      this.dateLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).dateLend
+      this.firstnameeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).firstname
+      this.lastnameeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).lastname
+      this.departmentLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).departmentLend
+      this.HnNoeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).HnNo
+      this.amountLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).amountLend
+      if (status === 'อนุมัติ') {
+        scanRef.push({
+          HnNo: this.HnNoeqm,
+          amountLend: this.amountLendeqm,
+          categoryLend: this.categoryLendeqm,
+          dateLend: this.dateLendeqm,
+          departmentLend: this.departmentLendeqm,
+          firstname: this.firstnameeqm,
+          lastname: this.lastnameeqm,
+          nameLend: this.nameLendeqm,
+          balance: this.amountLendeqm,
+          accepted: 0
+        })
+      }
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
@@ -292,10 +336,12 @@ nav ul li a:hover {
 
 /*--------------------------------------- selectBox -------------------------------------*/
 .selectBox {
-  width: 150px;
+  width: 100px;
   height: 34px;
   border-radius: 4px;
   font-size: 14px;
+  background: #5cb85c;
+  color: #ffffff;
 }
 /*----------------------------------------------------------------------------------*/
 

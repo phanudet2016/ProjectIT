@@ -66,13 +66,11 @@
 
                   </div>
                 </h4>
-                <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
                 <!--TABLE!-->
                 <br>
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
-                      <th width="100px">ลำดับ</th>
                       <th width="800px">ชื่ออุปกรณ์</th>
                       <th width="118px" style="text-align: center;background: #9968db; color: #ffffff;">จำนวน</th>
                       <th width="100px">หน่วย</th>
@@ -81,23 +79,20 @@
                   </thead>
                   <tbody>
                     <tr v-if="category === ''" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
-                        <td>#</td>
                         <td>{{equipment.nameEqm}}</td>
-                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.amountEqm}}</td>
+                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
                         <td><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
                       <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
-                        <td>#</td>
                         <td>{{equipment.nameEqm}}</td>
-                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.amountEqm}}</td>
+                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
                         <td><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
                       <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
-                        <td>#</td>
                         <td>{{equipment.nameEqm}}</td>
-                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.amountEqm}}</td>
+                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
                         <td><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
@@ -123,18 +118,6 @@
 
                       <p style="color:#9A9A9A;font-size:16px;">จำนวน</p>
                       <input class="" type="text" placeholder="" style="width:100px;border-radius:4px;border:1px solid #ccc" v-model="amountLend"/>
-                      <!--<select class="selectBox" v-model="unitEqm">
-                        <option disabled value="">หน่วย</option>
-                        <option>เครื่อง</option>
-                        <option>ชุด</option>
-                      </select>
-                      <select class="selectBox" v-model="categoryEqm">
-                        <option disabled value="">ประเภท</option>
-                        <option>สนับสนุน</option>
-                        <option>วินิจฉัยและรักษา</option>
-                        <option>รักษา</option>
-                        <option>วินิจฉัย</option>
-                      </select>!-->
                     </div>
                     <div class="modal-footer">
                       <button @click="submitLend()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
@@ -155,7 +138,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef} from './firebase'
 
 export default {
   name: 'uhome',
@@ -176,7 +159,10 @@ export default {
       amountLend: '',
       HnNo: '',
       statusLend: 'รออนุมัติ',
-      department: ''
+      department: '',
+      key: '',
+      borrowedLend: '',
+      balanceLend: ''
     }
   },
   created () {
@@ -193,7 +179,8 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    scan: scanRef
   },
   computed: {
     realtimeplus: function () {
@@ -205,22 +192,40 @@ export default {
       this.user = auth.currentUser
       this.firstname = this.users.find(users => users.email === this.user.email).firstname
       this.lastname = this.users.find(users => users.email === this.user.email).lastname
-      approvetableRef.push({
-        HnNo: this.HnNo,
-        nameLend: this.nameLend,
-        amountLend: this.amountLend,
-        categoryLend: this.categoryLend,
-        dateLend: new Date().toLocaleString(),
-        firstname: this.firstname,
-        lastname: this.lastname,
-        statusLend: this.statusLend,
-        departmentLend: this.department
-      })
+      if (this.amountLend < 0) {
+        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
+      } else if (this.amountLend === '0' || this.amountLend === '' || this.HnNo === '') {
+        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
+      } else if (this.amountLend > this.balanceLend) {
+        alert('กรอกจำนวนเกิน')
+      } else if (this.amountLend <= this.balanceLend) {
+        this.balanceLend = this.balanceLend * 1 - this.amountLend * 1
+        this.borrowedLend = this.borrowedLend * 1 + this.amountLend * 1
+        approvetableRef.push({
+          HnNo: this.HnNo,
+          nameLend: this.nameLend,
+          amountLend: this.amountLend,
+          categoryLend: this.categoryLend,
+          dateLend: new Date().toLocaleString(),
+          firstname: this.firstname,
+          lastname: this.lastname,
+          statusLend: this.statusLend,
+          departmentLend: this.department
+        })
+        equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
+        equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})
+      } else {
+        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
+      }
     },
     lend (key) {
       this.nameLend = this.equipments.find(equipments => equipments['.key'] === key).nameEqm
       this.categoryLend = this.equipments.find(equipments => equipments['.key'] === key).categoryEqm
       this.unitLend = this.equipments.find(equipments => equipments['.key'] === key).unitEqm
+      this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === key).borrowedEqm
+      this.balanceLend = this.equipments.find(equipments => equipments['.key'] === key).balanceEqm
+      this.key = key
+      console.log(this.balanceLend)
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()

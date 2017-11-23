@@ -55,13 +55,11 @@
                 <h4 class="card-title">
                   แสดงรายการรออนุมัติ
                 </h4>
-                <p class="card-text">รวม : {{realtimeplus}} รายการ</p>
                 <!--TABLE!-->
                 <br>
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
-                      <th width="100px">ลำดับ</th>
                       <th width="700px">ชื่ออุปกรณ์</th>
                       <th width="118px">จำนวน</th>
                       <th width="100px">วันที่</th>
@@ -69,8 +67,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="approvetable.firstname == firstname" v-for="approvetable of approvetables" v-bind:key="approvetable['.key']">
-                        <td>#</td>
+                    <tr v-if="approvetable.firstname == firstname && approvetable.lastname == lastname" v-for="approvetable of approvetables" v-bind:key="approvetable['.key']">
                         <td>{{approvetable.nameLend}}</td>
                         <td>{{approvetable.amountLend}}</td>
                         <td>{{approvetable.dateLend}}</td>
