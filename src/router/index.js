@@ -13,11 +13,23 @@ import Urequest from '@/components/Urequest'
 import Ualert from '@/components/Ualert'
 import Uapprove from '@/components/Uapprove'
 import Eqmtable from '@/components/Eqmtable'
+import Addlist from '@/components/Addlist'
+import Datalist from '@/components/Datalist'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/datalist',
+      name: 'datalist',
+      component: Datalist
+    },
+    {
+      path: '/addlist',
+      name: 'addlist',
+      component: Addlist
+    },
     {
       path: '/eqmtable/:id',
       name: 'eqmttable',

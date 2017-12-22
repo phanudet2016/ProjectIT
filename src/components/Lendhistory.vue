@@ -3,16 +3,17 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ประวัติการยืม</p>
+          <p style="font-size:25px"><b>ประวัติการยืม</b></p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
 
     <nav>
-      <p class="navbar-brand">UI SERVICE CARE</p>
+      <img src="../assets/196127.png" style="margin-top:22px;margin-left:20px;width:40%;">
+      <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
         <li>
@@ -56,8 +57,11 @@
           <div class="col-md">
           <div class="card">
             <div class="card-block">
-              <h4 class="card-title">
+              <h4 class="card-title" style="font-size:20px">
                 ประวัติการยืม
+                <div class="button-add">
+                  <input type="text" v-model="search" placeholder="ค้นหา..." v-on:keypress="" style="" class="searchEqm">
+                </div>
               </h4>
               <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
@@ -65,18 +69,20 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="50px">วันที่ยืม</th>
-                    <th width="118px">ชื่ออุปกรณ์</th>
-                    <th width="118px">ชื่อผู้ยืม</th>
+                    <th width="150px">วันที่ยืม</th>
+                    <th width="800px">ชื่ออุปกรณ์</th>
+                    <th width="118px" style="text-align: center;">ชื่อผู้ยืม</th>
+                    <th width="118px" style="text-align: center;">แผนก</th>
                     <th width="118px" style="text-align: center;">จำนวนที่ยืม</th>
                     <th width="100px" style="text-align: center; background: #9968db; color: #ffffff;">คืนแล้ว</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(history, index) of historys" v-bind:key="history['.key']">
+                  <tr v-for="(history, index) of searchEqm" v-bind:key="history['.key']">
                     <td>{{history.date}}</td>
                     <td>{{history.nameEqm}}</td>
-                    <td>{{history.firstname}} {{history.lastname}}</td>
+                    <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>
+                    <td style="text-align: center;">{{history.department}}</td>
                     <td style="text-align: center;">{{history.amount}}</td>
                     <td style="text-align: center; background: #9968db; color: #ffffff;">{{history.returnedEqm}}</td>
                   </tr>
@@ -109,7 +115,8 @@ export default {
       categoryEqm: '',
       firstname: '',
       lastname: '',
-      em: ''
+      em: '',
+      search: ''
     }
   },
   created () {
@@ -127,11 +134,6 @@ export default {
     equipments: equipmentRef,
     users: userRef,
     historys: historyRef
-  },
-  computed: {
-    realtimeplus: function () {
-      return this.num1
-    }
   },
   methods: {
     submitEqm () {
@@ -151,6 +153,13 @@ export default {
     submitLogout () {
       auth.signOut()
       this.$router.push('/')
+    }
+  },
+  computed: {
+    searchEqm () {
+      return this.historys.filter((historys) => {
+        return historys.nameEqm.indexOf(this.search) > -1 || historys.firstname.indexOf(this.search) > -1 || historys.lastname.indexOf(this.search) > -1
+      })
     }
   }
 }
@@ -197,7 +206,6 @@ export default {
 }
 
 .nav-header ul li p {
-  font-family: arial, sans-serif;
   font-weight: 400;
   font-size: 20px;
 }
@@ -229,10 +237,13 @@ export default {
 .navbar-brand {
   color: #FFFFFF;
   line-height: 30px;
-  padding-left: 50px;
-  border-bottom: 1px solid #525d63;
+  padding-left: 147px;
+  /*border-bottom: 1px solid #525d63;*/
   width: 100%;
   height: auto;
+  font-weight: bold;
+  font-size: 23px;
+  margin-top: -120px;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -260,6 +271,11 @@ nav ul li {
   padding: 15px;
   width: 253px;
   border-radius: 4px;
+  font-size: 20px;
+}
+
+nav ul {
+  margin-top: -50px;
 }
 
 .active-loguot {
@@ -297,4 +313,25 @@ nav ul li a:hover {
   font-size: 14px;
 }
 /*----------------------------------------------------------------------------------*/
+td {
+  font-size: 20px;
+}
+th {
+  font-size: 20px;
+}
+
+.searchEqm {
+    width: 150px;
+    box-sizing: border-box;
+    border: 1px solid rgb(169, 169, 169);
+    border-radius: 4px;
+    font-size: 20px;
+    background-color: white;
+    background-image: url('../assets/searchicon.png');
+    background-size: 17px 17px;
+    background-position: 8px 8px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 33px;
+    height: 34px;
+}
 </style>

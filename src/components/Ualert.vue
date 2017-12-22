@@ -37,7 +37,7 @@
         </li>
         <li class="selected">
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/ualert">การแจ้งเตือน์</router-link>
+          <router-link to="/ualert">การแจ้งเตือน</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>

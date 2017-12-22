@@ -3,16 +3,17 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>ยืมเครื่องมือแพทย์</p>
+          <p style="font-size:25px"><b>ยืมเครื่องมือแพทย์</b></p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
 
     <nav>
-      <p class="navbar-brand">UI SERVICE CARE</p>
+      <img src="../assets/196127.png" style="margin-top:22px;margin-left:20px;width:40%;">
+      <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
         <li class="selected">
@@ -33,11 +34,11 @@
         </li>
         <li>
           <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/urequest">แจ้งความต้องการใช้อุปกรณ์</router-link>
+          <router-link to="">แจ้งความต้องการใช้อุปกรณ์</router-link>
         </li>
         <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/ualert">การแจ้งเตือน</router-link>
+          <router-link to="">การแจ้งเตือน</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -52,10 +53,11 @@
           <div class="col-md">
             <div class="card">
               <div class="card-block">
-                <h4 class="card-title">
+                <h4 class="card-title" style="font-size:20px">
                   แสดงรายการเครื่องมือที่เปิดให้ยืม
                   <div class="button-add">
-                    <select v-model="category" class="selectBox">
+                    <input type="text" v-model="search" placeholder="ค้นหา..." v-on:keypress="" style="" class="searchEqm">
+                    <select v-model="category" class="selectBox" style="font-size:20px">
                       <option disabled value="">ประเภท</option>
                       <option>สนับสนุน</option>
                       <option>วินิจฉัยและรักษา</option>
@@ -74,27 +76,31 @@
                       <th width="800px">ชื่ออุปกรณ์</th>
                       <th width="118px" style="text-align: center;background: #9968db; color: #ffffff;">จำนวน</th>
                       <th width="100px">หน่วย</th>
-                      <th width="100px">ยืม</th>
+                      <th width="100px">ราคา (ต่อหน่วย)</th>
+                      <th width="100px" style="text-align: center;">ยืม</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="category === ''" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
+                    <tr v-if="category === ''" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
-                        <td><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                        <td style="text-align: center;"><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
-                      <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
+                      <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
-                        <td><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                        <td style="text-align: center;"><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
-                      <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of equipments" v-bind:key="equipment['.key']">
+                      <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
-                        <td><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                        <td style="text-align: center;"><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
                     </tbody>
                   </table>
@@ -107,20 +113,20 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h4 class="modal-title">ยืมเครื่องมือแพทย์</h4>
+                      <h4 class="modal-title" style="font-size:25px"><b>ยืมเครื่องมือแพทย์</b></h4>
                     </div>
                     <div class="modal-body">
-                      <p style="color:#9A9A9A;font-size:16px;">ชื่ออุปกรณ์  </p><h4>{{nameLend}}</h4> <br>
-                      <p style="color:#9A9A9A;font-size:16px;">ประเภท  </p><h4>{{categoryLend}}</h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">ชื่ออุปกรณ์  </p><h4 style="font-size:21px">{{nameLend}}</h4> <br>
+                      <p style="color:#9A9A9A;font-size:20px;">ประเภท  </p><h4 style="font-size:21px">{{categoryLend}}</h4><br>
 
-                      <p style="color:#9A9A9A;font-size:16px;">HN No.</p>
-                      <input class="" type="text" placeholder="" style="width:100px;border-radius:4px;border:1px solid #ccc" v-model="HnNo"/><br><br>
+                      <p style="color:#9A9A9A;font-size:20px;">HN No.</p>
+                      <input class="" type="text" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="HnNo"/><br><br>
 
-                      <p style="color:#9A9A9A;font-size:16px;">จำนวน</p>
-                      <input class="" type="text" placeholder="" style="width:100px;border-radius:4px;border:1px solid #ccc" v-model="amountLend"/>
+                      <p style="color:#9A9A9A;font-size:20px;">จำนวน</p>
+                      <input class="" type="number" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="amountLend"/>
                     </div>
                     <div class="modal-footer">
-                      <button @click="submitLend()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+                      <button @click="submitLend()" type="button" class="btn btn-default" data-dismiss="modal" style="width:100px;font-size:16px">ตกลง</button>
                     </div>
                   </div>
                 </div>
@@ -162,7 +168,8 @@ export default {
       department: '',
       key: '',
       borrowedLend: '',
-      balanceLend: ''
+      balanceLend: '',
+      search: ''
     }
   },
   created () {
@@ -182,16 +189,12 @@ export default {
     users: userRef,
     scan: scanRef
   },
-  computed: {
-    realtimeplus: function () {
-      return this.num1
-    }
-  },
   methods: {
     submitLend () {
       this.user = auth.currentUser
       this.firstname = this.users.find(users => users.email === this.user.email).firstname
       this.lastname = this.users.find(users => users.email === this.user.email).lastname
+      this.department = this.users.find(users => users.email === this.user.email).department
       if (this.amountLend < 0) {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
       } else if (this.amountLend === '0' || this.amountLend === '' || this.HnNo === '') {
@@ -226,6 +229,8 @@ export default {
       this.balanceLend = this.equipments.find(equipments => equipments['.key'] === key).balanceEqm
       this.key = key
       console.log(this.balanceLend)
+      this.amountLend = ''
+      this.HnNo = ''
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
@@ -233,6 +238,13 @@ export default {
     submitLogout () {
       auth.signOut()
       this.$router.push('/')
+    }
+  },
+  computed: {
+    searchEqm () {
+      return this.equipments.filter((equipments) => {
+        return equipments.nameEqm.indexOf(this.search) > -1
+      })
     }
   }
 }
@@ -279,7 +291,6 @@ export default {
 }
 
 .nav-header ul li p {
-  font-family: arial, sans-serif;
   font-weight: 400;
   font-size: 20px;
 }
@@ -311,10 +322,13 @@ export default {
 .navbar-brand {
   color: #FFFFFF;
   line-height: 30px;
-  padding-left: 50px;
-  border-bottom: 1px solid #525d63;
+  padding-left: 147px;
+  /*border-bottom: 1px solid #525d63;*/
   width: 100%;
   height: auto;
+  font-weight: bold;
+  font-size: 23px;
+  margin-top: -120px;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -342,6 +356,11 @@ nav ul li {
   padding: 15px;
   width: 253px;
   border-radius: 4px;
+  font-size: 20px;
+}
+
+nav ul {
+  margin-top: -50px;
 }
 
 .active-loguot {
@@ -379,4 +398,25 @@ nav ul li a:hover {
   font-size: 14px;
 }
 /*----------------------------------------------------------------------------------*/
+td {
+  font-size: 20px;
+}
+th {
+  font-size: 20px;
+}
+
+.searchEqm {
+    width: 150px;
+    box-sizing: border-box;
+    border: 1px solid rgb(169, 169, 169);
+    border-radius: 4px;
+    font-size: 20px;
+    background-color: white;
+    background-image: url('../assets/searchicon.png');
+    background-size: 17px 17px;
+    background-position: 8px 8px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 33px;
+    height: 34px;
+}
 </style>

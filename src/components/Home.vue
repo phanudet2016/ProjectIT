@@ -3,16 +3,17 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>หน้าหลัก</p>
+          <p style="font-size:25px"><b>หน้าหลัก</b></p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
 
     <nav>
-      <p class="navbar-brand">UI SERVICE CARE</p>
+      <img src="../assets/196127.png" style="margin-top:22px;margin-left:20px;width:40%;">
+      <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
         <li class="selected">
@@ -170,7 +171,6 @@ export default {
 }
 
 .nav-header ul li p {
-  font-family: arial, sans-serif;
   font-weight: 400;
   font-size: 20px;
 }
@@ -202,10 +202,13 @@ export default {
 .navbar-brand {
   color: #FFFFFF;
   line-height: 30px;
-  padding-left: 50px;
-  border-bottom: 1px solid #525d63;
+  padding-left: 147px;
+  /*border-bottom: 1px solid #525d63;*/
   width: 100%;
   height: auto;
+  font-weight: bold;
+  font-size: 23px;
+  margin-top: -120px;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -233,6 +236,11 @@ nav ul li {
   padding: 15px;
   width: 253px;
   border-radius: 4px;
+  font-size: 20px;
+}
+
+nav ul {
+  margin-top: -50px;
 }
 
 .active-loguot {

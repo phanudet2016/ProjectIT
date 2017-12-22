@@ -3,16 +3,17 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p>รายการรออนุมัติ</p>
+          <p style="font-size:25px"><b>รายการรออนุมัติ</b></p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
 
     <nav>
-      <p class="navbar-brand">UI SERVICE CARE</p>
+      <img src="../assets/196127.png" style="margin-top:22px;margin-left:20px;width:40%;">
+      <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
         <li>
@@ -56,7 +57,7 @@
           <div class="col-md">
           <div class="card">
             <div class="card-block">
-              <h4 class="card-title">
+              <h4 class="card-title" style="font-size:20px">
                 แสดงรายการรออนุมัติ
               </h4>
               <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
@@ -66,7 +67,7 @@
                 <thead>
                   <tr>
                     <th width="700px">ชื่ออุปกรณ์</th>
-                    <th width="118px">วันที่</th>
+                    <th width="120px">วันที่</th>
                     <th width="100px">ผู้ยืม</th>
                     <th width="100px">แผนก</th>
                     <th width="100px">HN No.</th>
@@ -82,15 +83,21 @@
                       <td>{{approvetable.departmentLend}}</td>
                       <td>{{approvetable.HnNo}}</td>
                       <td>{{approvetable.amountLend}}</td>
-                      <td>
+                      <td v-if="approvetable.statusLend === 'รออนุมัติ'" style="text-align:center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;">{{approvetable.statusLend}}
-                            <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
-                              <li><a @click="status('อนุมัติ',approvetable['.key'])">อนุมัติ</a></li>
-                              <li><a @click="status('ไม่อนุมัติ',approvetable['.key'])">ไม่อนุมัติ</a></li>
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:18px;width:100px;">{{approvetable.statusLend}}
+                            <span class="caret"></span></button>                    
+                            <ul class="dropdown-menu">                             
+                              <li><a @click="status('อนุมัติ',approvetable['.key'])" style="font-size:18px;">อนุมัติ</a></li>
+                              <li><a @click="status('ไม่อนุมัติ',approvetable['.key'])" style="font-size:18px;">ไม่อนุมัติ</a></li>
                             </ul>
                           </div>
+                      </td>
+                      <td v-if="approvetable.statusLend === 'อนุมัติ'" style="background:#9968db;text-align:center;color:#ffffff;">  
+                        {{approvetable.statusLend}}                    
+                      </td>
+                      <td v-if="approvetable.statusLend === 'ไม่อนุมัติ'" style="background:#9968db;text-align:center;color:#ffffff;">
+                        {{approvetable.statusLend}}
                       </td>
                   </tr>
                 </tbody>
@@ -242,7 +249,6 @@ export default {
 }
 
 .nav-header ul li p {
-  font-family: arial, sans-serif;
   font-weight: 400;
   font-size: 20px;
 }
@@ -274,10 +280,13 @@ export default {
 .navbar-brand {
   color: #FFFFFF;
   line-height: 30px;
-  padding-left: 50px;
-  border-bottom: 1px solid #525d63;
+  padding-left: 147px;
+  /*border-bottom: 1px solid #525d63;*/
   width: 100%;
   height: auto;
+  font-weight: bold;
+  font-size: 23px;
+  margin-top: -120px;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -305,6 +314,11 @@ nav ul li {
   padding: 15px;
   width: 253px;
   border-radius: 4px;
+  font-size: 20px;
+}
+
+nav ul {
+  margin-top: -50px;
 }
 
 .active-loguot {
@@ -346,6 +360,9 @@ nav ul li a:hover {
 /*----------------------------------------------------------------------------------*/
 
 td {
-  font-size: 14px;
+  font-size: 20px;
+}
+th {
+  font-size: 20px;
 }
 </style>

@@ -8,7 +8,7 @@
           <div class="panel-body">
             <div class="row">
               <div class="col-lg-12">
-                <p><img src="../assets/bbb.png"></p>
+                <p><center><img src="../assets/b.png" width="60%"></center></p>
                 <form id="login-form" action="#" method="post" role="form" style="display: block;">
                   <!--<h2>LOGIN</h2>!-->
                   <br>

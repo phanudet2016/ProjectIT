@@ -3,16 +3,17 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p><router-link to="/listtable">รายการอุปกรณ์</router-link> / {{nameEqm}}</p>
+          <p style="font-size:25px;"><router-link to="/listtable">รายการอุปกรณ์</router-link> / <b>{{nameEqm}}</b></p>
         </li>
         <li class="user-login">
-          <p><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
 
     <nav>
-      <p class="navbar-brand">UI SERVICE CARE</p>
+      <img src="../assets/196127.png" style="margin-top:22px;margin-left:20px;width:40%;">
+      <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
         <li>
@@ -24,12 +25,12 @@
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/lendhistory">ประวัติการยืม</router-link>
-        </li>
-        <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
+        </li>
+        <li>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
           <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
@@ -56,7 +57,7 @@
           <div class="col-md-9">
           <div class="card">
             <div class="card-block">
-              <h4 class="card-title">
+              <h4 class="card-title" style="font-size:20px">
                 {{nameEqm}}
               </h4>
 
@@ -64,7 +65,7 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="100px">ID Deivice</th>
+                    <th width="100px">รหัสอุปกรณ์</th>
                     <th width="800px">หมายเลขเครื่อง</th>
                     <th width="100px">สถานะ</th>
                     <th width="150px">ผู้ยืม</th>
@@ -196,7 +197,6 @@ export default {
 }
 
 .nav-header ul li p {
-  font-family: arial, sans-serif;
   font-weight: 400;
   font-size: 20px;
 }
@@ -228,10 +228,13 @@ export default {
 .navbar-brand {
   color: #FFFFFF;
   line-height: 30px;
-  padding-left: 50px;
-  border-bottom: 1px solid #525d63;
+  padding-left: 147px;
+  /*border-bottom: 1px solid #525d63;*/
   width: 100%;
   height: auto;
+  font-weight: bold;
+  font-size: 23px;
+  margin-top: -120px;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -259,6 +262,11 @@ nav ul li {
   padding: 15px;
   width: 253px;
   border-radius: 4px;
+  font-size: 20px;
+}
+
+nav ul {
+  margin-top: -50px;
 }
 
 .active-loguot {
@@ -296,6 +304,9 @@ nav ul li a:hover {
 }
 /*----------------------------------------------------------------------------------*/
 td {
-  font-size: 14px;
+  font-size: 20px;
+}
+th {
+  font-size: 20px;
 }
 </style>
