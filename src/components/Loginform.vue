@@ -66,10 +66,16 @@ export default {
       auth.signInWithEmailAndPassword(this.email, this.password).catch((error) => {
         var errorCode = error.code
         var errorMessage = error.message
-        if (errorCode === 'auth/wrong-password') {
+        if (this.email === '' || this.password === '') {
+          alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+        } else if (errorCode === 'auth/wrong-password') {
           alert('รหัสผ่านไม่ถูกต้อง')
         } else {
-          alert(errorMessage)
+          if (errorMessage === 'The email address is badly formatted.') {
+            alert('กรุณนากรอกข้อมูลให้ถูกต้อง')
+          } else if (errorMessage === 'There is no user record corresponding to this identifier. The user may have been deleted.') {
+            alert('ไม่พบข้อมูลอยู่ในระบบ')
+          }
         }
         console.log(error)
       })

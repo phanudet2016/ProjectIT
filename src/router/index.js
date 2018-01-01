@@ -15,11 +15,23 @@ import Uapprove from '@/components/Uapprove'
 import Eqmtable from '@/components/Eqmtable'
 import Addlist from '@/components/Addlist'
 import Datalist from '@/components/Datalist'
+import Ulendhistoryeqm from '@/components/Ulendhistoryeqm'
+import Lendhistoryeqm from '@/components/lendhistoryeqm'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/lendhistoryeqm/:id',
+      name: 'lendhistoryeqm',
+      component: Lendhistoryeqm
+    },
+    {
+      path: '/ulendhistoryeqm/:id',
+      name: 'ulendhistoryeqm',
+      component: Ulendhistoryeqm
+    },
     {
       path: '/datalist',
       name: 'datalist',

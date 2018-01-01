@@ -69,31 +69,41 @@
                     <th width="800px">หมายเลขเครื่อง</th>
                     <th width="100px">สถานะ</th>
                     <th width="150px">ผู้ยืม</th>
+                    <th width="150px">QR Code</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="arrayEqms in arrayEqm">
+                  <tr v-for="(arrayEqms, index) in arrayEqm">
                     <td>{{arrayEqms.id}}</td>
                     <td>{{arrayEqms.number}}</td>
                     <td>{{arrayEqms.status}}</td>
                     <td>{{arrayEqms.nameLend}} {{arrayEqms.lastnameLend}}</td>
+                    <td><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index)"></span></td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+          </div>
 
-            </div>
+          <div class="modal fade" id="myModall" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>QR Code</b></h4>
+                    </div>
+                    <div class="modal-body" style="text-align:center;">
+                      <qrcode-vue :value="valueQR" :size="250" level="H" id="myCanvas"></qrcode-vue>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" style="width:100px;font-size:16px">ปิด</button>
+                    </div>
+                  </div>
+                </div>
           </div>
-          </div>
-          <!--
-          <div class="col-sm-3">
-          <div class="card">
-            <div class="card-block">
-              <h4 class="card-title">
-                แสดงรายการเครื่องมือที่เปิดให้ยืมss
-              </h4>
-            </div>
-          </div>
-          </div>!-->
+
         </div>
       </div>
     </div>
@@ -103,6 +113,7 @@
 
 <script>
 import {equipmentRef, auth, userRef} from './firebase'
+import QrcodeVue from 'qrcode.vue'
 
 export default {
   name: 'eqmtable',
@@ -122,7 +133,8 @@ export default {
       editCategory: '',
       editID: '',
       key: '',
-      arrayEqm: []
+      arrayEqm: [],
+      valueQR: ''
     }
   },
   created () {
@@ -148,7 +160,14 @@ export default {
     submitLogout () {
       auth.signOut()
       this.$router.push('/')
+    },
+    genQrCode (index) {
+      this.valueQR = index + ' ' + this.$route.params.id
+      console.log(this.valueQR)
     }
+  },
+  components: {
+    QrcodeVue
   }
 }
 </script>
@@ -165,7 +184,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 100%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -211,7 +230,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -233,14 +252,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -258,21 +277,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
-
+ 
 nav ul {
   margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;

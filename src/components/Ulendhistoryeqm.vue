@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการเครื่องมือที่ยืมมา</b></p>
+          <p style="font-size:25px;"><router-link to="/ulendhistory">ประวัติการยืม</router-link> / <b>{{nameEqm}}</b></p>
         </li>
         <li class="user-login">
           <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
@@ -24,11 +24,11 @@
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/uapprove">รายการรออนุมัติ</router-link>
         </li>
-        <li class="selected">
+        <li>
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
-        <li>
+        <li class="selected">
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/ulendhistory">ประวัติการยืม</router-link>
         </li>
@@ -46,36 +46,44 @@
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md">
-            <div class="card">
-              <div class="card-block">
-                <h4 class="card-title" style="font-size:20px">
-                  รายการเครื่องมือที่ยืมมา
-                </h4>
-                <!--TABLE!-->
-                <br>
-                <table class="table table-hover table-striped">
-                  <thead>
-                    <tr>
-                      <th width="700px">ชื่ออุปกรณ์</th>
-                      <th width="125px">วันที่</th>
-                      <th width="100px">ยืม</th>
-                      <th width="100px" style="text-align: center;">รับแล้ว</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-if="scan.firstname == firstname && scan.lastname == lastname" v-for="(scan, index) of scans" v-bind:key="scan['.key']">
-                        <td>{{scan.nameLend}}</td>
-                        <td>{{scan.dateLend}}</td>
-                        <td>{{scan.amountLend}}</td>
-                        <td style="text-align: center; background: #9968db; color: #ffffff;">{{scan.accepted}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              <!--TABLE!-->
-              </div>
+          <div class="col-md-9">
+          <div class="card">
+            <div class="card-block">
+              <h4 class="card-title" style="font-size:20px">
+                {{nameEqm}}
+              </h4>
+
+              <br>
+              <table class="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th width="150px">วันที่คืน</th>
+                    <th width="500px">หมายเลขเครื่อง</th>
+                    <th width="100px">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="arrayEqms in arrayEqm" v-if="arrayEqms.number !== ''">
+                    <td>{{arrayEqms.date}}</td>
+                    <td >{{arrayEqms.number}}</td>
+                    <td>{{arrayEqms.status}}</td>
+                  </tr>
+                </tbody>
+              </table>
+
             </div>
           </div>
+          </div>
+          <!--
+          <div class="col-sm-3">
+          <div class="card">
+            <div class="card-block">
+              <h4 class="card-title">
+                แสดงรายการเครื่องมือที่เปิดให้ยืมss
+              </h4>
+            </div>
+          </div>
+          </div>!-->
         </div>
       </div>
     </div>
@@ -84,20 +92,27 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, scanRef} from './firebase'
+import {equipmentRef, auth, userRef, historyRef} from './firebase'
 
 export default {
-  name: 'ulisttable',
+  name: 'ulendhistoryeqm',
   data () {
     return {
+      name: '',
       category: '',
+      amountEqm: '',
+      count: '',
+      nameEqm: '',
       unitEqm: '',
       categoryEqm: '',
-      nameEqm: '',
-      amountEqm: '',
-      names: '',
       firstname: '',
-      lastname: ''
+      lastname: '',
+      editName: '',
+      editCategory: '',
+      editID: '',
+      key: '',
+      arrayEqm: [],
+      msgLogout: 'ออกจากระบบ'
     }
   },
   created () {
@@ -109,30 +124,15 @@ export default {
         console.log('not logged in')
       }
     })
+    this.arrayEqm = this.historys.find(historys => historys['.key'] === this.$route.params.id).returnedDate
+    this.nameEqm = this.historys.find(historys => historys['.key'] === this.$route.params.id).nameEqm
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    approvetables: approvetableRef,
-    scans: scanRef
-  },
-  computed: {
-    realtimeplus: function () {
-      return this.num1
-    }
+    historys: historyRef
   },
   methods: {
-    submitEqm () {
-      equipmentRef.push({
-        nameEqm: this.nameEqm,
-        amountEqm: this.amountEqm,
-        borrowedEqm: 0,
-        balanceEqm: this.amountEqm,
-        unitEqm: this.unitEqm,
-        categoryEqm: this.categoryEqm,
-        editEqm: false
-      })
-    },
     removeEqm (key) {
       equipmentRef.child(key).remove()
     },
@@ -146,13 +146,16 @@ export default {
 
 <style scoped>
 /*--------------------------------------- CONTENT ----------------------------------*/
+.row {
+  width: 80%;
+}
 .card {
   padding: .75rem 1.25rem;
   margin-bottom: 0;
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  width: 100%;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -280,7 +283,6 @@ nav ul li a:hover {
 
 .selected {
   background: #596166;
-
 }
 /*----------------------------------------------------------------------------------*/
 

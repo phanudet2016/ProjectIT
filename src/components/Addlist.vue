@@ -56,7 +56,7 @@
         <div class="row">
           <div class="col-md">
             <router-link to="/listtable">
-              <button style="margin-left:50px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;background:#E0E0E0;color:#000000;font-size:16px">
+              <button style="margin-left:62px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;background:#E0E0E0;color:#000000;font-size:16px">
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
                 <b>รายการอุปกรณ์</b>
               </button>
@@ -74,8 +74,8 @@
                   <span></span>
                   <!-- ADD Device !-->
                   <router-link to="/datalist">
-                    <button type="button" class="btn button-add btn btn-success" style="color:#ffffff;font-size:16px">
-                      <span class="glyphicon glyphicon-plus-sign"></span> เพิ่มจากบัญชีรายการครุภัณฑ์
+                    <button type="button" class="btn button-add btn btn-success" style="color:#ffffff;font-size:18px">
+                      <span class="glyphicon glyphicon-plus-sign"></span> เพิ่มรายการจากบัญชีรายการครุภัณฑ์
                     </button>
                  </router-link>
                   <div class="modal fade" id="myModal" role="dialog">
@@ -84,26 +84,14 @@
                       <div class="modal-content">
                         <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
+                          <h4 class="modal-title">นำเข้ารายการ</h4>
                         </div>
                         <div class="modal-body">
-                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
-                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
-                          <select class="selectBox" v-model="unitEqm">
-                            <option disabled value="">หน่วย</option>
-                            <option>เครื่อง</option>
-                            <option>ชุด</option>
-                          </select>
-                          <select class="selectBox" v-model="categoryEqm">
-                            <option disabled value="">ประเภท</option>
-                            <option>สนับสนุน</option>
-                            <option>วินิจฉัยและรักษา</option>
-                            <option>รักษา</option>
-                            <option>วินิจฉัย</option>
-                          </select>
+                          <input type="file" id="fileUpload">
+                          <!-- v-on:change !-->
                         </div>
                         <div class="modal-footer">
-                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">อัปโหลด</button>
                         </div>
                       </div>
                     </div>
@@ -142,6 +130,7 @@
                         <select class="selectBox" v-model="unitEqm" style="font-size:16px">
                             <option disabled value="">หน่วย</option>
                             <option>เครื่อง</option>
+                            <option>ตัว</option>
                             <option>ชุด</option>
                         </select>
                         <select class="selectBox" v-model="categoryEqm" style="font-size:16px">
@@ -229,7 +218,11 @@ export default {
       key: '',
       params: 'sss',
       editUnitEqm: '',
-      priceUnit: ''
+      priceUnit: '',
+      cells: [],
+      rows: [],
+      strRows: [],
+      countCSV: ''
     }
   },
   created () {
@@ -248,21 +241,21 @@ export default {
   },
   methods: {
     submitEqm () {
-      var s
+      var ss
       var id = []
       if (this.categoryEqm === 'สนับสนุน') {
-        s = 'Sup'
+        ss = 'Sup'
       } else if (this.categoryEqm === 'วินิจฉัยและรักษา') {
-        s = 'DxRx'
+        ss = 'DxRx'
       } else if (this.categoryEqm === 'รักษา') {
-        s = 'Rx'
+        ss = 'Rx'
       } else if (this.categoryEqm === 'วินิจฉัย') {
-        s = 'Dx'
+        ss = 'Dx'
       }
-      this.count = this.amountEqm * 1 + 1
-      for (var i = 1; i < this.count; i++) {
+      this.countCSV = this.amountEqm * 1 + 1
+      for (var i = 1; i < this.countCSV; i++) {
         var insertID = {
-          id: s + i,
+          id: ss + i,
           number: i,
           lastnameLend: '',
           nameLend: '',
@@ -283,7 +276,8 @@ export default {
             categoryEqm: this.categoryEqm,
             editEqm: false,
             equipmentID: id,
-            priceUnit: '-'
+            priceUnit: '-',
+            statusLend: 'ON'
           })
           this.$router.push('/listtable')
         } else {
@@ -296,7 +290,8 @@ export default {
             categoryEqm: this.categoryEqm,
             editEqm: false,
             equipmentID: id,
-            priceUnit: this.priceUnit
+            priceUnit: this.priceUnit,
+            statusLend: 'ON'
           })
           this.$router.push('/listtable')
         }
@@ -335,7 +330,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -381,7 +376,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -403,14 +398,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -428,21 +423,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
-
+ 
 nav ul {
   margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;
@@ -479,4 +474,5 @@ td {
 th {
   font-size: 20px;
 }
+
 </style>

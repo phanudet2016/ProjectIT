@@ -33,10 +33,6 @@
           <router-link to="/ulendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="">แจ้งความต้องการใช้อุปกรณ์</router-link>
-        </li>
-        <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="">การแจ้งเตือน</router-link>
         </li>
@@ -76,31 +72,27 @@
                       <th width="800px">ชื่ออุปกรณ์</th>
                       <th width="118px" style="text-align: center;background: #9968db; color: #ffffff;">จำนวน</th>
                       <th width="100px">หน่วย</th>
-                      <th width="100px">ราคา (ต่อหน่วย)</th>
                       <th width="100px" style="text-align: center;">ยืม</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="category === ''" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                    <tr v-if="category === '' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;">{{equipment.priceUnit}}</td>
-                        <td style="text-align: center;"><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;"><span class="glyphicon glyphicon-plus-sign" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
-                      <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                      <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;">{{equipment.priceUnit}}</td>
-                        <td style="text-align: center;"><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;"><span class="glyphicon glyphicon-plus-sign" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
-                      <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                      <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
                         <td>{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;">{{equipment.priceUnit}}</td>
-                        <td style="text-align: center;"><span class="glyphicon glyphicon-paperclip" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;"><span class="glyphicon glyphicon-plus-sign" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
                       </tr>
                     </tbody>
                   </table>
@@ -213,7 +205,8 @@ export default {
           firstname: this.firstname,
           lastname: this.lastname,
           statusLend: this.statusLend,
-          departmentLend: this.department
+          departmentLend: this.department,
+          keyAppove: this.key
         })
         equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
         equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})
@@ -228,7 +221,7 @@ export default {
       this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === key).borrowedEqm
       this.balanceLend = this.equipments.find(equipments => equipments['.key'] === key).balanceEqm
       this.key = key
-      console.log(this.balanceLend)
+      console.log(key)
       this.amountLend = ''
       this.HnNo = ''
     },
@@ -259,7 +252,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -305,7 +298,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -327,14 +320,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -352,21 +345,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
-
+ 
 nav ul {
   margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;

@@ -82,7 +82,7 @@ export default {
       if (this.password !== this.confirmpassword) {
         alert('กรุณากรอกรหัสผ่านทั้ง 2 ช่องให้ตรงกัน')
       } else if (this.firstname === '' || this.lastname === '' || this.email === '' || this.password === '' || this.confirmpassword === '' || this.department === '' || this.phoneNumber === '') {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วน !!!')
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
       } else {
         userRef.push({
           firstname: this.firstname,

@@ -33,10 +33,6 @@
           <router-link to="/ulendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="">แจ้งความต้องการใช้อุปกรณ์</router-link>
-        </li>
-        <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="">การแจ้งเตือน</router-link>
         </li>
@@ -62,7 +58,6 @@
                 <thead>
                   <tr>
                     <th width="150px">วันที่ยืม</th>
-                    <th width="150px">วันที่คืน</th>
                     <th width="800px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">ชื่อผู้ยืม</th>
                     <th width="118px" style="text-align: center;">แผนก</th>
@@ -73,8 +68,7 @@
                 <tbody>
                   <tr v-if="history.firstname == firstname && history.lastname == lastname" v-for="(history, index) of historys" v-bind:key="history['.key']">                   
                     <td>{{history.date}}</td>
-                    <td>{{history.returnedDate}}</td>
-                    <td>{{history.nameEqm}}</td>
+                    <td><router-link :to="'/ulendhistoryeqm/' + history['.key']">{{history.nameEqm}}</router-link></td>
                     <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>
                     <td style="text-align: center;">{{history.department}}</td>
                     <td style="text-align: center;">{{history.amount}}</td>
@@ -162,7 +156,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -208,7 +202,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -230,14 +224,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -255,21 +249,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
-
+ 
 nav ul {
   margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;

@@ -139,7 +139,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -185,7 +185,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -214,7 +214,7 @@ export default {
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -232,21 +232,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
-
+ 
 nav ul {
   margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;

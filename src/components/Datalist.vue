@@ -56,7 +56,7 @@
         <div class="row">
           <div class="col-md">
             <router-link to="/listtable">
-              <button style="margin-left:50px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;background:#E0E0E0;color:#000000;font-size:16px">
+              <button style="margin-left:62px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;background:#E0E0E0;color:#000000;font-size:16px">
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
                 <b>รายการอุปกรณ์</b>
               </button>
@@ -83,38 +83,23 @@
                   </select>
                   <span></span>
                   <!-- ADD Device !-->
-                  <router-link to="/addlist">
-                    <button type="button" class="btn button-add btn btn-success" style="font-size:16px;height:34px;">
-                      <span class="glyphicon glyphicon-menu-left"></span>
-                      กลับ
+                  <button type="button" class="btn button-add btn btn-success" style="color:#ffffff;font-size:18px" data-toggle="modal" data-target="#myModal">
+                      <span class="glyphicon glyphicon-import"></span> นำเข้ารายการ
                     </button>
-                  </router-link>
                   <div class="modal fade" id="myModal" role="dialog">
                     <div class="modal-dialog">
                       <!-- Modal content-->
                       <div class="modal-content">
                         <div class="modal-header">
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">เพิ่มรายการใหม่</h4>
+                          <h4 class="modal-title">นำเข้ารายการ</h4>
                         </div>
                         <div class="modal-body">
-                          <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="nameEqm"/><br>
-                          <input class="form-control" type="text" placeholder="จำนวน" v-model="amountEqm"/><br>
-                          <select class="selectBox" v-model="unitEqm">
-                            <option disabled value="">หน่วย</option>
-                            <option>เครื่อง</option>
-                            <option>ชุด</option>
-                          </select>
-                          <select class="selectBox" v-model="categoryEqm">
-                            <option disabled value="">ประเภท</option>
-                            <option>สนับสนุน</option>
-                            <option>วินิจฉัยและรักษา</option>
-                            <option>รักษา</option>
-                            <option>วินิจฉัย</option>
-                          </select>
+                          <input type="file" id="fileUpload">
+                          <!-- v-on:change !-->
                         </div>
                         <div class="modal-footer">
-                          <button @click="submitEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+                          <button @click="Upload()" type="button" class="btn btn-default" data-dismiss="modal">อัปโหลด</button>
                         </div>
                       </div>
                     </div>
@@ -134,30 +119,57 @@
                     <th width="400px" style="text-align: center;">คำอธิบาย</th>
                     <th width="118px" style="text-align: center;">ราคา (ต่อหน่วย)</th>
                     <th width="118px" style="text-align: center;">ประเภท</th>
-                    <th width="118px" style="text-align: center;color:#9968db;font-size:16px;"><span class="glyphicon glyphicon-plus-sign"></span></th>
+                    <th width="118px" style="text-align: center;">ON / OFF</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="category === ''" v-for="data of searchEqm" v-bind:key="data['.key']">
-                      <td>{{data.nameTH}}</td>
-                      <td style="text-align: center;">{{data.description}}</td>
-                      <td style="text-align: center;">{{data.unitPrice}}</td>
-                      <td style="text-align: center;">{{data.categoryData}}</td>
-                      <td style="text-align: center;font-size:16px;color:#9968db;"><span class="glyphicon glyphicon-plus-sign" data-toggle="modal" data-target="#myModall" @click="addEqm(data['.key'])"></span></td>
+                  <tr v-if="category === ''" v-for="equipment of searchEqm" v-bind:key="equipment['.key']">
+                      <td>{{equipment.nameEqm}}</td>
+                      <td style="text-align: center;">{{equipment.description}}</td>
+                      <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                      <td style="text-align: center;">{{equipment.categoryEqm}}</td>
+                      <td style="text-align: center;">
+                        <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
+                            <span class="caret"></span></button>                    
+                            <ul class="dropdown-menu">                             
+                              <li><a @click="onOff('ON',equipment['.key'])" style="font-size:18px;">ON</a></li>
+                              <li><a @click="onOff('OFF',equipment['.key'])" style="font-size:18px;">OFF</a></li>
+                            </ul>
+                        </div>
+                      </td>
                   </tr>
-                  <tr v-if="data.categoryData == category" v-for="data of searchEqm" v-bind:key="data['.key']">
-                      <td>{{data.nameTH}}</td>
-                      <td style="text-align: center;">{{data.description}}</td>
-                      <td style="text-align: center;">{{data.unitPrice}}</td>
-                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{data.categoryData}}</td>
-                      <td style="text-align: center;font-size:16px;color:#9968db;"><span class="glyphicon glyphicon-plus-sign" @click="addEqm(data['.key'])"></span></td>                
+                  <tr v-if="equipment.categoryEqm == category" v-for="equipment of searchEqm" v-bind:key="equipment['.key']">
+                      <td>{{equipment.nameEqm}}</td>
+                      <td style="text-align: center;">{{equipment.description}}</td>
+                      <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                      <td style="text-align: center;">{{equipment.categoryEqm}}</td>
+                      <td style="text-align: center;">
+                        <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
+                            <span class="caret"></span></button>                    
+                            <ul class="dropdown-menu">                             
+                              <li><a @click="onOff('ON',equipment['.key'])" style="font-size:18px;">ON</a></li>
+                              <li><a @click="onOff('OFF',equipment['.key'])" style="font-size:18px;">OFF</a></li>
+                            </ul>
+                        </div>
+                      </td>                
                   </tr>
-                  <tr v-if="category === 'ทั้งหมด'" v-for="data of searchEqm" v-bind:key="data['.key']">
-                      <td>{{data.nameTH}}</td>
-                      <td style="text-align: center;">{{data.description}}</td>
-                      <td style="text-align: center;">{{data.unitPrice}}</td>
-                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{data.categoryData}}</td>
-                      <td style="text-align: center;font-size:16px;color:#9968db;"><span class="glyphicon glyphicon-plus-sign" @click="addEqm(data['.key'])"></span></td>
+                  <tr v-if="category === 'ทั้งหมด'" v-for="equipment of searchEqm" v-bind:key="equipment['.key']">
+                      <td>{{equipment.nameEqm}}</td>
+                      <td style="text-align: center;">{{equipment.description}}</td>
+                      <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                      <td style="text-align: center;">{{equipment.categoryEqm}}</td>
+                      <td style="text-align: center;">
+                        <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
+                            <span class="caret"></span></button>                    
+                            <ul class="dropdown-menu">                             
+                              <li><a @click="onOff('ON',equipment['.key'])" style="font-size:18px;">ON</a></li>
+                              <li><a @click="onOff('OFF',equipment['.key'])" style="font-size:18px;">OFF</a></li>
+                            </ul>
+                        </div>
+                      </td>
                   </tr>
                 </tbody>
               </table>
@@ -178,6 +190,7 @@
                       <select class="selectBox" v-model="unitEqm" style="font-size:16px">
                             <option disabled value="">หน่วย</option>
                             <option>เครื่อง</option>
+                            <option>ตัว</option>
                             <option>ชุด</option>
                       </select><br><br>
                       <p style="color:#9A9A9A;font-size:20px;">จำนวน</p>
@@ -227,7 +240,11 @@ export default {
       addNameEqm: '',
       addCategoryData: '',
       search: '',
-      priceUnit: ''
+      priceUnit: '',
+      cells: [],
+      rows: [],
+      strRows: [],
+      countCSV: ''
     }
   },
   created () {
@@ -308,12 +325,80 @@ export default {
     submitLogout () {
       auth.signOut()
       this.$router.push('/')
+    },
+    onOff (status, key) {
+      equipmentRef.child(key).update({
+        statusLend: status
+      })
+    },
+    Upload () {
+      var data = this.equipments
+      var fileUpload = document.getElementById('fileUpload')
+      var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/
+      if (regex.test(fileUpload.value.toLowerCase())) {
+        if (typeof (FileReader) !== 'undefined') {
+          var reader = new FileReader()
+          reader.onload = function (e) {
+            this.rows = e.target.result.split('\n')
+            for (var i = 1; i < this.rows.length; i++) {
+              this.strRows = this.rows[i].substring(0, this.rows[i].length - 1)
+              this.cells = this.strRows.split(',')
+              if (data.find(data => data.nameEqm === this.cells[0])) {
+                console.log('T')
+              } else {
+                var amount = []
+                var s
+                if (this.cells[5] === 'สนับสนุน') {
+                  s = 'Sup'
+                } else if (this.cells[5] === 'วินิจฉัยและรักษา') {
+                  s = 'DxRx'
+                } else if (this.cells[5] === 'รักษา') {
+                  s = 'Rx'
+                } else if (this.cells[5] === 'วินิจฉัย') {
+                  s = 'Dx'
+                } else { s = 'Etc' }
+                this.count = this.cells[6] * 1 + 1
+                for (var c = 1; c < this.count; c++) {
+                  var insertID = {
+                    id: s + c,
+                    number: c,
+                    lastnameLend: '',
+                    nameLend: '',
+                    status: 'พร้อมใช้งาน'
+                  }
+                  amount.push(insertID)
+                }
+
+                equipmentRef.push({
+                  nameEqm: this.cells[0],
+                  nameEng: this.cells[1],
+                  description: this.cells[4],
+                  amountEqm: this.cells[6],
+                  balanceEqm: this.cells[6],
+                  unitEqm: this.cells[3],
+                  categoryEqm: this.cells[5],
+                  borrowedEqm: 0,
+                  priceUnit: this.cells[2],
+                  equipmentID: amount,
+                  statusLend: 'OFF'
+                })
+              }
+            }
+          }
+          reader.readAsText(fileUpload.files[0], 'tis-620') // ทำให้ภาษาไทยไม่เพี้ยน
+          this.$router.push('/listtable')
+        } else {
+          alert('This browser does not support HTML5.')
+        }
+      } else {
+        alert('กรุณาอัปโหลดไฟล์ CSV')
+      }
     }
   },
   computed: {
     searchEqm () {
-      return this.datas.filter((datas) => {
-        return datas.nameTH.indexOf(this.search) > -1 || datas.categoryData.indexOf(this.search) > -1
+      return this.equipments.filter((equipments) => {
+        return equipments.nameEqm.indexOf(this.search) > -1 || equipments.categoryEqm.indexOf(this.search) > -1
       })
     }
   }
@@ -329,7 +414,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -375,7 +460,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -397,14 +482,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -422,17 +507,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
+}
+ 
+nav ul {
+  margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;

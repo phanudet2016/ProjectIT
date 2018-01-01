@@ -56,7 +56,7 @@
         <div class="row">
           <div class="col-md">
             <router-link to="/listtable">
-              <button style="margin-left:50px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;color:#000000;font-size:16px">
+              <button style="margin-left:62px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;color:#000000;font-size:16px">
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
                 <b>รายการอุปกรณ์</b>
               </button>
@@ -70,6 +70,7 @@
           <div class="card">
             <div class="card-block">
               <h4 class="card-title">
+                รายการอุปกรณ์ที่เปิดให้ยืม
                 <div class="button-add">
                   <input type="text" v-model="search" placeholder="ค้นหา..." v-on:keypress="" style="" class="searchEqm">
                   <select class="selectBox" v-model="category" style="font-size:20px">
@@ -79,6 +80,11 @@
                     <option>รักษา</option>
                     <option>วินิจฉัย</option>
                     <option>ทั้งหมด</option>
+                  </select>
+                  <select class="selectBox" v-model="ห" style="font-size:20px">
+                    <option disabled value="">รายการทั้งหมด</option>
+                    <option>รายการที่เปิดให้ยืม</option>
+                    <option>รายการที่ไม่ได้เปิดให้ยืม</option>
                   </select>
                   <span></span>
                   
@@ -139,7 +145,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="category === ''" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                  <tr v-if="category === '' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
@@ -148,7 +154,7 @@
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
                       <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
-                  <tr v-if="equipment.categoryEqm == category" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                  <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
@@ -157,7 +163,7 @@
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
                       <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
-                  <tr v-if="category === 'ทั้งหมด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                  <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
@@ -378,7 +384,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -425,7 +431,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -447,14 +453,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -472,9 +478,9 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
@@ -485,8 +491,8 @@ nav ul {
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;

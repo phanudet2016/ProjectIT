@@ -31,10 +31,6 @@
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/ulendhistory">ประวัติการยืม</router-link>
         </li>
-        <li class="selected">
-          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/urequest">แจ้งความต้องการใช้อุปกรณ์</router-link>
-        </li>
         <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/ualert">การแจ้งเตือน</router-link>

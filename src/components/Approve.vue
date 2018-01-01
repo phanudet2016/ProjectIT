@@ -6,7 +6,7 @@
           <p style="font-size:25px"><b>รายการรออนุมัติ</b></p>
         </li>
         <li class="user-login">
-          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()"></span></a>{{firstname}} {{lastname}}</p>
         </li>
       </ul>
     </div>
@@ -135,7 +135,10 @@ export default {
       departmentLendeqm: '',
       HnNoeqm: '',
       amountLendeqm: '',
-      categoryLendeqm: ''
+      categoryLendeqm: '',
+      keyAppove: '',
+      balanceEqm: '',
+      borrowedLend: ''
     }
   },
   created () {
@@ -182,6 +185,7 @@ export default {
       this.departmentLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).departmentLend
       this.HnNoeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).HnNo
       this.amountLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).amountLend
+      this.keyAppove = this.approvetables.find(approvetables => approvetables['.key'] === key).keyAppove
       if (status === 'อนุมัติ') {
         scanRef.push({
           HnNo: this.HnNoeqm,
@@ -193,7 +197,20 @@ export default {
           lastname: this.lastnameeqm,
           nameLend: this.nameLendeqm,
           balance: this.amountLendeqm,
-          accepted: 0
+          accepted: 0,
+          number: [
+            {number: ''}
+          ]
+        })
+      } else {
+        this.balanceEqm = this.equipments.find(equipments => equipments['.key'] === this.keyAppove).balanceEqm
+        this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === this.keyAppove).borrowedEqm
+        this.balanceEqm = this.balanceEqm * 1 + this.amountLendeqm * 1
+        this.borrowedLend = this.borrowedLend * 1 - this.amountLendeqm * 1
+        console.log(this.balanceEqm, this.borrowedLend)
+        equipmentRef.child(this.keyAppove).update({
+          balanceEqm: this.balanceEqm,
+          borrowedEqm: this.borrowedLend
         })
       }
     },
@@ -217,7 +234,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
   width: 82%;
-  margin-left: 35px;
+  margin-left: 48px;
   border: 1px solid #dddddd;
 }
 
@@ -263,7 +280,7 @@ export default {
 }
 
 .nav-header ul .topic {
-  padding-left: 270px;
+  padding-left: 301px;
   float: left;
   color: #9A9A9A;
 }
@@ -285,14 +302,14 @@ export default {
   width: 100%;
   height: auto;
   font-weight: bold;
-  font-size: 23px;
-  margin-top: -120px;
+  font-size: 20px;
+  margin-top: -108px;
 }
 /*----------------------------------------------------------------------------------*/
 
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
-  width: 275px;
+  width: 301px;
   background: #273238;
   position: fixed;
   z-index: 1000;
@@ -310,21 +327,21 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 10px;
+  margin-left: 6px;
   padding: 15px;
-  width: 253px;
+  width: 289px;
   border-radius: 4px;
   font-size: 20px;
 }
-
+ 
 nav ul {
   margin-top: -50px;
 }
 
 .active-loguot {
   position: absolute;
-  margin-left: 10px;
-  width: 253px;
+  margin-left: 6px;
+  width: 289px;
   bottom: 20px;
   background: rgba(255, 255, 255, 0.14);
   opacity: 1;
