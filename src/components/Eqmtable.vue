@@ -4,9 +4,18 @@
       <ul>
         <li class="topic">
           <p style="font-size:25px;"><router-link to="/listtable">รายการอุปกรณ์</router-link> / <b>{{nameEqm}}</b></p>
+        <li style="font-size:15px;color:#2c3e50;float:right;">
+          <div class="dropdown" style="float:right;">
+            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <div class="dropdown-content">
+              <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
+              <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
+            </div>
+          </div>
         </li>
         <li class="user-login">
-          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">Administrator</p>
         </li>
       </ul>
     </div>
@@ -65,11 +74,11 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="100px">รหัสอุปกรณ์</th>
-                    <th width="800px">หมายเลขเครื่อง</th>
-                    <th width="100px">สถานะ</th>
-                    <th width="150px">ผู้ยืม</th>
-                    <th width="150px">QR Code</th>
+                    <th width="200px">รหัสอุปกรณ์</th>
+                    <th width="200px">หมายเลขเครื่อง</th>
+                    <th width="200px">สถานะ</th>
+                    <th width="200px" style="text-align: center;">QR Code</th>
+                    <th width="200px" style="text-align: center;">ผู้ยืม</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -77,8 +86,8 @@
                     <td>{{arrayEqms.id}}</td>
                     <td>{{arrayEqms.number}}</td>
                     <td>{{arrayEqms.status}}</td>
-                    <td>{{arrayEqms.nameLend}} {{arrayEqms.lastnameLend}}</td>
-                    <td><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index)"></span></td>
+                    <td style="text-align: center;"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index)"></span></td>
+                    <td style="text-align: center;">{{arrayEqms.nameLend}} {{arrayEqms.lastnameLend}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -108,6 +117,73 @@
       </div>
     </div>
 
+    <!-- ADD ADMIN !-->
+    <div class="modal fade" id="addAdmin" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" style="font-size:25px"><b>เพิ่มผู้จัดการระบบ</b></h4>
+              </div>
+              <div class="modal-body">
+                <table class="table table-hover table-striped">
+                  <thead>
+                    <tr>
+                      <th width="700px">ชื่อ</th>
+                      <th width="700px">นามสกุล</th>
+                      <th width="700px" style="text-align: center;">สถานะ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="user of users" v-if="user.firstname !== 'Phanudet' && user.lastname !== 'Kawilai'">
+                        <td>{{user.firstname}}</td>
+                        <td>{{user.lastname}}</td>
+                        <td style="text-align: center;">
+                          <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{user.status}}
+                              <span class="caret"></span></button>                    
+                                <ul class="dropdown-menu">                             
+                                  <li><a @click="addAdmin('user',user['.key'])" style="font-size:18px;">user</a></li>
+                                  <li><a @click="addAdmin('admin',user['.key'])" style="font-size:18px;">admin</a></li>
+                                </ul>
+                          </div>
+                        </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal" data-toggle="modal" data-target="#myModal">ลงทะเบียนใหม่</button>
+                <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ปิด</button>
+              </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-size:25px"><b>เพิ่มผู้จัดการระบบ</b></h4>
+          </div>
+          <div class="modal-body">
+            <input class="form-control" type="text" placeholder="Firstname" style="font-size:20px" v-model="firstnameAdmin"/><br>
+            <input class="form-control" type="text" placeholder="Lastname" style="font-size:20px" v-model="lastnameAdmin"/><br>
+            <input class="form-control" type="text" placeholder="Department" style="font-size:20px" v-model="department"/><br>
+            <input class="form-control" type="text" placeholder="Email Address" style="font-size:20px" v-model="email"/><br>
+            <input class="form-control" type="text" placeholder="Phone Number" style="font-size:20px" v-model="phoneNumber"/><br>
+            <input class="form-control" type="Password" placeholder="Password" style="font-size:20px" v-model="password"/><br>
+            <input class="form-control" type="Password" placeholder="Confirm Password" style="font-size:20px" v-model="confirmpassword"/><br>
+          </div>
+          <div class="modal-footer">
+            <button @click="submitRegisterAdmin()" type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+          </div>
+        </div>
+      </div>
+    </div>    
+    <!-- ADD ADMIN !-->
+
+
   </div>
 </template>
 
@@ -134,7 +210,16 @@ export default {
       editID: '',
       key: '',
       arrayEqm: [],
-      valueQR: ''
+      valueQR: '',
+
+      firstnameAdmin: '',
+      lastnameAdmin: '',
+      email: '',
+      password: '',
+      confirmpassword: '',
+      department: '',
+      phoneNumber: '',
+      statusCheck: ''
     }
   },
   created () {
@@ -164,6 +249,45 @@ export default {
     genQrCode (index) {
       this.valueQR = index + ' ' + this.$route.params.id
       console.log(this.valueQR)
+    },
+    submitRegisterAdmin () {
+      if (this.password !== this.confirmpassword) {
+        alert('กรุณากรอกรหัสผ่านทั้ง 2 ช่องให้ตรงกัน')
+      } else if (this.firstname === '' || this.lastname === '' || this.email === '' || this.password === '' || this.confirmpassword === '' || this.department === '' || this.phoneNumber === '') {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+      } else {
+        userRef.push({
+          firstname: this.firstnameAdmin,
+          lastname: this.lastnameAdmin,
+          email: this.email.toLowerCase(),
+          password: this.password,
+          confirmpassword: this.confirmpassword,
+          department: this.department,
+          phoneNumber: this.phoneNumber,
+          status: 'admin',
+          editProfile: false
+        })
+        auth.createUserWithEmailAndPassword(this.email, this.password).catch((error) => {
+          var errorCode = error.code
+          var errorMessage = error.message
+          if (errorCode === 'auth/wrong-password') {
+            alert('pass 6')
+          } else {
+            alert(errorMessage)
+          }
+          console.log(error)
+        })
+        alert('ลงทะเบียนสำเร็จ')
+        this.$router.push('/')
+      }
+    },
+    addAdmin (statusAdd, key) {
+      userRef.child(key).update({status: statusAdd})
+      this.statusCheck = this.users.find(users => users.firstname === this.firstname && users.lastname === this.lastname).status
+      if (this.statusCheck === 'user') {
+        this.$router.push('/')
+        location.reload()
+      }
     }
   },
   components: {
@@ -183,7 +307,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 100%;
+  width: 768px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -327,5 +451,43 @@ td {
 }
 th {
   font-size: 20px;
+}
+
+.dropbtn {
+    color:#337ab7;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #ffffff;
+    min-width: 160px;
+    border: 1px solid #dddddd;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: #337ab7;
+    padding: 1px 18px;
+    text-decoration: none;
+    height: 50px;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 </style>

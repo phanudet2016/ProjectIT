@@ -5,8 +5,17 @@
         <li class="topic">
           <p style="font-size:25px"><b>รายการเครื่องมือที่ยืมมา</b></p>
         </li>
+        <li style="font-size:15px;color:#2c3e50;float:right;">
+          <div class="dropdown" style="float:right;">
+            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <div class="dropdown-content">
+              <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
+            </div>
+          </div>
+        </li>
         <li class="user-login">
-          <p style="font-size:25px"><a><span class="glyphicon glyphicon-log-in" style="padding-right:10px;color:#9A9A9A;font-size:15px" @click="submitLogout()" v-bind:title="msgLogout"></span></a>{{firstname}} {{lastname}}</p>
+          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">General user</p>
         </li>
       </ul>
     </div>
@@ -297,5 +306,43 @@ td {
 }
 th {
   font-size: 20px;
+}
+
+.dropbtn {
+    color:#337ab7;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #ffffff;
+    min-width: 160px;
+    border: 1px solid #dddddd;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: #337ab7;
+    padding: 1px 18px;
+    text-decoration: none;
+    height: 50px;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 </style>
