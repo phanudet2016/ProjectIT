@@ -17,11 +17,17 @@ import Addlist from '@/components/Addlist'
 import Datalist from '@/components/Datalist'
 import Ulendhistoryeqm from '@/components/Ulendhistoryeqm'
 import Lendhistoryeqm from '@/components/lendhistoryeqm'
+import Borrowedlist from '@/components/Borrowedlist'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/borrowedlist',
+      name: 'borrowedlist',
+      component: Borrowedlist
+    },
     {
       path: '/lendhistoryeqm/:id',
       name: 'lendhistoryeqm',

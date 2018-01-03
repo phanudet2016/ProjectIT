@@ -3,13 +3,12 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px;"><router-link to="/lendhistory">รายการอุปกรณ์</router-link> / <b>{{nameEqm}}</b></p>
+          <p style="font-size:25px"><b>รายการอุปกรณ์ที่ถูกยืมไป</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
             <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
             <div class="dropdown-content">
-              <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
             </div>
           </div>
@@ -38,11 +37,11 @@
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
-        <li>
+        <li class="selected">
           <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
         </li>
-        <li class="selected">
+        <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
@@ -68,148 +67,118 @@
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-9">
-          <div class="card">
-            <div class="card-block">
-              <h4 class="card-title" style="font-size:20px">
-                {{nameEqm}}
-              </h4>
-
-              <br>
-              <table class="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th width="100px">วันที่คืน</th>
-                    <th width="100px">หมายเลขเครื่อง</th>
-                    <th width="100px">สถานะ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="arrayEqms in arrayEqm" v-if="arrayEqms.number !== ''">
-                    <td>{{arrayEqms.date}}</td>
-                    <td >{{arrayEqms.number}}</td>
-                    <td>{{arrayEqms.status}}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-            </div>
-          </div>
-          </div>
-          <!--
-          <div class="col-sm-3">
-          <div class="card">
-            <div class="card-block">
-              <h4 class="card-title">
-                แสดงรายการเครื่องมือที่เปิดให้ยืมss
-              </h4>
-            </div>
-          </div>
-          </div>!-->
-        </div>
-      </div>
-    </div>
-
-    <!-- ADD ADMIN !-->
-    <div class="modal fade" id="addAdmin" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title" style="font-size:25px"><b>เพิ่มผู้จัดการระบบ</b></h4>
-              </div>
-              <div class="modal-body">
+          <div class="col-md">
+            <div class="card">
+              <div class="card-block">
+                <h4 class="card-title" style="font-size:20px">
+                  รายการอุปกรณ์ที่ถูกยืมไป
+                </h4>
+                <!--TABLE!-->
+                <br>
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
-                      <th width="700px">ชื่อ</th>
-                      <th width="700px">นามสกุล</th>
-                      <th width="700px" style="text-align: center;">สถานะ</th>
+                      <th width="700px">ชื่ออุปกรณ์</th>
+                      <th width="125px">วันที่</th>
+                      <th width="100px">ยืม</th>
+                      <th width="100px" style="text-align: center;">รับแล้ว</th>
+                      <th width="100px" style="text-align: center;">รับอุปกรณ์</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="user of users" v-if="user.firstname !== 'Phanudet' && user.lastname !== 'Kawilai'">
-                        <td>{{user.firstname}}</td>
-                        <td>{{user.lastname}}</td>
-                        <td style="text-align: center;">
-                          <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{user.status}}
-                              <span class="caret"></span></button>                    
-                                <ul class="dropdown-menu">                             
-                                  <li><a @click="addAdmin('user',user['.key'])" style="font-size:18px;">user</a></li>
-                                  <li><a @click="addAdmin('admin',user['.key'])" style="font-size:18px;">admin</a></li>
-                                </ul>
-                          </div>
-                        </td>
+                    <tr v-for="scan of scans" v-bind:key="scan['.key']">
+                        <td>{{scan.nameLend}}</td>
+                        <td>{{scan.dateLend}}</td>
+                        <td>{{scan.amountLend}}</td>
+                        <td style="text-align: center; background: #9968db; color: #ffffff;">{{scan.accepted}}</td>
+                        <td v-if="scan.accepted !== scan.amountLend * 1" style="text-align: center;"><button @click="receiveItem(scan.nameLend, scan.keyRecive, scan.firstname, scan.lastname, scan['.key'])" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#receiveItem" style="background:#5cb85c;font-size:18px;width:100px;">รับอุปกรณ์</button></td>
+                        <td v-if="scan.accepted === scan.amountLend * 1" style="text-align: center;"><b>รับบอุปกรณ์ครบแล้ว</b\></td>
                     </tr>
                   </tbody>
                 </table>
+              <!--TABLE!-->
               </div>
-              <div class="modal-footer">
-                <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal" data-toggle="modal" data-target="#myModal">ลงทะเบียนใหม่</button>
-                <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ปิด</button>
-              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="modal fade" id="myModal" role="dialog">
+
+    <div class="modal fade" id="receiveItem" role="dialog">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title" style="font-size:25px"><b>เพิ่มผู้จัดการระบบ</b></h4>
+            <h4 class="modal-title" style="font-size:25px"><b>{{nameEqm}}</b></h4>
           </div>
           <div class="modal-body">
-            <input class="form-control" type="text" placeholder="Firstname" style="font-size:20px" v-model="firstnameAdmin"/><br>
-            <input class="form-control" type="text" placeholder="Lastname" style="font-size:20px" v-model="lastnameAdmin"/><br>
-            <input class="form-control" type="text" placeholder="Department" style="font-size:20px" v-model="department"/><br>
-            <input class="form-control" type="text" placeholder="Email Address" style="font-size:20px" v-model="email"/><br>
-            <input class="form-control" type="text" placeholder="Phone Number" style="font-size:20px" v-model="phoneNumber"/><br>
-            <input class="form-control" type="Password" placeholder="Password" style="font-size:20px" v-model="password"/><br>
-            <input class="form-control" type="Password" placeholder="Confirm Password" style="font-size:20px" v-model="confirmpassword"/><br>
+            <table class="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th width="700px">รหัสอุปกรณ์</th>
+                  <th width="700px">หมายเลขเครื่อง</th>
+                  <th width="700px">สถานะ</th>
+                  <th width="700px" style="text-align: center;">รับ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(arrayEqms, index) in arrayEqm">
+                  <td>{{arrayEqms.id}}</td>
+                  <td>{{arrayEqms.number}}</td>
+                  <td>{{arrayEqms.status}}</td>
+                  <td style="text-align: center;" v-if="arrayEqms.status === 'พร้อมใช้งาน'">
+                    <button @click="getItem(index)" class="btn btn-primary" type="button" style="background:#5cb85c;font-size:20px;width:100px;" data-dismiss="modal">รับ</button>
+                  </td>
+                  <td v-if="arrayEqms.status === 'ถูกยืม'" style="text-align: center;">
+                    <button class="btn btn-primary" style="background: #9968db; color: #ffffff;font-size:20px;width:100px;">รับแล้ว</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="modal-footer">
-            <button @click="submitRegisterAdmin()" type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+            <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ปิด</button>
           </div>
         </div>
       </div>
     </div>    
-    <!-- ADD ADMIN !-->
 
   </div>
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, historyRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef, historyRef} from './firebase'
 
 export default {
-  name: 'lendhistoryeqm',
+  name: 'ulisttable',
   data () {
     return {
-      name: '',
       category: '',
-      amountEqm: '',
-      count: '',
-      nameEqm: '',
       unitEqm: '',
       categoryEqm: '',
+      nameEqm: '',
+      amountEqm: '',
+      names: '',
       firstname: '',
       lastname: '',
-      editName: '',
-      editCategory: '',
-      editID: '',
-      key: '',
       arrayEqm: [],
-      msgLogout: 'ออกจากระบบ',
+      keyRecive: '',
+      firstnameScan: '',
+      lastnameScan: '',
 
-      firstnameAdmin: '',
-      lastnameAdmin: '',
-      email: '',
-      password: '',
-      confirmpassword: '',
-      department: '',
-      phoneNumber: '',
-      statusCheck: ''
+      eqmID: '',
+      balanceScan: '',
+      acceptedScan: '',
+      keyScan: '',
+      amountScan: '',
+      categoryhit: '',
+      nameEqmHit: '',
+      departmentHit: '',
+      HnnoHit: '',
+      dateHit: '',
+      number: [],
+      indexCheck: '',
+      succus: ''
     }
   },
   created () {
@@ -221,15 +190,31 @@ export default {
         console.log('not logged in')
       }
     })
-    this.arrayEqm = this.historys.find(historys => historys['.key'] === this.$route.params.id).returnedDate
-    this.nameEqm = this.historys.find(historys => historys['.key'] === this.$route.params.id).nameEqm
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
+    approvetables: approvetableRef,
+    scans: scanRef,
     historys: historyRef
   },
+  computed: {
+    realtimeplus: function () {
+      return this.num1
+    }
+  },
   methods: {
+    submitEqm () {
+      equipmentRef.push({
+        nameEqm: this.nameEqm,
+        amountEqm: this.amountEqm,
+        borrowedEqm: 0,
+        balanceEqm: this.amountEqm,
+        unitEqm: this.unitEqm,
+        categoryEqm: this.categoryEqm,
+        editEqm: false
+      })
+    },
     removeEqm (key) {
       equipmentRef.child(key).remove()
     },
@@ -237,43 +222,65 @@ export default {
       auth.signOut()
       this.$router.push('/')
     },
-    submitRegisterAdmin () {
-      if (this.password !== this.confirmpassword) {
-        alert('กรุณากรอกรหัสผ่านทั้ง 2 ช่องให้ตรงกัน')
-      } else if (this.firstname === '' || this.lastname === '' || this.email === '' || this.password === '' || this.confirmpassword === '' || this.department === '' || this.phoneNumber === '') {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
-      } else {
-        userRef.push({
-          firstname: this.firstnameAdmin,
-          lastname: this.lastnameAdmin,
-          email: this.email.toLowerCase(),
-          password: this.password,
-          confirmpassword: this.confirmpassword,
-          department: this.department,
-          phoneNumber: this.phoneNumber,
-          status: 'admin',
-          editProfile: false
-        })
-        auth.createUserWithEmailAndPassword(this.email, this.password).catch((error) => {
-          var errorCode = error.code
-          var errorMessage = error.message
-          if (errorCode === 'auth/wrong-password') {
-            alert('pass 6')
-          } else {
-            alert(errorMessage)
-          }
-          console.log(error)
-        })
-        alert('ลงทะเบียนสำเร็จ')
-        this.$router.push('/')
-      }
+    receiveItem (nameEqm, keyRecive, firstname, lastname, key) {
+      this.nameEqm = nameEqm
+      this.keyRecive = keyRecive // keyEqm
+      this.firstnameScan = firstname
+      this.lastnameScan = lastname
+      this.keyScan = key
+      this.arrayEqm = this.equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID
     },
-    addAdmin (statusAdd, key) {
-      userRef.child(key).update({status: statusAdd})
-      this.statusCheck = this.users.find(users => users.firstname === this.firstname && users.lastname === this.lastname).status
-      if (this.statusCheck === 'user') {
-        this.$router.push('/')
-        location.reload()
+    getItem (index) {
+      equipmentRef.child(this.keyRecive + '/equipmentID/' + [index]).update({
+        status: 'ถูกยืม',
+        nameLend: this.firstnameScan,
+        lastnameLend: this.lastnameScan
+      })
+      this.indexCheck = index
+      this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.keyRecive).equipmentID[index].number
+      this.balanceScan = this.scans.find(scan => scan['.key'] === this.keyScan).balance
+      this.acceptedScan = this.scans.find(scan => scan['.key'] === this.keyScan).accepted
+      // push history
+      this.amountScan = this.scans.find(scan => scan['.key'] === this.keyScan).amountLend
+      this.categoryhit = this.scans.find(scan => scan['.key'] === this.keyScan).categoryLend
+      this.nameEqmHit = this.scans.find(scan => scan['.key'] === this.keyScan).nameLend
+      this.departmentHit = this.scans.find(scan => scan['.key'] === this.keyScan).departmentLend
+      this.HnnoHit = this.scans.find(scan => scan['.key'] === this.keyScan).HnNo
+      this.dateHit = this.scans.find(scan => scan['.key'] === this.keyScan).dateLend
+
+      this.number = this.scans.find(scan => scan['.key'] === this.keyScan).number
+      var insertNumber = {
+        number: this.eqmID,
+        date: '',
+        status: 'ยังไม่ส่งคืน'
+      }
+      this.number.push(insertNumber)
+
+      this.amountScan = this.amountScan * 1
+      this.acceptedScan = this.acceptedScan + 1
+      this.balanceScan = this.balanceScan * 1 - 1
+      if (this.acceptedScan >= this.amountScan) {
+        this.acceptedSucsess = true
+        historyRef.push({
+          date: this.dateHit,
+          nameEqm: this.nameEqmHit,
+          firstname: this.lastnameScan,
+          lastname: this.lastnameScan,
+          amount: this.amountScan,
+          category: this.categoryhit,
+          department: this.departmentHit,
+          HnNo: this.HnnoHit,
+          returnedEqm: 0,
+          returnedDate: this.number
+        })
+        alert('รับอุปกรณ์ครบแล้ว')
+      }
+      if (this.acceptedScan <= this.amountScan) {
+        scanRef.child(this.keyScan).update({
+          balance: this.balanceScan,
+          accepted: this.acceptedScan,
+          number: this.number
+        })
       }
     }
   }
@@ -282,16 +289,13 @@ export default {
 
 <style scoped>
 /*--------------------------------------- CONTENT ----------------------------------*/
-.row {
-  width: 80%;
-}
 .card {
   padding: .75rem 1.25rem;
   margin-bottom: 0;
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 768px;
+  width: 82%;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -419,6 +423,7 @@ nav ul li a:hover {
 
 .selected {
   background: #596166;
+
 }
 /*----------------------------------------------------------------------------------*/
 

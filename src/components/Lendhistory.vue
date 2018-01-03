@@ -37,7 +37,11 @@
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
-        </li class="selected">
+        </li>
+        <li>
+          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
+        </li>
         <li class="selected">
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>

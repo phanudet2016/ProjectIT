@@ -4,6 +4,7 @@
       <ul>
         <li class="topic">
           <p style="font-size:25px;"><router-link to="/listtable">รายการอุปกรณ์</router-link> / <b>{{nameEqm}}</b></p>
+        </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
             <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
@@ -36,6 +37,10 @@
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
+        </li>
+        <li>
+          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
         </li>
         <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
