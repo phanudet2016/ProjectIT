@@ -277,7 +277,6 @@ export default {
           returnedDate: this.number,
           returnKey: this.keyRecive
         })
-        alert('รับอุปกรณ์ครบแล้ว')
       }
       if (this.acceptedScan <= this.amountScan) {
         scanRef.child(this.keyScan).update({
