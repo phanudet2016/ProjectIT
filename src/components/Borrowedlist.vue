@@ -78,8 +78,9 @@
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
-                      <th width="700px">ชื่ออุปกรณ์</th>
+                      <th width="600px">ชื่ออุปกรณ์</th>
                       <th width="125px">วันที่</th>
+                      <th width="100px">ชื่อผู้ยืม</th>
                       <th width="100px">ยืม</th>
                       <th width="100px" style="text-align: center;">รับแล้ว</th>
                       <th width="100px" style="text-align: center;">รับอุปกรณ์</th>
@@ -89,10 +90,11 @@
                     <tr v-for="scan of scans" v-bind:key="scan['.key']">
                         <td>{{scan.nameLend}}</td>
                         <td>{{scan.dateLend}}</td>
+                        <td>{{scan.firstname}} {{scan.lastname}}</td>
                         <td>{{scan.amountLend}}</td>
                         <td style="text-align: center; background: #9968db; color: #ffffff;">{{scan.accepted}}</td>
                         <td v-if="scan.accepted !== scan.amountLend * 1" style="text-align: center;"><button @click="receiveItem(scan.nameLend, scan.keyRecive, scan.firstname, scan.lastname, scan['.key'])" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#receiveItem" style="background:#5cb85c;font-size:18px;width:100px;">รับอุปกรณ์</button></td>
-                        <td v-if="scan.accepted === scan.amountLend * 1" style="text-align: center;"><b>รับบอุปกรณ์ครบแล้ว</b\></td>
+                        <td v-if="scan.accepted === scan.amountLend * 1" style="text-align: center;"><b>รับอุปกรณ์ครบแล้ว</b></td>
                     </tr>
                   </tbody>
                 </table>
@@ -252,7 +254,8 @@ export default {
       var insertNumber = {
         number: this.eqmID,
         date: '',
-        status: 'ยังไม่ส่งคืน'
+        status: 'ยังไม่ส่งคืน',
+        indexReturn: this.indexCheck
       }
       this.number.push(insertNumber)
 
@@ -264,14 +267,15 @@ export default {
         historyRef.push({
           date: this.dateHit,
           nameEqm: this.nameEqmHit,
-          firstname: this.lastnameScan,
+          firstname: this.firstnameScan,
           lastname: this.lastnameScan,
           amount: this.amountScan,
           category: this.categoryhit,
           department: this.departmentHit,
           HnNo: this.HnnoHit,
           returnedEqm: 0,
-          returnedDate: this.number
+          returnedDate: this.number,
+          returnKey: this.keyRecive
         })
         alert('รับอุปกรณ์ครบแล้ว')
       }

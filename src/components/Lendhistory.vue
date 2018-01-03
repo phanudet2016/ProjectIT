@@ -84,11 +84,12 @@
                 <thead>
                   <tr>
                     <th width="150px">วันที่ยืม</th>
-                    <th width="800px">ชื่ออุปกรณ์</th>
+                    <th width="600px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">ชื่อผู้ยืม</th>
                     <th width="118px" style="text-align: center;">แผนก</th>
                     <th width="118px" style="text-align: center;">จำนวนที่ยืม</th>
                     <th width="100px" style="text-align: center; background: #9968db; color: #ffffff;">คืนแล้ว</th>
+                    <th width="118px" style="text-align: center;">คืนอุปกรณ์</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,6 +100,8 @@
                     <td style="text-align: center;">{{history.department}}</td>
                     <td style="text-align: center;">{{history.amount}}</td>
                     <td style="text-align: center; background: #9968db; color: #ffffff;">{{history.returnedEqm}}</td>
+                    <td v-if="history.amount !== history.returnedEqm * 1" style="text-align: center;"><button @click="returnItem(history['.key'], history.nameEqm, history.returnKey)" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#returnItem" style="background:#5cb85c;font-size:18px;width:100px;">คืนอุปกรณ์</button></td>
+                    <td v-if="history.amount === history.returnedEqm * 1" style="text-align: center;"><b>คืนอุปกรณ์ครบแล้ว</b></td>
                   </tr>
                 </tbody>
               </table>
@@ -109,6 +112,44 @@
         </div>
       </div>
     </div>
+
+    <!-- ADD returnItem !-->
+    <div class="modal fade" id="returnItem" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-size:25px"><b>{{nameEqm}}</b></h4>
+          </div>
+          <div class="modal-body">
+            <table class="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th width="700px">หมายเลขเครื่อง</th>
+                  <th width="700px">สถานะ</th>
+                  <th width="700px" style="text-align: center;">คืน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(arrayReturnItems, index) in arrayReturnItem" v-if="arrayReturnItems.number !== ''">
+                  <td>{{arrayReturnItems.number}}</td>
+                  <td>{{arrayReturnItems.status}}</td>
+                  <td style="text-align: center;" v-if="arrayReturnItems.status === 'ยังไม่ส่งคืน'">
+                    <button @click="getReturnItem(index, arrayReturnItems.indexReturn)" class="btn btn-primary" type="button" style="background:#5cb85c;font-size:20px;width:100px;" data-dismiss="modal">คืนอุปกรณ์</button>
+                  </td>
+                  <td v-if="arrayReturnItems.status === 'ส่งคืนแล้ว'" style="text-align: center;">
+                    <button class="btn btn-primary" type="button" style="background: #9968db; color: #ffffff;font-size:20px;">คืนอุปกรณ์แล้ว</button>
+                  </td>              
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ปิด</button>
+          </div>
+        </div>
+      </div>
+    </div>   
 
     <!-- ADD ADMIN !-->
     <div class="modal fade" id="addAdmin" role="dialog">
@@ -205,7 +246,16 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+      arrayReturnItem: [],
+
+      nameEqm: '',
+      returnKey: '',
+      amountScan: '',
+      returnedScan: '',
+      balanceReturn: '',
+      borrowedReturn: '',
+      keyEqm: ''
     }
   },
   created () {
@@ -280,6 +330,42 @@ export default {
       if (this.statusCheck === 'user') {
         this.$router.push('/')
         location.reload()
+      }
+    },
+    returnItem (key, nameEqm, returnKey) {
+      this.nameEqm = nameEqm
+      this.returnKey = returnKey
+      this.keyEqm = key
+      this.arrayReturnItem = this.historys.find(historys => historys['.key'] === key).returnedDate
+    },
+    getReturnItem (index, indexReturn) {
+      equipmentRef.child(this.returnKey + '/equipmentID/' + [indexReturn]).update({
+        status: 'พร้อมใช้งาน',
+        nameLend: '',
+        lastnameLend: ''
+      })
+      // this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.returnKey).equipmentID[indexReturn].number
+      this.amountScan = this.historys.find(history => history['.key'] === this.keyEqm).amount
+      this.returnedScan = this.historys.find(history => history['.key'] === this.keyEqm).returnedEqm
+      this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.returnKey).balanceEqm
+      this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.returnKey).borrowedEqm
+      historyRef.child(this.keyEqm + '/returnedDate/' + [index]).update({
+        // number: this.eqmID,
+        date: new Date().toLocaleString(),
+        status: 'ส่งคืนแล้ว'
+      })
+      this.borrowedReturn = this.borrowedReturn * 1 - 1
+      this.balanceReturn = this.balanceReturn * 1 + 1
+      this.amountScan = this.amountScan * 1
+      this.returnedScan = this.returnedScan + 1
+      if (this.returnedScan <= this.amountScan) {
+        historyRef.child(this.keyEqm).update({
+          returnedEqm: this.returnedScan
+        })
+        equipmentRef.child(this.returnKey).update({
+          balanceEqm: this.balanceReturn,
+          borrowedEqm: this.borrowedReturn
+        })
       }
     }
   },
