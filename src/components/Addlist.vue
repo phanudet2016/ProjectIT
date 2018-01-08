@@ -333,13 +333,13 @@ export default {
       var ss
       var id = []
       if (this.categoryEqm === 'สนับสนุน') {
-        ss = 'Sup'
+        ss = 'SUP'
       } else if (this.categoryEqm === 'วินิจฉัยและรักษา') {
-        ss = 'DxRx'
+        ss = 'DXRX'
       } else if (this.categoryEqm === 'รักษา') {
-        ss = 'Rx'
+        ss = 'RX'
       } else if (this.categoryEqm === 'วินิจฉัย') {
-        ss = 'Dx'
+        ss = 'DX'
       }
       this.countCSV = this.amountEqm * 1 + 1
       for (var i = 1; i < this.countCSV; i++) {
@@ -354,6 +354,8 @@ export default {
       }
       if (this.nameEqm === '' || this.amountEqm === '' || this.categoryEqm === '' || this.unitEqm === '') {
         alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+      } else if (this.amountEqm <= 0) {
+        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
       } else {
         if (this.priceUnit === '') {
           equipmentRef.push({

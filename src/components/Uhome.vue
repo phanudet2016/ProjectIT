@@ -196,6 +196,18 @@ export default {
       this.firstname = this.users.find(users => users.email === this.user.email).firstname
       this.lastname = this.users.find(users => users.email === this.user.email).lastname
       this.department = this.users.find(users => users.email === this.user.email).department
+
+      var s = ''
+      if (this.categoryLend === 'สนับสนุน') {
+        s = 'SUP'
+      } else if (this.categoryLend === 'วินิจฉัยและรักษา') {
+        s = 'DXRX'
+      } else if (this.categoryLend === 'รักษา') {
+        s = 'RX'
+      } else if (this.categoryLend === 'วินิจฉัย') {
+        s = 'DX'
+      }
+
       if (this.amountLend < 0) {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
       } else if (this.amountLend === '0' || this.amountLend === '' || this.HnNo === '') {
@@ -203,6 +215,12 @@ export default {
       } else if (this.amountLend > this.balanceLend) {
         alert('กรอกจำนวนเกิน')
       } else if (this.amountLend <= this.balanceLend) {
+        // สร้างเลขที่การยืม
+        var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
+        var timestamp = new Date().getUTCMilliseconds()
+        var id = getRandomInt + timestamp
+        var idLend = s + id
+        // --------------
         this.balanceLend = this.balanceLend * 1 - this.amountLend * 1
         this.borrowedLend = this.borrowedLend * 1 + this.amountLend * 1
         approvetableRef.push({
@@ -215,7 +233,8 @@ export default {
           lastname: this.lastname,
           statusLend: this.statusLend,
           departmentLend: this.department,
-          keyAppove: this.key
+          keyAppove: this.key,
+          idLend: idLend
         })
         equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
         equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})

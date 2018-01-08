@@ -66,6 +66,7 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
+                    <th width="100px">เลขที่การยืม</th>
                     <th width="150px">วันที่ยืม</th>
                     <th width="800px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">ชื่อผู้ยืม</th>
@@ -75,7 +76,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="history.firstname == firstname && history.lastname == lastname" v-for="(history, index) of historys" v-bind:key="history['.key']">                   
+                  <tr v-if="history.firstname == firstname && history.lastname == lastname" v-for="(history, index) of historys" v-bind:key="history['.key']">
+                    <td>{{history.idLend}}</td>                  
                     <td>{{history.date}}</td>
                     <td><router-link :to="'/ulendhistoryeqm/' + history['.key']">{{history.nameEqm}}</router-link></td>
                     <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>

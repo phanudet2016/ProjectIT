@@ -83,8 +83,9 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
+                    <th width="100px">เลขที่การยืม</th>
                     <th width="150px">วันที่ยืม</th>
-                    <th width="600px">ชื่ออุปกรณ์</th>
+                    <th width="500px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">ชื่อผู้ยืม</th>
                     <th width="118px" style="text-align: center;">แผนก</th>
                     <th width="118px" style="text-align: center;">จำนวนที่ยืม</th>
@@ -94,6 +95,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(history, index) of searchEqm" v-bind:key="history['.key']">
+                    <td>{{history.idLend}}</td>
                     <td>{{history.date}}</td>
                     <td><router-link :to="'/lendhistoryeqm/' + history['.key']">{{history.nameEqm}}</router-link></td>
                     <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>

@@ -78,6 +78,7 @@
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
+                      <th width="100px">เลขที่การยืม</th>
                       <th width="600px">ชื่ออุปกรณ์</th>
                       <th width="125px">วันที่</th>
                       <th width="100px">ชื่อผู้ยืม</th>
@@ -88,6 +89,7 @@
                   </thead>
                   <tbody>
                     <tr v-for="scan of scans" v-bind:key="scan['.key']">
+                        <td>{{scan.idLend}}</td>
                         <td>{{scan.nameLend}}</td>
                         <td>{{scan.dateLend}}</td>
                         <td>{{scan.firstname}} {{scan.lastname}}</td>
@@ -180,7 +182,8 @@ export default {
       dateHit: '',
       number: [],
       indexCheck: '',
-      succus: ''
+      succus: '',
+      idLend: ''
     }
   },
   created () {
@@ -249,6 +252,7 @@ export default {
       this.departmentHit = this.scans.find(scan => scan['.key'] === this.keyScan).departmentLend
       this.HnnoHit = this.scans.find(scan => scan['.key'] === this.keyScan).HnNo
       this.dateHit = this.scans.find(scan => scan['.key'] === this.keyScan).dateLend
+      this.idLend = this.scans.find(scan => scan['.key'] === this.keyScan).idLend
 
       this.number = this.scans.find(scan => scan['.key'] === this.keyScan).number
       var insertNumber = {
@@ -275,7 +279,8 @@ export default {
           HnNo: this.HnnoHit,
           returnedEqm: 0,
           returnedDate: this.number,
-          returnKey: this.keyRecive
+          returnKey: this.keyRecive,
+          idLend: this.idLend
         })
       }
       if (this.acceptedScan <= this.amountScan) {

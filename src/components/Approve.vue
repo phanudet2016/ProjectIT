@@ -80,7 +80,8 @@
               <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="700px">ชื่ออุปกรณ์</th>
+                    <th width="100px">เลขที่การยืม</th>
+                    <th width="600px">ชื่ออุปกรณ์</th>
                     <th width="120px">วันที่</th>
                     <th width="100px">ผู้ยืม</th>
                     <th width="100px">แผนก</th>
@@ -91,6 +92,7 @@
                 </thead>
                 <tbody>
                   <tr v-for="(approvetable, index) of approvetables" v-bind:key="approvetable['.key']">
+                      <td>{{approvetable.idLend}}</td>
                       <td>{{approvetable.nameLend}}</td>
                       <td>{{approvetable.dateLend}}</td>
                       <td>{{approvetable.firstname}} {{approvetable.lastname}}</td>
@@ -230,7 +232,8 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+      idLend: ''
     }
   },
   created () {
@@ -270,6 +273,7 @@ export default {
       approvetableRef.child(key).update({statusLend: status})
 
       this.categoryLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).categoryLend
+      this.idLend = this.approvetables.find(approvetables => approvetables['.key'] === key).idLend
       this.nameLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).nameLend
       this.dateLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).dateLend
       this.firstnameeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).firstname
@@ -291,6 +295,7 @@ export default {
           balance: this.amountLendeqm,
           accepted: 0,
           keyRecive: this.keyAppove,
+          idLend: this.idLend,
           number: [
             {number: ''}
           ]

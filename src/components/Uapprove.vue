@@ -66,6 +66,7 @@
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
+                      <th width="100px">เลขที่การยืม</th>
                       <th width="700px">ชื่ออุปกรณ์</th>
                       <th width="118px">จำนวน</th>
                       <th width="100px">วันที่</th>
@@ -74,6 +75,7 @@
                   </thead>
                   <tbody>
                     <tr v-if="approvetable.firstname == firstname && approvetable.lastname == lastname" v-for="approvetable of approvetables" v-bind:key="approvetable['.key']">
+                        <td>{{approvetable.idLend}}</td>
                         <td>{{approvetable.nameLend}}</td>
                         <td>{{approvetable.amountLend}}</td>
                         <td>{{approvetable.dateLend}}</td>

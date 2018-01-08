@@ -66,6 +66,7 @@
                 <table class="table table-hover table-striped">
                   <thead>
                     <tr>
+                      <th width="100px">เลขที่การยืม</th>
                       <th width="700px">ชื่ออุปกรณ์</th>
                       <th width="125px">วันที่</th>
                       <th width="100px">ยืม</th>
@@ -74,6 +75,7 @@
                   </thead>
                   <tbody>
                     <tr v-if="scan.firstname == firstname && scan.lastname == lastname" v-for="(scan, index) of scans" v-bind:key="scan['.key']">
+                        <td>{{scan.idLend}}</td>
                         <td>{{scan.nameLend}}</td>
                         <td>{{scan.dateLend}}</td>
                         <td>{{scan.amountLend}}</td>

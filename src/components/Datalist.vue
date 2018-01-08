@@ -439,13 +439,13 @@ export default {
                 var amount = []
                 var s
                 if (this.cells[5] === 'สนับสนุน') {
-                  s = 'Sup'
+                  s = 'SUP'
                 } else if (this.cells[5] === 'วินิจฉัยและรักษา') {
-                  s = 'DxRx'
+                  s = 'DXRX'
                 } else if (this.cells[5] === 'รักษา') {
-                  s = 'Rx'
+                  s = 'RX'
                 } else if (this.cells[5] === 'วินิจฉัย') {
-                  s = 'Dx'
+                  s = 'DX'
                 } else { s = 'Etc' }
                 this.count = this.cells[6] * 1 + 1
                 for (var c = 1; c < this.count; c++) {
