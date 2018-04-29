@@ -7,7 +7,7 @@
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
             <div class="dropdown-content">
               <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
@@ -15,8 +15,8 @@
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">Administrator</p>
+          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color:#ffffff;">Administrator</p>
         </li>
       </ul>
     </div>
@@ -31,7 +31,7 @@
           <router-link to="/home">หน้าหลัก</router-link>
         </li>
         <li class="selected">
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <i class="fa fa-list-alt" style="font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
@@ -97,7 +97,7 @@
                   </select>
                   <span></span>
                   <!-- ADD Device !-->
-                  <button type="button" class="btn button-add btn btn-success" style="color:#ffffff;font-size:18px" data-toggle="modal" data-target="#myModal">
+                  <button type="button" class="BTNstatus" style="color:#ffffff;font-size:18px;width:150px;" data-toggle="modal" data-target="#myModal">
                       <span class="glyphicon glyphicon-import"></span> นำเข้ารายการ
                     </button>
                   <div class="modal fade" id="myModal" role="dialog">
@@ -113,7 +113,7 @@
                           <!-- v-on:change !-->
                         </div>
                         <div class="modal-footer">
-                          <button @click="Upload()" type="button" class="btn btn-default" data-dismiss="modal">อัปโหลด</button>
+                          <button @click="Upload()" type="button" class="btn btn-default BTNstatus" data-dismiss="modal">อัปโหลด</button>
                         </div>
                       </div>
                     </div>
@@ -132,8 +132,10 @@
                     <th width="500px">ชื่ออุปกรณ์</th>
                     <th width="400px" style="text-align: center;">คำอธิบาย</th>
                     <th width="118px" style="text-align: center;">ราคา (ต่อหน่วย)</th>
+                    <th width="118px" style="text-align: center;">จำนวน</th>
                     <th width="118px" style="text-align: center;">ประเภท</th>
-                    <th width="118px" style="text-align: center;">ON / OFF</th>
+                    <th width="118px" style="text-align: center;">ปิด/เปิด ให้บริการ</th>
+                    <th width="118px" style="text-align: center;">ลบ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -141,16 +143,24 @@
                       <td>{{equipment.nameEqm}}</td>
                       <td style="text-align: center;">{{equipment.description}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                      <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
-                            <span class="caret"></span></button>                    
+                          <button v-if="equipment.statusLend === 'เปิด'" class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown">{{equipment.statusLend}}
+                            <span class="caret"></span></button>
+                          <button v-if="equipment.statusLend === 'ปิด'" class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background-color: #EF5350;">{{equipment.statusLend}}
+                            <span class="caret"></span></button>                  
                             <ul class="dropdown-menu">                             
-                              <li><a @click="onOff('ON',equipment['.key'])" style="font-size:18px;">ON</a></li>
-                              <li><a @click="onOff('OFF',equipment['.key'])" style="font-size:18px;">OFF</a></li>
+                              <li><a @click="onOff('เปิด',equipment['.key'])" style="font-size:18px;">เปิด</a></li>
+                              <li><a @click="onOff('ปิด',equipment['.key'])" style="font-size:18px;">ปิด</a></li>
                             </ul>
                         </div>
+                      </td>
+                      <td style="text-align: center;">
+                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle BTNdelete" type="button" data-toggle="modal" data-target="#deleteList">
+                          <span class="glyphicon glyphicon-trash"></span>
+                        </button>
                       </td>
                   </tr>
                   <tr v-if="equipment.categoryEqm == category" v-for="equipment of searchEqm" v-bind:key="equipment['.key']">
@@ -160,14 +170,19 @@
                       <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
+                          <button class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
                             <span class="caret"></span></button>                    
                             <ul class="dropdown-menu">                             
-                              <li><a @click="onOff('ON',equipment['.key'])" style="font-size:18px;">ON</a></li>
-                              <li><a @click="onOff('OFF',equipment['.key'])" style="font-size:18px;">OFF</a></li>
+                              <li><a @click="onOff('เปิด',equipment['.key'])" style="font-size:18px;">เปิด</a></li>
+                              <li><a @click="onOff('ปิด',equipment['.key'])" style="font-size:18px;">ปิด</a></li>
                             </ul>
                         </div>
-                      </td>                
+                      </td>
+                      <td style="text-align: center;">
+                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#deleteList" style="background:#5cb85c;font-size:20px;width:50px;">
+                          <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                      </td>           
                   </tr>
                   <tr v-if="category === 'ทั้งหมด'" v-for="equipment of searchEqm" v-bind:key="equipment['.key']">
                       <td>{{equipment.nameEqm}}</td>
@@ -176,13 +191,18 @@
                       <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
+                          <button class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
                             <span class="caret"></span></button>                    
                             <ul class="dropdown-menu">                             
-                              <li><a @click="onOff('ON',equipment['.key'])" style="font-size:18px;">ON</a></li>
-                              <li><a @click="onOff('OFF',equipment['.key'])" style="font-size:18px;">OFF</a></li>
+                              <li><a @click="onOff('เปิด',equipment['.key'])" style="font-size:18px;">เปิด</a></li>
+                              <li><a @click="onOff('ปิด',equipment['.key'])" style="font-size:18px;">ปิด</a></li>
                             </ul>
                         </div>
+                      </td>
+                      <td style="text-align: center;">
+                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#deleteList" style="background:#5cb85c;font-size:20px;width:50px;">
+                          <span class="glyphicon glyphicon-trash"></span>
+                        </button>
                       </td>
                   </tr>
                 </tbody>
@@ -217,6 +237,26 @@
                 </div>
               </div>
               <!-- Edit Device !-->
+              <!-- ลบข้อมูล !-->
+              <div class="modal fade" id="deleteList" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size: 25px;"><b>ลบรายการอุปกรณ์</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <p style="color:#9A9A9A;font-size:20px;">ชื่ออุปกรณ์</p> <h4 style="font-size:21px">{{nameRemove}}</h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">ประเภท</p> <h4 style="font-size:21px">{{categoryRemove}}</h4><br>
+                    </div>
+                    <div class="modal-footer">
+                      <button @click="removeEqm()" type="button" class="btn btn-default" data-dismiss="modal" style="width:100px;font-size:16px">ตกลง</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ลบข้อมูล !-->
             </div>
           </div>
           </div>
@@ -233,7 +273,7 @@
               <h4 class="modal-title" style="font-size:25px"><b>เพิ่มผู้จัดการระบบ</b></h4>
               </div>
               <div class="modal-body">
-                <table class="table table-hover table-striped">
+                <table class="table">
                   <thead>
                     <tr>
                       <th width="700px">ชื่อ</th>
@@ -247,7 +287,7 @@
                         <td>{{user.lastname}}</td>
                         <td style="text-align: center;">
                           <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{user.status}}
+                            <button class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{user.status}}
                               <span class="caret"></span></button>                    
                                 <ul class="dropdown-menu">                             
                                   <li><a @click="addAdmin('user',user['.key'])" style="font-size:18px;">user</a></li>
@@ -260,8 +300,8 @@
                 </table>
               </div>
               <div class="modal-footer">
-                <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal" data-toggle="modal" data-target="#myModal">ลงทะเบียนใหม่</button>
-                <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ปิด</button>
+                <button type="button" style="width:100px;" class="btn btn-default BTNstatus" data-dismiss="modal" data-toggle="modal" data-target="#myModal">ลงทะเบียนใหม่</button>
+                <button type="button" style="width:100px;" class="btn btn-default BTNdelete" data-dismiss="modal">ปิด</button>
               </div>
         </div>
       </div>
@@ -334,7 +374,11 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+
+      nameRemove: '',
+      categoryRemove: '',
+      keyRemove: ''
     }
   },
   created () {
@@ -409,8 +453,14 @@ export default {
         unitEqm: this.editUnitEqm
       })
     },
-    removeEqm (key) {
-      equipmentRef.child(key).remove()
+    sendDelete (key, nameEqm, categoryEqm) {
+      console.log(nameEqm)
+      this.categoryRemove = categoryEqm
+      this.nameRemove = nameEqm
+      this.keyRemove = key
+    },
+    removeEqm () {
+      equipmentRef.child(this.keyRemove).remove()
     },
     submitLogout () {
       auth.signOut()
@@ -470,7 +520,8 @@ export default {
                   borrowedEqm: 0,
                   priceUnit: this.cells[2],
                   equipmentID: amount,
-                  statusLend: 'OFF'
+                  statusLend: 'ปิด',
+                  countTopTen: 0
                 })
               }
             }
@@ -541,7 +592,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  margin-right: 24px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -554,7 +605,6 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -563,7 +613,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: #ffffff;
+  background: rgb(3,155,229);
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -571,11 +621,13 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
+  margin-top: -1px;
 }
 
 .nav-header ul li p {
   font-weight: 400;
   font-size: 20px;
+  height: 58px;
 }
 
 .nav-header ul li {
@@ -599,7 +651,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .navbar-brand {
@@ -618,7 +670,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #273238;
+  background: #262f3d;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -635,10 +687,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 6px;
+ 
   padding: 15px;
-  width: 289px;
-  border-radius: 4px;
+  padding-left: 30px;
+ 
   font-size: 20px;
 }
  
@@ -658,21 +710,16 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #434d52;
+  background: #373f4c;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
-  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-nav ul {
-  margin-top: -50px;
-}
-
-.selected {
-  background: #596166;
+.selected a, i {
+  color: #4fc3f7;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -742,5 +789,37 @@ th {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.BTNstatus{
+  background-color: rgb(3,155,229);
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
+}
+
+.BTNdelete {
+  background-color: #EF5350;
+  border: none;
+  color: white;
+  padding: 5px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold; 
 }
 </style>

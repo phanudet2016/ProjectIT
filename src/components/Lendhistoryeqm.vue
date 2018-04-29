@@ -3,11 +3,14 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px;"><router-link to="/lendhistory">รายการอุปกรณ์</router-link> / <b>{{nameEqm}}</b></p>
+          <p style="font-size:25px;"><router-link to="/lendhistory" style="color:#ffffff;">รายการอุปกรณ์ / </router-link></p>
+        </li>
+        <li class="topic" style="padding-left: 10px;">
+          <p style="font-size:25px; border-bottom: 2px solid #ffffff"><b>{{nameEqm}}</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
             <div class="dropdown-content">
               <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
@@ -15,8 +18,8 @@
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">Administrator</p>
+          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: #ffffff;">Administrator</p>
         </li>
       </ul>
     </div>
@@ -43,7 +46,7 @@
           <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
         </li>
         <li class="selected">
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <i class="fa fa-clipboard" style="font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
@@ -76,19 +79,23 @@
               </h4>
 
               <br>
-              <table class="table table-hover table-striped">
+              <table class="table">
                 <thead>
                   <tr>
                     <th width="100px">วันที่คืน</th>
-                    <th width="100px">หมายเลขเครื่อง</th>
-                    <th width="100px">สถานะ</th>
+                    <th width="100px" style="text-align:center;">หมายเลขเครื่อง</th>
+                    <th width="100px" style="text-align:center;">สถานะ</th>
+                    <!-- <th width="100px" style="text-align:center;">แจ้งคืนอุปกรณ์</th> !-->
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="arrayEqms in arrayEqm" v-if="arrayEqms.number !== ''">
                     <td>{{arrayEqms.date}}</td>
-                    <td >{{arrayEqms.number}}</td>
-                    <td>{{arrayEqms.status}}</td>
+                    <td style="text-align:center;">{{arrayEqms.number}}</td>
+                    <td style="text-align:center;">{{arrayEqms.status}}</td>
+                    <!-- <td style="text-align:center;">
+                      <button class="btn btn-primary dropdown-toggle BTNreturn" data-toggle="modal" data-target="#sendEmail" @click="setDate(), setDatatoEmail(arrayEqms.number)">แจ้งคืน</button>
+                    </td> !-->
                   </tr>
                 </tbody>
               </table>
@@ -176,11 +183,31 @@
     </div>    
     <!-- ADD ADMIN !-->
 
+    <!-- sendEmail !-->
+    <div class="modal fade" id="sendEmail" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-size:25px"><b>แจ้งคืนอุปกรณ์</b></h4>
+          </div>
+          <div class="modal-body">
+            <input id="myDate" type="date" class="inputDate" v-model="send_Date">
+          </div>
+          <div class="modal-footer">
+            <button @click="sendDate()" type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ตกลง</button>
+          </div>
+        </div>
+      </div>
+    </div>    
+    <!-- sendEmail !-->
+
   </div>
 </template>
 
 <script>
 import {equipmentRef, auth, userRef, historyRef} from './firebase'
+import PostsService from '@/services/PostsService'
 
 export default {
   name: 'lendhistoryeqm',
@@ -209,7 +236,20 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+
+      send_Date: '',
+      today: '',
+      keyDate: '',
+      // sendMail data
+      sendNameEqm: '',
+      sendFirstname: '',
+      sendLastname: '',
+      sendDepartment: '',
+      sendIdLend: '',
+      subject: '',
+      description: '',
+      numberEqm: ''
     }
   },
   created () {
@@ -230,6 +270,44 @@ export default {
     historys: historyRef
   },
   methods: {
+    async sendEmail () {
+      await PostsService.sendEmail({
+        to: this.email,
+        subject: this.subject,
+        description: this.description
+      })
+    },
+    setDate () {
+      this.today = new Date().toISOString().substr(0, 10)
+      document.querySelector('#myDate').value = this.today
+    },
+    setDatatoEmail (number) {
+      this.email = this.historys.find(historys => historys['.key'] === this.$route.params.id).email
+      this.sendNameEqm = this.historys.find(historys => historys['.key'] === this.$route.params.id).nameEqm
+      this.sendFirstname = this.historys.find(historys => historys['.key'] === this.$route.params.id).firstname
+      this.sendLastname = this.historys.find(historys => historys['.key'] === this.$route.params.id).lastname
+      this.sendDepartment = this.historys.find(historys => historys['.key'] === this.$route.params.id).department
+      this.sendIdLend = this.historys.find(historys => historys['.key'] === this.$route.params.id).idLend
+      this.subject = 'แจ้งกำหนดการคืนอุปกรณ์ทางการแพทย์'
+      this.numberEqm = number
+    },
+    sendDate () {
+      if (this.send_Date === '') {
+        historyRef.child(this.$route.params.id).update({
+          dateReturn: this.today
+        })
+        this.description = 'เรียนคุณ: ' + this.sendFirstname + ' ' + this.sendLastname + '<br>' + ' แผนก: ' + this.sendDepartment + '<br><br>' + 'เลขที่การยืม: ' + this.sendIdLend + '<br>' + 'หมายเลขเครื่อง: ' + this.numberEqm + '<br> ' + 'ชื่ออุปกรณ์: ' + this.sendNameEqm + '<br> ' + ' ครบกำหนดการคืนในวันที่ ' + this.today + ' กรุณานำอุปกรณ์มาส่งคืนภายในวันที่กำหนด'
+        this.sendEmail()
+        this.send_Date = ''
+      } else if (this.send_Date !== '') {
+        historyRef.child(this.$route.params.id).update({
+          dateReturn: this.send_Date
+        })
+        this.description = 'เรียนคุณ: ' + this.sendFirstname + ' ' + this.sendLastname + '<br>' + ' แผนก: ' + this.sendDepartment + '<br><br>' + 'เลขที่การยืม: ' + this.sendIdLend + '<br>' + 'หมายเลขเครื่อง: ' + this.numberEqm + '<br> ' + 'ชื่ออุปกรณ์: ' + this.sendNameEqm + '<br> ' + ' ครบกำหนดการคืนในวันที่ ' + this.send_Date + ' กรุณานำอุปกรณ์มาส่งคืนภายในวันที่กำหนด'
+        this.sendEmail()
+        this.send_Date = ''
+      }
+    },
     removeEqm (key) {
       equipmentRef.child(key).remove()
     },
@@ -291,7 +369,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 768px;
+  margin-right: 24px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -304,7 +382,6 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -313,7 +390,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: #ffffff;
+  background: rgb(3,155,229);
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -321,11 +398,13 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
+  margin-top: -1px;
 }
 
 .nav-header ul li p {
   font-weight: 400;
   font-size: 20px;
+  height: 58px;
 }
 
 .nav-header ul li {
@@ -349,7 +428,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .navbar-brand {
@@ -368,7 +447,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #273238;
+  background: #262f3d;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -385,10 +464,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 6px;
+ 
   padding: 15px;
-  width: 289px;
-  border-radius: 4px;
+  padding-left: 30px;
+ 
   font-size: 20px;
 }
  
@@ -408,17 +487,16 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #434d52;
+  background: #373f4c;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
-  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-.selected {
-  background: #596166;
+.selected a, i {
+  color: #4fc3f7;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -473,5 +551,21 @@ th {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.BTNreturn {
+  background-color: rgb(3,155,229);
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
 }
 </style>

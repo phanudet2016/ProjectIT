@@ -93,7 +93,9 @@ export default {
           department: this.department,
           phoneNumber: this.phoneNumber,
           status: 'user',
-          editProfile: false
+          editProfile: false,
+          agree: 'ยังไม่รับทราบ',
+          noteNoti: 0
         })
         auth.createUserWithEmailAndPassword(this.email, this.password).catch((error) => {
           var errorCode = error.code

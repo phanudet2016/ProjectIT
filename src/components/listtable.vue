@@ -3,11 +3,11 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการอุปกรณ์</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>รายการอุปกรณ์</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
             <div class="dropdown-content">
               <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
@@ -15,12 +15,11 @@
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">Administrator</p>
+          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color:#ffffff;">Administrator</p>
         </li>
       </ul>
     </div>
-
     <nav>
       <img src="../assets/196127.png" style="margin-top:22px;margin-left:20px;width:40%;">
       <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
@@ -31,16 +30,19 @@
           <router-link to="/home">หน้าหลัก</router-link>
         </li>
         <li class="selected">
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <i class="fa fa-list-alt" style="font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
+          </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>       
         </li>
         <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
@@ -172,42 +174,42 @@
               <!--TABLE!-->
               <br>
      
-              <table class="table table-hover table-striped">
+              <table class="table">
                 <thead>
                   <tr>
                     <th width="700px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">จำนวน</th>
                     <th width="118px" style="text-align: center;">ถูกยืม</th>
-                    <th width="118px" style="text-align: center; background: #9968db; color: #ffffff;">คงเหลือ</th>
+                    <th width="118px" style="text-align: center; background: rgb(3,155,229);; color: #ffffff;">คงเหลือ</th>
                     <th width="100px">หน่วย</th>
                     <th width="100px">ราคา (ต่อหน่วย)</th>
                     <th width="80px" style="text-align: center;">แก้ไข</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="category === '' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                  <tr v-if="category === '' && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                      <td style="text-align: center; background: rgb(3,155,229);; color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
                       <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
-                  <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                  <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                      <td style="text-align: center; background: rgb(3,155,229);rgb(3,155,229); color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
                       <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
                   </tr>
-                  <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                  <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
-                      <td style="text-align: center; background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
+                      <td style="text-align: center; background: rgb(3,155,229); color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
                       <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
@@ -261,7 +263,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef} from './firebase'
 
 export default {
   name: 'listtable',
@@ -312,7 +314,8 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    notis: notiRef
   },
   methods: {
     subm1itEqm () {
@@ -470,8 +473,7 @@ export default {
   margin-bottom: 0;
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
-  border-radius: 4px;
-  width: 82%;
+  margin-right: 24px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -484,7 +486,7 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  width: 100%;
+  /*width: 100%;*/
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -493,7 +495,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: #ffffff;
+  background: rgb(3,155,229);
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -501,12 +503,13 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
+  margin-top: -1px;
 }
 
 .nav-header ul li p {
-  
   font-weight: 400;
   font-size: 20px;
+  height: 58px;
 }
 
 .nav-header ul li {
@@ -530,7 +533,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .navbar-brand {
@@ -549,7 +552,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #273238;
+  background: #262f3d;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -566,10 +569,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 6px;
+ 
   padding: 15px;
-  width: 289px;
-  border-radius: 4px;
+  padding-left: 30px;
+ 
   font-size: 20px;
 }
  
@@ -589,17 +592,25 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #434d52;
+  background: #373f4c;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
-  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-.selected {
-  background: #596166;
+.selected a, i {
+  color: #4fc3f7;
+}
+/*----------------------------------------------------------------------------------*/
+
+/*--------------------------------------- selectBox -------------------------------------*/
+.selectBox {
+  width: 150px;
+  height: 34px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -669,6 +680,19 @@ th {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
 }
 
 </style>

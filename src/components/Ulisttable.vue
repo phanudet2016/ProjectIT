@@ -7,15 +7,15 @@
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
             <div class="dropdown-content">
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
             </div>
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">General user</p>
+          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color:#ffffff;">General user</p>
         </li>
       </ul>
     </div>
@@ -34,7 +34,10 @@
           <router-link to="/uapprove">รายการรออนุมัติ</router-link>
         </li>
         <li class="selected">
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <i class="fa fa-list-alt" style="font-size:25px;"></i>
+          <button v-if="user.noteNoti !== 0 && user.email === emailAuth" v-for="user of users" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;">{{user.noteNoti}}</p>
+          </button>
           <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
         <li>
@@ -63,23 +66,45 @@
                 </h4>
                 <!--TABLE!-->
                 <br>
-                <table class="table table-hover table-striped">
+                <table class="table">
                   <thead>
                     <tr>
-                      <th width="100px">เลขที่การยืม</th>
-                      <th width="700px">ชื่ออุปกรณ์</th>
-                      <th width="125px">วันที่</th>
-                      <th width="100px">ยืม</th>
-                      <th width="100px" style="text-align: center;">รับแล้ว</th>
+                      <th width="300px">ชื่ออุปกรณ์</th>
+                      <th width="300px"  style="text-align: center;">เลขที่การยืม</th>
+                      <th width="300px" style="text-align: center;">วันที่ยืม</th>
+                      <th width="300px" style="text-align: center;">ยืมถึงวันที่</th>
+                      <th width="300px" style="text-align: center;">ยืม</th>
+                      <th width="300px" style="text-align: center;">รับแล้ว</th>
+                      <th width="300px" style="text-align: center;">เลื่อนระยะวันยืม</th>
+                      <th width="300px" style="text-align: center;">ส่งต่อให้กับผู้ใช้อื่น</th>
+                      <th width="300px" style="text-align: center;">
+                        <i class="fa fa-bell-o" style="font-size:25px;"></i>
+                        <button v-if="user.noteNoti !== 0 && user.email === emailAuth" v-for="user of users" class="noti" style="margin-left:-12px;">
+                          <p style="margin-top: -4px;">{{user.noteNoti}}</p>
+                        </button>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-if="scan.firstname == firstname && scan.lastname == lastname" v-for="(scan, index) of scans" v-bind:key="scan['.key']">
-                        <td>{{scan.idLend}}</td>
                         <td>{{scan.nameLend}}</td>
-                        <td>{{scan.dateLend}}</td>
-                        <td>{{scan.amountLend}}</td>
-                        <td style="text-align: center; background: #9968db; color: #ffffff;">{{scan.accepted}}</td>
+                        <td style="text-align: center;">{{scan.idLend}}</td>
+                        <td style="text-align: center;">{{scan.dateLend}}</td>
+                        <td style="text-align: center;" v-if="scan.updateTimeLength === ''">{{scan.timeLength}}</td>
+                        <td style="text-align: center;color:black;" v-if="scan.updateTimeLength !== ''">{{scan.updateTimeLength}} <button v-bind:title="msg" @click="showUpdateTime(scan.dateLend, scan.timeLength, scan.updateTimeLength, scan.note, scan['.key'])" class="glyphicon glyphicon-exclamation-sign" data-toggle="modal" data-target="#updateTime" style="font-size:18px;border:none;background: #ffffff;"></button></td>
+                        <td style="text-align: center;">{{scan.amountLend}}</td>
+                        <td style="text-align: center;">{{scan.accepted}}</td>
+                        <td style="text-align: center;"><button @click="setDate(scan['.key'])" class="btn btn-primary dropdown-toggle BTNstatus" data-toggle="modal" data-target="#myModal">เลื่อนวัน</button></td>
+                        <td style="text-align: center;"><button @click="forward(scan.idLend, scan.nameLend, scan.categoryLend, scan.keyRecive, scan.amountLend, scan.accepted, scan.forwardCound, scan['.key'])" class="glyphicon glyphicon-send" style="font-size:25px;background-color:#ffffff;border:none;color:rgb(79,195,247);" data-toggle="modal" data-target="#forward"></button></td>
+                        <td style="text-align: center;" v-if="scan.agree !== ''">
+                          <i @click="setAgree(scan['.key'], scan.email, scan.agree, scan.idLend, scan.nameLend, scan.noteReturn)" class="glyphicon glyphicon-list-alt" style="font-size:25px;background-color:#ffffff;border:none;color:rgb(79,195,247);" data-toggle="modal" data-target="#agree"></i>
+                          <button v-if="scan.agree === 'ยังไม่รับทราบ'" class="noti2" style="margin-left:-12px;">
+                           <i @click="setAgree(scan['.key'], scan.email, scan.agree, scan.idLend, scan.nameLend, scan.noteReturn)" style="margin-top: -4px;color:#d9534f;" class="glyphicon glyphicon-exclamation-sign" data-toggle="modal" data-target="#agree"></i>
+                         </button>
+                        </td>
+                        <td v-if="scan.agree === ''" style="text-align: center;">
+                          <i class="glyphicon glyphicon-list-alt" style="font-size:25px;background-color:#ffffff;border:none;color:rgb(79,195,247);"></i>
+                        </td>
                     </tr>
                   </tbody>
                 </table>
@@ -91,11 +116,194 @@
       </div>
     </div>
 
+    <!-- เลื่อนวันยืม !-->
+              <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>เลื่อนระยะวันยืม</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <p style="color:#9A9A9A;font-size:20px;">วันที่ </p><h4 style="font-size:21px"></h4>
+                      <input id="myDate" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="today"><br><br>
+
+                      <p style="color:#9A9A9A;font-size:20px;">เหตุผล:</p>
+                      <textarea style="width:300px;height:100px;font-size:20px;" v-model="note"></textarea>
+                      <br><br>
+                    </div>
+                    <div class="modal-footer">
+                      <button @click="updateTimeLengthFn()" type="button" class="btn btn-default BTNstatus" data-dismiss="modal">ตกลง</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- เลื่อนวันยืม !-->
+
+              <!-- แสดงเลื่อนวันยืม !-->
+              <div class="modal fade" id="updateTime" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>เลื่อนระยะวันยืม</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <p style="color:#9A9A9A;font-size:20px;">จากเดิม: </p><h4 style="font-size:21px"></h4>
+                      <h4 style="font-size:21px">{{dateLend}} ถึง {{timeLength}}</h4>
+                      <p style="color:#9A9A9A;font-size:20px;">เป็นวันที่: </p><h4 style="font-size:21px"></h4>
+                      <h4 style="font-size:21px">{{dateLend}} ถึง {{updateTime}}</h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">เหตุผล:</p>
+                      <textarea disabled style="width:300px;height:100px;font-size:20px;" v-model="note"></textarea>
+                      <br><br>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default BTNstatus" data-dismiss="modal">ปิด</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- แสดงเลื่อนวันยืม !-->
+
+              <!-- รับทราบเรียกคืนอุปกรณ์ !-->
+              <div class="modal fade" id="agree" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>แจ้งคืนอุปกรณ์</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <p style="color:#9A9A9A;font-size:20px;">เลขที่การยืม:</p><h4 style="font-size:21px"></h4>
+                      <h4 style="font-size:21px">{{idLend}}</h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">ชื่ออุปกรณ์:</p><h4 style="font-size:21px"></h4>
+                      <h4 style="font-size:21px">{{nameLend}}</h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">ข้อความจากศูนย์กลางเครื่องมือแพทย์:</p><h4 style="font-size:21px"></h4>
+                      <textarea disabled style="width:300px;height:100px;font-size:20px;" v-model="noteReturn"></textarea>
+                      <br><br>
+                      <p style="color:#9A9A9A;font-size:20px;">สถานะ:</p><h4 style="font-size:21px"></h4>
+                      <div class="dropdown" v-if="selectAgree === '' && agreeNoti === 'ยังไม่รับทราบ'">
+                          <button class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="width:120px;background-color:#EF5350;">{{agreeNoti}}
+                            <span class="caret"></span></button>                    
+                            <ul class="dropdown-menu">                             
+                              <li><a @click="selectAgreeFn('รับทราบแล้ว')" style="font-size:18px;">รับทราบ</a></li>
+                            </ul>
+                      </div>
+                      <div v-if="selectAgree === 'รับทราบแล้ว' || agreeNoti === 'รับทราบแล้ว'"><button class="BTNstatus">รับทราบแล้ว</button></div>
+                    </div>
+                    <div class="modal-footer">
+                      <button @click="agree()" type="button" class="btn btn-default BTNstatus" data-dismiss="modal">ตกลง</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- รับทราบเรียกคืนอุปกรณ์ !-->
+
+              <!-- หมด !-->
+              <div class="modal fade" id="forward" role="dialog" v-if="forwardCound === 0">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>หมายเหตุ</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <h4 class="modal-title" style="font-size:25px"><b>ไม่สามารถส่งต่ออุปกร์ให้กับผู้ใช้งานอืนได้ เนื่องจากยังไม่ได้ทำการรับอุปกรณ์ หรือส่งอุปกรณ์ให้กับผู้อื่นหมดแล้ว</b></h4>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default BTNstatus" data-dismiss="modal" >ปิด</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- หมด !-->
+
+              <!-- ส่งต่อ (เลือกอุปกรณ์) !-->
+              <div class="modal fade" id="forward" role="dialog" v-if="forwardCound !== 0">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px" v-if="accepted === 0"><b>หมายเหตุ</b></h4>
+                      <h4 class="modal-title" style="font-size:25px" v-if="accepted !== 0"><b>ระบุจำนวน</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <h4 class="modal-title" style="font-size:25px" v-if="accepted === 0"><b>กรุณารับอุปกรณ์ก่อน ถึงจะทำการส่งต่ออุปกรณ์ได้</b></h4>
+                      <table class="table" v-if="accepted !== 0">
+                        <thead>
+                          <tr>
+                            <th width="300">ชื่ออุปกรณ์</th>
+                            <th width="150">ระยะเวลาการยืม</th>
+                            <th width="150">จำนวน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{nameLendFoeward}}</td>
+                            <td><input id="myDate2" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="dateForward"></td>
+                            <td><input id="setAmount" min="" max="" type="number" v-model="amountLendeqm"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="modal-footer" v-if="accepted === 0">
+                      <button type="button" class="btn btn-default BTNstatus" data-dismiss="modal" >ปิด</button>
+                    </div>
+                    <div class="modal-footer" v-if="accepted !== 0">
+                      <button @click="nextFoeward()" type="button" class="btn btn-default BTNstatus">ถัดไป</button>
+                      <i id="next" data-dismiss="modal" data-toggle="modal" data-target="#sumbitforward"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ส่งต่อ (เลือกอุปกรณ์) !-->
+
+              <!-- ส่งต่อ (เลือกผู้รับ) !-->
+              <div class="modal fade" id="sumbitforward" role="dialog">
+                <div class="modal-dialog">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>เลือกผู้รับ</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="700px">ชื่อผู้รับ</th>
+                            <th width="700px" style="text-align: center;">แผนก</th>
+                            <th width="700px" style="text-align: center;">เลือก</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="user of users" v-if="user.status === 'user' && user.email !== emailAuth">
+                            <td>{{user.firstname}} {{user.lastname}}</td>
+                            <td style="text-align: center;">{{user.department}}</td>
+                            <td style="text-align: center;"><button @click="submitForward(user.firstname, user.lastname, user.department, user.email)" type="button" class="btn btn-default BTNstatus" data-dismiss="modal">เลือก</button></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default BTNstatus" data-dismiss="modal">ปิด</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ส่งต่อ (เลือกผู้รับ)!-->
+
   </div>
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, scanRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef, messaging, historyRef} from './firebase'
+import moment from 'moment'
 
 export default {
   name: 'ulisttable',
@@ -108,7 +316,40 @@ export default {
       amountEqm: '',
       names: '',
       firstname: '',
-      lastname: ''
+      lastname: '',
+
+      today: '',
+      key: '',
+      note: '',
+      updateTimeLength: '',
+
+      dateLend: '',
+      updateTime: '',
+      keyPushNoti: '',
+      keyAgree: '',
+      emailAgree: '',
+      KeyemailAgree: '',
+      noteNoti: '',
+      emailAuth: '',
+      agreeNoti: '',
+      selectAgree: '',
+      idLend: '',
+      nameLend: '',
+      noteReturn: '',
+      forwardEqms: [],
+      number: '',
+      nameLendFoeward: '',
+
+      dateForward: '',
+      TimeLength: '',
+      amountLendeqm: '',
+      categoryLend: '',
+      keyAppove: '',
+      amountLend: '',
+      accepted: '',
+      formIdlend: '',
+      forwardCound: '',
+      forwardKey: ''
     }
   },
   created () {
@@ -116,6 +357,8 @@ export default {
       if (user) {
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
+        this.keyPushNoti = this.users.find(users => users.email === user.email)['.key']
+        this.emailAuth = user.email
       } else {
         console.log('not logged in')
       }
@@ -125,7 +368,8 @@ export default {
     equipments: equipmentRef,
     users: userRef,
     approvetables: approvetableRef,
-    scans: scanRef
+    scans: scanRef,
+    historys: historyRef
   },
   computed: {
     realtimeplus: function () {
@@ -133,6 +377,147 @@ export default {
     }
   },
   methods: {
+    forward (idLend, nameLend, categoryLend, keyRecive, amountLend, accepted, forwardCound, forwardKey) {
+      this.amountLendeqm = ''
+      this.categoryLend = categoryLend
+      this.nameLendFoeward = nameLend
+      this.keyAppove = keyRecive
+      this.amountLend = amountLend
+      this.accepted = accepted
+      this.formIdlend = idLend
+      this.forwardCound = forwardCound
+      this.forwardKey = forwardKey
+      console.log(this.forwardCound)
+
+      /* this.number = this.historys.find(historys => historys.idLend === idLend).returnedDate
+      this.forwardEqms = this.number */
+
+      this.dateForward = new Date().toISOString().substr(0, 10)
+      document.querySelector('#myDate').value = this.dateForward
+      console.log(this.dateForward)
+      document.getElementById('myDate2').setAttribute('min', this.dateForward)
+      document.getElementById('setAmount').setAttribute('min', 1)
+      document.getElementById('setAmount').setAttribute('max', forwardCound)
+       // this.dateForward = dateForward
+    },
+    nextFoeward () {
+      console.log(this.amountLend)
+      if (this.amountLendeqm > this.accepted * 1) {
+        alert('กรอกจำนวนเกิน')
+      } else if (this.amountLendeqm <= 0 || this.amountLendeqm === '') {
+        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
+      } else if (this.amountLendeqm > this.accepted) {
+        alert('กรอกจำนวนเกิน')
+      } else { document.getElementById('next').click() }
+    },
+    submitForward (firstname, lastname, department, email) {
+      var s = ''
+      if (this.categoryLend === 'สนับสนุน') {
+        s = 'SUP'
+      } else if (this.categoryLend === 'วินิจฉัยและรักษา') {
+        s = 'DXRX'
+      } else if (this.categoryLend === 'รักษา') {
+        s = 'RX'
+      } else if (this.categoryLend === 'วินิจฉัย') {
+        s = 'DX'
+      }
+      // สร้างเลขที่การยืม
+      if (this.amountLendeqm > this.amountLend) {
+        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
+      } else {
+        var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
+        var timestamp = new Date().getUTCMilliseconds()
+        var id = getRandomInt + timestamp
+        var idLend = s + id
+        // setDate
+        var dd = this.dateForward.substr(8, 2)
+        var mm = this.dateForward.substr(5, 2)
+        var yyyy = this.dateForward.substr(0, 4)
+        this.TimeLength = dd + '/' + mm + '/' + yyyy
+        this.forwardCound = this.forwardCound - this.amountLendeqm
+        scanRef.child(this.forwardKey).update({
+          forwardCound: this.forwardCound
+        })
+        scanRef.push({
+          HnNo: '-',
+          amountLend: this.amountLendeqm,
+          categoryLend: this.categoryLend,
+          dateLend: moment().format('DD/MM/YYYY LTS'),
+          timeLength: this.TimeLength,
+          departmentLend: department,
+          firstname: firstname,
+          lastname: lastname,
+          nameLend: this.nameLendFoeward,
+          balance: this.amountLendeqm,
+          accepted: 0,
+          keyRecive: this.keyAppove,
+          idLend: idLend,
+          forwardCound: 0,
+          borrowedTo: 0,
+          updateTimeLength: '',
+          email: email,
+          agree: '',
+          formIdlend: this.formIdlend,
+          number: [
+            {number: ''}
+          ]
+        })
+      }
+    },
+    setAgree (key, email, agree, idLend, nameLend, noteReturn) {
+      this.keyAgree = key
+      this.KeyemailAgree = this.users.find(users => users.email === email)['.key']
+      this.noteNoti = this.users.find(users => users.email === email).noteNoti
+      this.agreeNoti = agree
+      this.selectAgree = ''
+      this.idLend = idLend
+      this.nameLend = nameLend
+      this.noteReturn = noteReturn
+    },
+    selectAgreeFn (selectAgree) {
+      this.selectAgree = selectAgree
+      console.log(this.selectAgree)
+    },
+    agree () {
+      if (this.selectAgree !== '') {
+        scanRef.child(this.keyAgree).update({
+          agree: this.selectAgree
+        })
+      }
+      if (this.agreeNoti === 'ยังไม่รับทราบ' && this.selectAgree !== '') {
+        this.noteNoti = this.noteNoti - 1
+        console.log(this.noteNoti)
+        userRef.child(this.KeyemailAgree).update({
+          noteNoti: this.noteNoti
+        })
+      }
+    },
+    showUpdateTime (dateLend, timeLength, updateTimeLength, note, key) {
+      this.dateLend = dateLend.substr(0, 10)
+      this.timeLength = timeLength
+      this.updateTime = updateTimeLength
+      this.note = note
+      this.key = key
+    },
+    setDate (key) {
+      this.today = new Date().toISOString().substr(0, 10)
+      document.querySelector('#myDate').value = this.today
+      document.getElementById('myDate').setAttribute('min', this.today)
+      this.key = key
+      this.note = ''
+    },
+    updateTimeLengthFn () {
+      // setDate
+      var dd = this.today.substr(8, 2)
+      var mm = this.today.substr(5, 2)
+      var yyyy = this.today.substr(0, 4)
+      this.updateTimeLength = dd + '/' + mm + '/' + yyyy
+      scanRef.child(this.key).update({
+        updateTimeLength: this.updateTimeLength,
+        note: this.note,
+        yessir: 'R'
+      })
+    },
     submitEqm () {
       equipmentRef.push({
         nameEqm: this.nameEqm,
@@ -148,6 +533,10 @@ export default {
       equipmentRef.child(key).remove()
     },
     submitLogout () {
+      messaging.getToken().then((token) => messaging.deleteToken(token))
+      userRef.child(this.keyPushNoti).update({
+        keyPushNoti: ''
+      })
       auth.signOut()
       this.$router.push('/')
     }
@@ -163,7 +552,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  margin-right: 24px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -176,7 +565,6 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -185,7 +573,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: #ffffff;
+  background: rgb(3,155,229);
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -193,11 +581,13 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
+  margin-top: -1px;
 }
 
 .nav-header ul li p {
   font-weight: 400;
   font-size: 20px;
+  height: 58px;
 }
 
 .nav-header ul li {
@@ -221,7 +611,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .navbar-brand {
@@ -240,7 +630,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #273238;
+  background: #262f3d;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -257,10 +647,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 6px;
+ 
   padding: 15px;
-  width: 289px;
-  border-radius: 4px;
+  padding-left: 30px;
+ 
   font-size: 20px;
 }
  
@@ -280,18 +670,16 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #434d52;
+  background: #373f4c;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
-  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-.selected {
-  background: #596166;
-
+.selected a, i {
+  color: #4fc3f7;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -346,5 +734,51 @@ th {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.BTNstatus {
+  background-color: rgb(3,155,229);
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
+}
+
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
+}
+
+.noti2 {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:none;
+  color:#ffffff;
+  background:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
+}
+
+input[type="number"] {
+   width:50px;
 }
 </style>

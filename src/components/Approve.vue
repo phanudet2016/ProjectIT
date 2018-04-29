@@ -7,7 +7,7 @@
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
             <div class="dropdown-content">
               <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
@@ -15,8 +15,8 @@
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">Administrator</p>
+          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: #ffffff;">Administrator</p>
         </li>
       </ul>
     </div>
@@ -35,12 +35,15 @@
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li class="selected">
-          <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <i class="fa fa-check-square-o" style="font-size:25px;"></i>
+          <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
+          </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>      
         </li>
         <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
@@ -56,7 +59,7 @@
         </li>
         <li>
           <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/noti">การแจ้งเตือน</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -77,31 +80,33 @@
               <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
               <br>
-              <table class="table table-hover table-striped">
+              <table class="table">
                 <thead>
                   <tr>
-                    <th width="100px">เลขที่การยืม</th>
-                    <th width="600px">ชื่ออุปกรณ์</th>
-                    <th width="120px">วันที่</th>
-                    <th width="100px">ผู้ยืม</th>
-                    <th width="100px">แผนก</th>
-                    <th width="100px">HN No.</th>
-                    <th width="100px">จำนวน</th>
-                    <th width="100px" style="text-align: center;background: #9968db; color: #ffffff;">สถานะการยืม</th>
+                    <th width="250px">ชื่ออุปกรณ์</th>
+                    <th width="150px" style="text-align: center;">เลขที่การยืม</th>
+                    <th width="150px" style="text-align: center;">วันที่ยืม</th>
+                    <th width="150px" style="text-align: center;">ยืมถึงวันที่</th>
+                    <th width="150px" style="text-align: center;">ผู้ยืม</th>
+                    <th width="150px" style="text-align: center;">แผนก</th>
+                    <th width="150px" style="text-align: center;">HN No.</th>
+                    <th width="150px" style="text-align: center;">จำนวน</th>
+                    <th width="150px" style="text-align: center;">สถานะการยืม</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(approvetable, index) of approvetables" v-bind:key="approvetable['.key']">
-                      <td>{{approvetable.idLend}}</td>
                       <td>{{approvetable.nameLend}}</td>
-                      <td>{{approvetable.dateLend}}</td>
-                      <td>{{approvetable.firstname}} {{approvetable.lastname}}</td>
-                      <td>{{approvetable.departmentLend}}</td>
-                      <td>{{approvetable.HnNo}}</td>
-                      <td>{{approvetable.amountLend}}</td>
+                      <td style="text-align: center;">{{approvetable.idLend}}</td>
+                      <td style="text-align: center;">{{approvetable.dateLend}}</td>
+                      <td style="text-align: center;">{{approvetable.timeLength}}</td>
+                      <td style="text-align: center;">{{approvetable.firstname}} {{approvetable.lastname}}</td>
+                      <td style="text-align: center;">{{approvetable.departmentLend}}</td>
+                      <td style="text-align: center;">{{approvetable.HnNo}}</td>
+                      <td style="text-align: center;">{{approvetable.amountLend}}</td>
                       <td v-if="approvetable.statusLend === 'รออนุมัติ'" style="text-align:center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:18px;width:100px;">{{approvetable.statusLend}}
+                          <button class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="dropdown">{{approvetable.statusLend}}
                             <span class="caret"></span></button>                    
                             <ul class="dropdown-menu">                             
                               <li><a @click="status('อนุมัติ',approvetable['.key'])" style="font-size:18px;">อนุมัติ</a></li>
@@ -109,11 +114,11 @@
                             </ul>
                           </div>
                       </td>
-                      <td v-if="approvetable.statusLend === 'อนุมัติ'" style="background:#9968db;text-align:center;color:#ffffff;">  
-                        {{approvetable.statusLend}}                    
+                      <td v-if="approvetable.statusLend === 'อนุมัติ'" style="text-align:center;">  
+                        <button class="btn btn-primary dropdown-toggle BTNreturn" style="background-color:rgb(92, 184, 92);">{{approvetable.statusLend}}</button>                    
                       </td>
-                      <td v-if="approvetable.statusLend === 'ไม่อนุมัติ'" style="background:#9968db;text-align:center;color:#ffffff;">
-                        {{approvetable.statusLend}}
+                      <td v-if="approvetable.statusLend === 'ไม่อนุมัติ'" style="text-align:center;">
+                        <button class="btn btn-primary dropdown-toggle BTNreturn" style="background-color:#EF5350;">{{approvetable.statusLend}}</button>
                       </td>
                   </tr>
                 </tbody>
@@ -199,7 +204,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, lendRef, scanRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, lendRef, scanRef, notiRef} from './firebase'
 
 export default {
   name: 'approve',
@@ -215,6 +220,7 @@ export default {
 
       nameLendeqm: '',
       dateLendeqm: '',
+      datetimeLength: '',
       firstnameeqm: '',
       lastnameeqm: '',
       departmentLendeqm: '',
@@ -233,7 +239,12 @@ export default {
       department: '',
       phoneNumber: '',
       statusCheck: '',
-      idLend: ''
+      idLend: '',
+      sendMail: '',
+
+      approveNoti: '',
+      notiKeyUpdate: '',
+      clearNotiApprove: ''
     }
   },
   created () {
@@ -250,7 +261,8 @@ export default {
     equipments: equipmentRef,
     users: userRef,
     approvetables: approvetableRef,
-    lendeqm: lendRef
+    lendeqm: lendRef,
+    notis: notiRef
   },
   computed: {
     realtimeplus: function () {
@@ -276,8 +288,10 @@ export default {
       this.idLend = this.approvetables.find(approvetables => approvetables['.key'] === key).idLend
       this.nameLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).nameLend
       this.dateLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).dateLend
+      this.datetimeLength = this.approvetables.find(approvetables => approvetables['.key'] === key).timeLength
       this.firstnameeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).firstname
       this.lastnameeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).lastname
+      this.sendMail = this.approvetables.find(approvetables => approvetables['.key'] === key).email
       this.departmentLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).departmentLend
       this.HnNoeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).HnNo
       this.amountLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).amountLend
@@ -288,6 +302,7 @@ export default {
           amountLend: this.amountLendeqm,
           categoryLend: this.categoryLendeqm,
           dateLend: this.dateLendeqm,
+          timeLength: this.datetimeLength,
           departmentLend: this.departmentLendeqm,
           firstname: this.firstnameeqm,
           lastname: this.lastnameeqm,
@@ -295,7 +310,13 @@ export default {
           balance: this.amountLendeqm,
           accepted: 0,
           keyRecive: this.keyAppove,
+          formIdlend: '',
+          forwardCound: 0,
+          borrowedTo: 0,
           idLend: this.idLend,
+          updateTimeLength: '',
+          email: this.sendMail,
+          agree: '',
           number: [
             {number: ''}
           ]
@@ -311,6 +332,11 @@ export default {
           borrowedEqm: this.borrowedLend
         })
       }
+      this.approveNoti = this.notis.find(notis => notis).approveNoti
+      this.notiKeyUpdate = this.notis.find(notis => notis['.key'])['.key']
+      notiRef.child(this.notiKeyUpdate).update({
+        approveNoti: this.approveNoti - 1
+      })
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
@@ -370,7 +396,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  margin-right: 24px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -383,7 +409,6 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -392,7 +417,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: #ffffff;
+  background: rgb(3,155,229);
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -400,11 +425,13 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
+  margin-top: -1px;
 }
 
 .nav-header ul li p {
   font-weight: 400;
   font-size: 20px;
+  height: 58px;
 }
 
 .nav-header ul li {
@@ -428,7 +455,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .navbar-brand {
@@ -447,7 +474,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #273238;
+  background: #262f3d;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -464,10 +491,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 6px;
+ 
   padding: 15px;
-  width: 289px;
-  border-radius: 4px;
+  padding-left: 30px;
+ 
   font-size: 20px;
 }
  
@@ -487,18 +514,16 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #434d52;
+  background: #373f4c;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
-  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-.selected {
-  background: #596166;
-
+.selected a, i {
+  color: #4fc3f7;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -556,5 +581,34 @@ th {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
+}
+
+.BTNreturn {
+  background-color: rgb(3,155,229);
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
 }
 </style>

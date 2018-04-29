@@ -3,11 +3,11 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการอุปกรณ์</b></p>
+          <p style="font-size:25px"><b>การแจ้งเตือน</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
             <div class="dropdown-content">
               <a href="#" data-toggle="modal" data-target="#addAdmin"><span class="glyphicon glyphicon-user"></span> เพิ่มผู้จัดการระบบ</a>
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
@@ -15,8 +15,8 @@
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: #ffffff;">Administrator</p>
+          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">Administrator</p>
         </li>
       </ul>
     </div>
@@ -30,8 +30,8 @@
           <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/home">หน้าหลัก</router-link>
         </li>
-        <li class="selected">
-          <i class="fa fa-list-alt" style="font-size:25px;"></i>
+        <li>
+          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
         <li>
@@ -54,9 +54,12 @@
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
           <a href="#">สถิติ</a>
         </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+        <li class="selected">
+          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;z-index:1;"></i>
+          <router-link to="/noti">การแจ้งเตือน</router-link>
+          <button style="height:20px;width:20px;border-radius:60px;border:1px solid #d9534f;background:#d9534f;color:#ffffff;font-size:16px;margin-left: -220px;">
+            <p style="margin-top: -4px;"><b>1</b></p>
+          </button>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -69,142 +72,90 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md">
-            <router-link to="/listtable">
-              <button style="margin-left:62px;background:#ffffff;border:1px solid #dddddd;height:40px;width:140px;background:#E0E0E0;color:#000000;font-size:16px">
-                <span class="glyphicon glyphicon-menu-hamburger"></span>
-                <b>รายการอุปกรณ์</b>
-              </button>
-            </router-link>
-            <router-link to="/addlist">
-              <button style="margin-left:2px;background:#ffffff;border:1px solid #dddddd;height:40px;width:130px;color:#000000;font-size:16px">
-                <span class="glyphicon glyphicon-plus-sign"></span>
-                <b>เพิ่มรายการ</b>
-              </button>
-            </router-link>
           <div class="card">
             <div class="card-block">
-              <h4 class="card-title">
+              <h4 class="card-title" style="font-size:20px">
+                การแจ้งเตือน
                 <div class="button-add">
-                  <span></span>
-                  <!-- ADD Device !-->
-                  <router-link to="/datalist">
-                    <button type="button" class="btn button-add btn btn-success" style="color:#ffffff;font-size:18px;background-color: rgb(3,155,229);border:none;border-radius: 2px;">
-                      <span class="glyphicon glyphicon-plus-sign"></span> เพิ่มรายการจากบัญชีรายการครุภัณฑ์
-                    </button>
-                 </router-link>
-                  <div class="modal fade" id="myModal" role="dialog">
-                    <div class="modal-dialog">
-                      <!-- Modal content-->
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">นำเข้ารายการ</h4>
-                        </div>
-                        <div class="modal-body">
-                          <input type="file" id="fileUpload">
-                          <!-- v-on:change !-->
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">อัปโหลด</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- ADD Device !-->
-
+                  <input type="text" v-model="search" placeholder="ค้นหา..." v-on:keypress="" style="" class="searchEqm">
                 </div>
               </h4>
-              <br><br>
-             <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
+              <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
               <br>
-              <table>
+              <table class="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th width="400px" style="text-align:right;"></th>
-                    <th width="600px"></th>
+                    <th width="100px">เลขที่การยืม</th>
+                    <th width="150px">วันที่ยืม</th>
+                    <th width="500px">ชื่ออุปกรณ์</th>
+                    <th width="118px" style="text-align: center;">ชื่อผู้ยืม</th>
+                    <th width="118px" style="text-align: center;">แผนก</th>
+                    <th width="118px" style="text-align: center;">จำนวนที่ยืม</th>
+                    <th width="100px" style="text-align: center; background: #9968db; color: #ffffff;">คืนแล้ว</th>
+                    <th width="118px" style="text-align: center;">คืนอุปกรณ์</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                      <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">ชื่ออุปกรณ์</h4></td>
-                      <td><input type="text" class="form-control" style="font-size:20px" v-model="nameEqm"/></td>
-                  </tr>
-                  <tr>
-                      <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">จำนวน</h4></td>
-                      <td><input type="number" class="form-control" style="font-size:20px" v-model="amountEqm"/></td>
-                  </tr>
-                  <tr>
-                      <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">ราคา (ต่อหน่วย)</h4></td>
-                      <td><input type="number" class="form-control" style="font-size:20px" v-model="priceUnit"/></td>
-                  </tr>
-                  <tr>
-                      <td style="text-align:right;height:50px;"></td>
-                      <td>
-                        <select class="selectBox" v-model="unitEqm" style="font-size:16px">
-                            <option disabled value="">หน่วย</option>
-                            <option>เครื่อง</option>
-                            <option>ตัว</option>
-                            <option>ชุด</option>
-                        </select>
-                        <select class="selectBox" v-model="categoryEqm" style="font-size:16px">
-                            <option disabled value="">ประเภท</option>
-                            <option>สนับสนุน</option>
-                            <option>วินิจฉัยและรักษา</option>
-                            <option>รักษา</option>
-                            <option>วินิจฉัย</option>
-                        </select>
-                      </td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td style="text-align:right;"><br><br>
-                      <div class="modal-footer">
-                          <button @click="submitEqm()" type="button" class="BTN" data-dismiss="modal">ตกลง</button>
-                      </div>
-                    </td>
+                  <tr v-for="(history, index) of searchEqm" v-bind:key="history['.key']">
+                    <td>{{history.idLend}}</td>
+                    <td>{{history.date}}</td>
+                    <td><router-link :to="'/lendhistoryeqm/' + history['.key']">{{history.nameEqm}}</router-link></td>
+                    <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>
+                    <td style="text-align: center;">{{history.department}}</td>
+                    <td style="text-align: center;">{{history.amount}}</td>
+                    <td style="text-align: center; background: #9968db; color: #ffffff;">{{history.returnedEqm}}</td>
+                    <td v-if="history.amount !== history.returnedEqm * 1" style="text-align: center;"><button @click="returnItem(history['.key'], history.nameEqm, history.returnKey)" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#returnItem" style="background:#5cb85c;font-size:18px;width:100px;">คืนอุปกรณ์</button></td>
+                    <td v-if="history.amount === history.returnedEqm * 1" style="text-align: center;"><b>คืนอุปกรณ์ครบแล้ว</b></td>
                   </tr>
                 </tbody>
               </table>
               <!--TABLE!-->
-              <!-- Edit Device !-->
-              <div class="modal fade" id="myModall" role="dialog">
-                <div class="modal-dialog">
-                  <!-- Modal content-->
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h4 class="modal-title">เพิ่มรายการใหม่</h4>
-                    </div>
-                    <div class="modal-body">
-                      <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" v-model="editName"/><br>
-                      <select class="selectBox" v-model="editUnitEqm">
-                        <option disabled value="">หน่วย</option>
-                        <option>เครื่อง</option>
-                        <option>ชุด</option>
-                      </select>
-                      <select class="selectBox" v-model="editCategory">
-                        <option disabled value="">ประเภท</option>
-                        <option>สนับสนุน</option>
-                        <option>วินิจฉัยและรักษา</option>
-                        <option>รักษา</option>
-                        <option>วินิจฉัย</option>
-                      </select>
-                    </div>
-                    <div class="modal-footer">
-                      <button @click="submitEditEqm()" type="button" class="btn btn-default" data-dismiss="modal">ตกลง</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Edit Device !-->
             </div>
           </div>
           </div>
         </div>
       </div>
     </div>
-    
+
+    <!-- ADD returnItem !-->
+    <div class="modal fade" id="returnItem" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" style="font-size:25px"><b>{{nameEqm}}</b></h4>
+          </div>
+          <div class="modal-body">
+            <table class="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th width="700px">หมายเลขเครื่อง</th>
+                  <th width="700px">สถานะ</th>
+                  <th width="700px" style="text-align: center;">คืน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(arrayReturnItems, index) in arrayReturnItem" v-if="arrayReturnItems.number !== ''">
+                  <td>{{arrayReturnItems.number}}</td>
+                  <td>{{arrayReturnItems.status}}</td>
+                  <td style="text-align: center;" v-if="arrayReturnItems.status === 'ยังไม่ส่งคืน'">
+                    <button @click="getReturnItem(index, arrayReturnItems.indexReturn)" class="btn btn-primary" type="button" style="background:#5cb85c;font-size:20px;width:100px;" data-dismiss="modal">คืนอุปกรณ์</button>
+                  </td>
+                  <td v-if="arrayReturnItems.status === 'ส่งคืนแล้ว'" style="text-align: center;">
+                    <button class="btn btn-primary" type="button" style="background: #9968db; color: #ffffff;font-size:20px;">คืนอุปกรณ์แล้ว</button>
+                  </td>              
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" style="width:100px;font-size:16px" class="btn btn-default" data-dismiss="modal">ปิด</button>
+          </div>
+        </div>
+      </div>
+    </div>   
+
     <!-- ADD ADMIN !-->
     <div class="modal fade" id="addAdmin" role="dialog">
       <div class="modal-dialog">
@@ -275,34 +226,23 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, historyRef} from './firebase'
 
 export default {
-  name: 'addlist',
+  name: 'noti',
   data () {
     return {
-      id: '',
-      name: '',
+      user: 'Admin',
+      num: 0,
+      num1: 1,
+      num2: 2,
       category: '',
-      amountEqm: '',
-      count: '',
-      nameEqm: '',
       unitEqm: '',
       categoryEqm: '',
       firstname: '',
       lastname: '',
-      msgLogout: 'ออกจากระบบ',
-      editName: '',
-      editCategory: '',
-      editID: '',
-      key: '',
-      params: 'sss',
-      editUnitEqm: '',
-      priceUnit: '',
-      cells: [],
-      rows: [],
-      strRows: [],
-      countCSV: '',
+      em: '',
+      search: '',
 
       firstnameAdmin: '',
       lastnameAdmin: '',
@@ -311,12 +251,22 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+      arrayReturnItem: [],
+
+      nameEqm: '',
+      returnKey: '',
+      amountScan: '',
+      returnedScan: '',
+      balanceReturn: '',
+      borrowedReturn: '',
+      keyEqm: ''
     }
   },
   created () {
     auth.onAuthStateChanged((user) => {
       if (user) {
+        this.em = user.email
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
       } else {
@@ -326,81 +276,19 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    historys: historyRef
   },
   methods: {
     submitEqm () {
-      var ss
-      var id = []
-      if (this.categoryEqm === 'สนับสนุน') {
-        ss = 'SUP'
-      } else if (this.categoryEqm === 'วินิจฉัยและรักษา') {
-        ss = 'DXRX'
-      } else if (this.categoryEqm === 'รักษา') {
-        ss = 'RX'
-      } else if (this.categoryEqm === 'วินิจฉัย') {
-        ss = 'DX'
-      }
-      this.countCSV = this.amountEqm * 1 + 1
-      for (var i = 1; i < this.countCSV; i++) {
-        var insertID = {
-          id: ss + i,
-          number: i,
-          lastnameLend: '',
-          nameLend: '',
-          status: 'พร้อมใช้งาน'
-        }
-        id.push(insertID)
-      }
-      if (this.nameEqm === '' || this.amountEqm === '' || this.categoryEqm === '' || this.unitEqm === '') {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
-      } else if (this.amountEqm <= 0) {
-        alert('กรุณากรอกข้อมูลให้ถูกต้อง')
-      } else {
-        if (this.priceUnit === '') {
-          equipmentRef.push({
-            nameEqm: this.nameEqm,
-            amountEqm: this.amountEqm,
-            borrowedEqm: 0,
-            balanceEqm: this.amountEqm,
-            unitEqm: this.unitEqm,
-            categoryEqm: this.categoryEqm,
-            editEqm: false,
-            equipmentID: id,
-            priceUnit: '-',
-            statusLend: 'ปิด',
-            countTopTen: 0
-          })
-          this.$router.push('/listtable')
-        } else {
-          equipmentRef.push({
-            nameEqm: this.nameEqm,
-            amountEqm: this.amountEqm,
-            borrowedEqm: 0,
-            balanceEqm: this.amountEqm,
-            unitEqm: this.unitEqm,
-            categoryEqm: this.categoryEqm,
-            editEqm: false,
-            equipmentID: id,
-            priceUnit: this.priceUnit,
-            statusLend: 'ปิด',
-            countTopTen: 0
-          })
-          this.$router.push('/listtable')
-        }
-      }
-    },
-    editEqm (key) {
-      this.editName = this.equipments.find(equipments => equipments['.key'] === key).nameEqm
-      this.editID = this.equipments.find(equipments => equipments['.key'] === key).equipmentID
-      this.key = key
-      console.log(this.editID)
-    },
-    submitEditEqm () {
-      equipmentRef.child(this.key).update({
-        nameEqm: this.editName,
-        categoryEqm: this.editCategory,
-        unitEqm: this.editUnitEqm
+      equipmentRef.push({
+        nameEqm: this.nameEqm,
+        amountEqm: this.amountEqm,
+        borrowedEqm: 0,
+        balanceEqm: this.amountEqm,
+        unitEqm: this.unitEqm,
+        categoryEqm: this.categoryEqm,
+        editEqm: false
       })
     },
     removeEqm (key) {
@@ -448,6 +336,49 @@ export default {
         this.$router.push('/')
         location.reload()
       }
+    },
+    returnItem (key, nameEqm, returnKey) {
+      this.nameEqm = nameEqm
+      this.returnKey = returnKey
+      this.keyEqm = key
+      this.arrayReturnItem = this.historys.find(historys => historys['.key'] === key).returnedDate
+    },
+    getReturnItem (index, indexReturn) {
+      equipmentRef.child(this.returnKey + '/equipmentID/' + [indexReturn]).update({
+        status: 'พร้อมใช้งาน',
+        nameLend: '',
+        lastnameLend: ''
+      })
+      // this.eqmID = this.equipments.find(equipments => equipments['.key'] === this.returnKey).equipmentID[indexReturn].number
+      this.amountScan = this.historys.find(history => history['.key'] === this.keyEqm).amount
+      this.returnedScan = this.historys.find(history => history['.key'] === this.keyEqm).returnedEqm
+      this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.returnKey).balanceEqm
+      this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.returnKey).borrowedEqm
+      historyRef.child(this.keyEqm + '/returnedDate/' + [index]).update({
+        // number: this.eqmID,
+        date: new Date().toLocaleString(),
+        status: 'ส่งคืนแล้ว'
+      })
+      this.borrowedReturn = this.borrowedReturn * 1 - 1
+      this.balanceReturn = this.balanceReturn * 1 + 1
+      this.amountScan = this.amountScan * 1
+      this.returnedScan = this.returnedScan + 1
+      if (this.returnedScan <= this.amountScan) {
+        historyRef.child(this.keyEqm).update({
+          returnedEqm: this.returnedScan
+        })
+        equipmentRef.child(this.returnKey).update({
+          balanceEqm: this.balanceReturn,
+          borrowedEqm: this.borrowedReturn
+        })
+      }
+    }
+  },
+  computed: {
+    searchEqm () {
+      return this.historys.filter((historys) => {
+        return historys.nameEqm.indexOf(this.search) > -1 || historys.firstname.indexOf(this.search) > -1 || historys.lastname.indexOf(this.search) > -1
+      })
     }
   }
 }
@@ -460,7 +391,8 @@ export default {
   margin-bottom: 0;
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
-  margin-right: 24px;
+  border-radius: 4px;
+  width: 82%;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -473,6 +405,7 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
+  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -481,7 +414,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: rgb(3,155,229);
+  background: #ffffff;
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -489,13 +422,11 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
-  margin-top: -1px;
 }
 
 .nav-header ul li p {
   font-weight: 400;
   font-size: 20px;
-  height: 58px;
 }
 
 .nav-header ul li {
@@ -519,7 +450,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #ffffff;
+  color: #2c3e50;
 }
 
 .navbar-brand {
@@ -538,7 +469,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #262f3d;
+  background: #273238;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -555,10 +486,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
- 
+  margin-left: 6px;
   padding: 15px;
-  padding-left: 30px;
- 
+  width: 289px;
+  border-radius: 4px;
   font-size: 20px;
 }
  
@@ -578,16 +509,18 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #373f4c;
+  background: #434d52;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
+  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-.selected a, i {
-  color: #4fc3f7;
+.selected {
+  background: #596166;
+
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -606,8 +539,23 @@ th {
   font-size: 20px;
 }
 
+.searchEqm {
+    width: 150px;
+    box-sizing: border-box;
+    border: 1px solid rgb(169, 169, 169);
+    border-radius: 4px;
+    font-size: 20px;
+    background-color: white;
+    background-image: url('../assets/searchicon.png');
+    background-size: 17px 17px;
+    background-position: 8px 8px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 33px;
+    height: 34px;
+}
+
 .dropbtn {
-    color: #337ab7;
+    color:#337ab7;
     padding: 16px;
     font-size: 16px;
     border: none;
@@ -643,21 +591,4 @@ th {
 .dropdown:hover .dropdown-content {
     display: block;
 }
-
-.BTN {
-  background-color: rgb(3,155,229);
-  border: none;
-  color: white;
-  padding: auto;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 20px;
-  cursor: pointer;
-  border-radius: 2px;
-  width: 120px;
-  height: 40px;
-  font-weight: bold;
-}
-
 </style>

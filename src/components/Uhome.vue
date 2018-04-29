@@ -7,15 +7,15 @@
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
-            <span class="dropbtn glyphicon glyphicon-chevron-down"></span>
+            <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
             <div class="dropdown-content">
               <a href="#" @click="submitLogout()"><span class="glyphicon glyphicon-log-out"></span> ออกจากระบบ</a>
             </div>
           </div>
         </li>
         <li class="user-login">
-          <p style="font-size:28px;margin-top:-15px;color:#337ab7;">{{firstname}} {{lastname}}</p>
-          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: rgb(66, 79, 99);">General user</p>
+          <p style="font-size:28px;margin-top:-15px;color:#ffffff;">{{firstname}} {{lastname}}</p>
+          <p style="font-size:20px;margin-top:-45px;font-style:italic;color: #ffffff">General user</p>
         </li>
       </ul>
     </div>
@@ -26,7 +26,7 @@
       <br><br><br><br><br>
       <ul>
         <li class="selected">
-          <i class="glyphicon glyphicon-wrench" style="color:#ffffff;font-size:25px;"></i>
+          <i class="glyphicon glyphicon-wrench" style="font-size:25px;"></i>
           <router-link to="/uhome">ยืมเครื่องแพทย์</router-link>
         </li>
         <li>
@@ -35,6 +35,9 @@
         </li>
         <li>
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="user.noteNoti !== 0 && user.email === emailAuth" v-for="user of users" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;">{{user.noteNoti}}</p>
+          </button>
           <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
         <li>
@@ -75,33 +78,33 @@
                 </h4>
                 <!--TABLE!-->
                 <br>
-                <table class="table table-hover table-striped">
+                <table class="table">
                   <thead>
                     <tr>
-                      <th width="800px">ชื่ออุปกรณ์</th>
-                      <th width="118px" style="text-align: center;background: #9968db; color: #ffffff;">จำนวน</th>
-                      <th width="100px">หน่วย</th>
-                      <th width="100px" style="text-align: center;">ยืม</th>
+                      <th width="300px">ชื่ออุปกรณ์</th>
+                      <th width="150px" style="text-align: center;">จำนวน</th>
+                      <th width="150px" style="text-align: center;">หน่วย</th>
+                      <th width="150px" style="text-align: center;">ยืม</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="category === '' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                    <tr v-if="category === '' && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
-                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                        <td>{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;"><span class="glyphicon glyphicon-plus-sign" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;">{{equipment.balanceEqm}}</td>
+                        <td style="text-align: center;">{{equipment.unitEqm}}</td>
+                        <td style="text-align: center;"><button class="BTNlend" style="color:#ffffff;" data-toggle="modal" data-target="#myModal" @click="setDate(), lend(equipment['.key'], equipment.countTopTen)">ยืม</button></td>
                       </tr>
-                      <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                      <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
-                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                        <td>{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;"><span class="glyphicon glyphicon-plus-sign" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;">{{equipment.balanceEqm}}</td>
+                        <td style="text-align: center;">{{equipment.unitEqm}}</td>
+                        <td style="text-align: center;"><button class="BTNlend" style="color:#ffffff;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'], equipment.countTopTen), setDate()">ยืม</button></td>
                       </tr>
-                      <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'ON'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
+                      <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                         <td>{{equipment.nameEqm}}</td>
-                        <td style="text-align: center;background: #9968db; color: #ffffff;">{{equipment.balanceEqm}}</td>
-                        <td>{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;"><span class="glyphicon glyphicon-plus-sign" style="color:#9968db;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'])"></span></td>
+                        <td style="text-align: center;">{{equipment.balanceEqm}}</td>
+                        <td style="text-align: center;">{{equipment.unitEqm}}</td>
+                        <td style="text-align: center;"><button class="BTNlend" style="color:#ffffff;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'], equipment.countTopTen), setDate()">ยืม</button></td>
                       </tr>
                     </tbody>
                   </table>
@@ -124,10 +127,13 @@
                       <input class="" type="text" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="HnNo"/><br><br>
 
                       <p style="color:#9A9A9A;font-size:20px;">จำนวน</p>
-                      <input class="" type="number" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="amountLend"/>
+                      <input class="" type="number" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="amountLend"/><br><br>
+
+                      <p style="color:#9A9A9A;font-size:20px;">ระยะเวลาการยืม</p>
+                      <input id="myDate" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="today">
                     </div>
                     <div class="modal-footer">
-                      <button @click="submitLend()" type="button" class="btn btn-default" data-dismiss="modal" style="width:100px;font-size:16px">ตกลง</button>
+                      <button @click="submitLend()" type="button" class="btn btn-default BTNlend" data-dismiss="modal">ตกลง</button>
                     </div>
                   </div>
                 </div>
@@ -145,7 +151,8 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, scanRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef, notiRef, messaging} from './firebase'
+import moment from 'moment'
 
 export default {
   name: 'uhome',
@@ -170,32 +177,76 @@ export default {
       key: '',
       borrowedLend: '',
       balanceLend: '',
-      search: ''
+      search: '',
+      email: '',
+
+      approveNoti: '',
+      notiKeyUpdate: '',
+
+      today: '',
+      timeLength: '',
+      keyPushNoti: '',
+      emailAuth: '',
+
+      countTopTen: ''
     }
   },
   created () {
+    // requestPermis
+    messaging.requestPermission()
+        .then(function () {
+          console.log('Notification permission granted.')
+        })
+        .catch(function (err) {
+          console.log('Unable to get permission to notify. ', err)
+        })
+    // firebaseAuth
     auth.onAuthStateChanged((user) => {
       if (user) {
         this.firstname = this.users.find(users => users.email === user.email).firstname
         this.lastname = this.users.find(users => users.email === user.email).lastname
         this.department = this.users.find(users => users.email === user.email).department
+        this.keyPushNoti = this.users.find(users => users.email === user.email)['.key']
+        this.emailAuth = user.email
+        // getTokenPushNoti
+        messaging.getToken()
+        .then((token) => {
+          console.log(token)
+          this.tokensss = token
+          console.log(this.keyPushNoti)
+          userRef.child(this.keyPushNoti).update({
+            keyPushNoti: this.tokensss
+          })
+        })
+        .catch(function (err) {
+          console.log('An error occurred while retrieving token. ', err)
+        })
       } else {
         console.log('not logged in')
       }
       console.log(user)
     })
   },
+  mounted () {
+  },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    scan: scanRef
+    scan: scanRef,
+    notis: notiRef
   },
   methods: {
+    setDate () {
+      this.today = new Date().toISOString().substr(0, 10)
+      document.querySelector('#myDate').value = this.today
+      document.getElementById('myDate').setAttribute('min', this.today)
+    },
     submitLend () {
       this.user = auth.currentUser
       this.firstname = this.users.find(users => users.email === this.user.email).firstname
       this.lastname = this.users.find(users => users.email === this.user.email).lastname
       this.department = this.users.find(users => users.email === this.user.email).department
+      this.email = this.users.find(users => users.email === this.user.email).email
 
       var s = ''
       if (this.categoryLend === 'สนับสนุน') {
@@ -220,6 +271,13 @@ export default {
         var timestamp = new Date().getUTCMilliseconds()
         var id = getRandomInt + timestamp
         var idLend = s + id
+
+        // setDate
+        var dd = this.today.substr(8, 2)
+        var mm = this.today.substr(5, 2)
+        var yyyy = this.today.substr(0, 4)
+        this.timeLength = dd + '/' + mm + '/' + yyyy
+
         // --------------
         this.balanceLend = this.balanceLend * 1 - this.amountLend * 1
         this.borrowedLend = this.borrowedLend * 1 + this.amountLend * 1
@@ -228,21 +286,39 @@ export default {
           nameLend: this.nameLend,
           amountLend: this.amountLend,
           categoryLend: this.categoryLend,
-          dateLend: new Date().toLocaleString(),
+          dateLend: moment().format('DD/MM/YYYY LTS'),
           firstname: this.firstname,
           lastname: this.lastname,
           statusLend: this.statusLend,
           departmentLend: this.department,
           keyAppove: this.key,
-          idLend: idLend
+          idLend: idLend,
+          email: this.email,
+          timeLength: this.timeLength
         })
+
+        // Noti
+        if (this.approveNoti === '') {
+          notiRef.push({
+            approveNoti: this.approveNoti + 1
+          })
+        } else {
+          notiRef.child(this.notiKeyUpdate).update({
+            approveNoti: this.approveNoti + 1
+          })
+        }
+        // EndNoti
+
         equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
         equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})
+        this.countTopTen = this.countTopTen + 1
+        equipmentRef.child(this.key).update({countTopTen: this.countTopTen})
       } else {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
       }
+      this.approveNoti = 0 // clear ค่า approveNoti
     },
-    lend (key) {
+    lend (key, countTopTen) {
       this.nameLend = this.equipments.find(equipments => equipments['.key'] === key).nameEqm
       this.categoryLend = this.equipments.find(equipments => equipments['.key'] === key).categoryEqm
       this.unitLend = this.equipments.find(equipments => equipments['.key'] === key).unitEqm
@@ -252,11 +328,19 @@ export default {
       console.log(key)
       this.amountLend = ''
       this.HnNo = ''
+      this.approveNoti = this.notis.find(notis => notis).approveNoti
+      this.approveNoti = this.approveNoti * 1
+      this.notiKeyUpdate = this.notis.find(notis => notis['.key'])['.key']
+      this.countTopTen = countTopTen
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
     },
     submitLogout () {
+      messaging.getToken().then((token) => messaging.deleteToken(token))
+      userRef.child(this.keyPushNoti).update({
+        keyPushNoti: ''
+      })
       auth.signOut()
       this.$router.push('/')
     }
@@ -279,7 +363,7 @@ export default {
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
   border-radius: 4px;
-  width: 82%;
+  margin-right: 24px;
   margin-left: 48px;
   border: 1px solid #dddddd;
 }
@@ -292,7 +376,6 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/
@@ -301,7 +384,7 @@ export default {
 .nav-header {
   height: 60px;
   width: 100%;
-  background: #ffffff;
+  background: rgb(3,155,229);
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
@@ -309,11 +392,13 @@ export default {
   bottom: 0;
   position: fixed;
   top: 0;
+  margin-top: -1px;
 }
 
 .nav-header ul li p {
   font-weight: 400;
   font-size: 20px;
+  height: 58px;
 }
 
 .nav-header ul li {
@@ -337,7 +422,7 @@ export default {
 
 .nav-header ul .topic p {
   font-size: 20px;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 .navbar-brand {
@@ -356,7 +441,7 @@ export default {
 /*--------------------------------------- MENU -------------------------------------*/
 nav {
   width: 301px;
-  background: #273238;
+  background: #262f3d;
   position: fixed;
   z-index: 1000;
   top: 0;
@@ -373,10 +458,10 @@ nav a {
 nav ul li {
   list-style-type: none;
   display: block;
-  margin-left: 6px;
+ 
   padding: 15px;
-  width: 289px;
-  border-radius: 4px;
+  padding-left: 30px;
+ 
   font-size: 20px;
 }
  
@@ -396,18 +481,16 @@ nav ul {
 }
 
 nav ul li:hover {
-  background: #434d52;
+  background: #373f4c;
   transition: linear all 0.30s;
 }
 
 nav ul li a:hover {
-  margin-left: 10px;
   transition: linear all 0.50s;
 }
 
-.selected {
-  background: #596166;
-
+.selected a, i {
+  color: #4fc3f7;
 }
 /*----------------------------------------------------------------------------------*/
 
@@ -479,4 +562,32 @@ th {
     display: block;
 }
 
+.BTNlend {
+  background-color: rgb(3,155,229);
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
+}
+
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
+}
 </style>
