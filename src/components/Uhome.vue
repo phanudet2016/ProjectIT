@@ -123,8 +123,8 @@
                       <p style="color:#9A9A9A;font-size:20px;">ชื่ออุปกรณ์  </p><h4 style="font-size:21px">{{nameLend}}</h4> <br>
                       <p style="color:#9A9A9A;font-size:20px;">ประเภท  </p><h4 style="font-size:21px">{{categoryLend}}</h4><br>
 
-                      <p style="color:#9A9A9A;font-size:20px;">HN No.</p>
-                      <input class="" type="text" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="HnNo"/><br><br>
+                      <!--<p style="color:#9A9A9A;font-size:20px;">HN No.</p>
+                      <input class="" type="text" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="HnNo"/><br><br> !-->
 
                       <p style="color:#9A9A9A;font-size:20px;">จำนวน</p>
                       <input class="" type="number" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="amountLend"/><br><br>
@@ -187,6 +187,7 @@ export default {
       timeLength: '',
       keyPushNoti: '',
       emailAuth: '',
+      dateCheckReturn: '',
 
       countTopTen: ''
     }
@@ -261,7 +262,7 @@ export default {
 
       if (this.amountLend < 0) {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
-      } else if (this.amountLend === '0' || this.amountLend === '' || this.HnNo === '') {
+      } else if (this.amountLend === '0' || this.amountLend === '') {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
       } else if (this.amountLend > this.balanceLend) {
         alert('กรอกจำนวนเกิน')
@@ -277,12 +278,13 @@ export default {
         var mm = this.today.substr(5, 2)
         var yyyy = this.today.substr(0, 4)
         this.timeLength = dd + '/' + mm + '/' + yyyy
+        this.dateCheckReturn = mm + '/' + dd + '/' + yyyy
 
         // --------------
         this.balanceLend = this.balanceLend * 1 - this.amountLend * 1
         this.borrowedLend = this.borrowedLend * 1 + this.amountLend * 1
         approvetableRef.push({
-          HnNo: this.HnNo,
+          HnNo: '-',
           nameLend: this.nameLend,
           amountLend: this.amountLend,
           categoryLend: this.categoryLend,
@@ -294,7 +296,8 @@ export default {
           keyAppove: this.key,
           idLend: idLend,
           email: this.email,
-          timeLength: this.timeLength
+          timeLength: this.timeLength,
+          dateCheckReturn: this.dateCheckReturn
         })
 
         // Noti
@@ -311,7 +314,7 @@ export default {
 
         equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
         equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})
-        this.countTopTen = this.countTopTen + 1
+        this.countTopTen = this.countTopTen * 1 + 1
         equipmentRef.child(this.key).update({countTopTen: this.countTopTen})
       } else {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')

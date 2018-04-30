@@ -89,7 +89,7 @@
                     <th width="150px" style="text-align: center;">ยืมถึงวันที่</th>
                     <th width="150px" style="text-align: center;">ผู้ยืม</th>
                     <th width="150px" style="text-align: center;">แผนก</th>
-                    <th width="150px" style="text-align: center;">HN No.</th>
+                    <!-- <th width="150px" style="text-align: center;">HN No.</th> !-->
                     <th width="150px" style="text-align: center;">จำนวน</th>
                     <th width="150px" style="text-align: center;">สถานะการยืม</th>
                   </tr>
@@ -102,7 +102,7 @@
                       <td style="text-align: center;">{{approvetable.timeLength}}</td>
                       <td style="text-align: center;">{{approvetable.firstname}} {{approvetable.lastname}}</td>
                       <td style="text-align: center;">{{approvetable.departmentLend}}</td>
-                      <td style="text-align: center;">{{approvetable.HnNo}}</td>
+                      <!-- <td style="text-align: center;">{{approvetable.HnNo}}</td> !-->
                       <td style="text-align: center;">{{approvetable.amountLend}}</td>
                       <td v-if="approvetable.statusLend === 'รออนุมัติ'" style="text-align:center;">
                         <div class="dropdown">
@@ -244,7 +244,8 @@ export default {
 
       approveNoti: '',
       notiKeyUpdate: '',
-      clearNotiApprove: ''
+      clearNotiApprove: '',
+      dateCheckReturn: ''
     }
   },
   created () {
@@ -296,6 +297,7 @@ export default {
       this.HnNoeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).HnNo
       this.amountLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).amountLend
       this.keyAppove = this.approvetables.find(approvetables => approvetables['.key'] === key).keyAppove
+      this.dateCheckReturn = this.approvetables.find(approvetables => approvetables['.key'] === key).dateCheckReturn
       if (status === 'อนุมัติ') {
         scanRef.push({
           HnNo: this.HnNoeqm,
@@ -317,6 +319,7 @@ export default {
           updateTimeLength: '',
           email: this.sendMail,
           agree: '',
+          dateCheckReturn: this.dateCheckReturn,
           number: [
             {number: ''}
           ]

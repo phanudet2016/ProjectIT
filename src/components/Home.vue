@@ -4,7 +4,7 @@
       <ul>
         <li class="topic">
           <p style="font-size:25px"><b>หน้าหลัก (Dashboard)</b></p>
-          <a style="font-size:0px;">{{balanceStoreCal}}{{borrowedStoreCal}}{{repairStoreCal}}{{BarChartCal}}{{topTenBorrowed}}</a>
+          <a style="font-size:0px;">{{balanceStoreCal}}{{borrowedStoreCal}}{{repairStoreCal}}{{BarChartCal}}{{topTenBorrowed}}{{overDeadline}}</a>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -162,7 +162,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, historyRef} from './firebase'
 import Chart from 'chart.js'
 
 export default {
@@ -215,7 +215,12 @@ export default {
       arryBarCharts: [],
       arryAmountBarChart: [],
       arrayNameEqmBarchart: [],
-      bb: ''
+      bb: '',
+      t: 1,
+      overTimeReturnDiagnose: '',
+      overTimeReturnSupport: '',
+      overTimeReturnDiagnoseAndTreat: '',
+      overTimeReturnTreat: ''
     }
   },
   mounted () {
@@ -240,12 +245,14 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
+    historys: historyRef,
     users: userRef
   },
   computed: {
     balanceStoreCal: function () {
       this.sumAmount = 0
       this.balanceStore = 0
+      this.balanceStorePercent = 0
       this.equipments.forEach(equipments => {
         // หาผลรวมอุปกรณ์ทั้งหมดในคลัง
         this.sumAmount = this.sumAmount * 1 + equipments.amountEqm * 1
@@ -262,6 +269,7 @@ export default {
     borrowedStoreCal: function () {
       this.sumAmount = 0
       this.borrowedStore = 0
+      this.borrowedStorePercent = 0
       this.equipments.forEach(equipments => {
         // หาผลรวมอุปกรณ์ทั้งหมดในคลัง
         this.sumAmount = this.sumAmount * 1 + equipments.amountEqm * 1
@@ -278,6 +286,7 @@ export default {
     repairStoreCal: function () {
       this.sumAmount = 0
       this.repairStore = 0
+      this.repairStorePercent = 0
       this.equipments.forEach(equipments => {
         // หาผลรวมอุปกรณ์ทั้งหมดในคลัง
         this.sumAmount = this.sumAmount * 1 + equipments.amountEqm * 1
@@ -361,7 +370,6 @@ export default {
           arry.push(equipments.countTopTen + ' ' + equipments.nameEqm)
         } else { arry.push('') }
       })
-      console.log(arry)
       // เรียงอันดับ 10 - 1
       var arraySort = arry.sort(collator.compare)
       for (let i = arraySort.length - 1; i > 0; i--) {
@@ -380,6 +388,47 @@ export default {
         this.arrayNameEqmBarchart.push(str.substring(n + 1))
       }
       return this.arryAmountBarChart
+    },
+    overDeadline: function () {
+      var day = new Date().getDate()
+      var mount = new Date().getMonth() + 1
+      var year = new Date().getFullYear()
+      var date = mount + '/' + day + '/' + year
+      var timeNow = new Date(date).getTime()
+
+      this.overTimeReturnTreat = 0
+      this.overTimeReturnDiagnoseAndTreat = 0
+      this.overTimeReturnSupport = 0
+      this.overTimeReturnDiagnose = 0
+      this.historys.forEach(historys => {
+        for (let i = 0; i < historys.returnedDate.length; i++) {
+          if (historys.category === 'วินิจฉัย' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+            var timeReturnDiagnose = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+            if (timeNow > timeReturnDiagnose) {
+              this.overTimeReturnDiagnose = this.overTimeReturnDiagnose * 1 + 1
+            }
+          }
+          if (historys.category === 'รักษา' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+            var timeReturnTreat = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+            if (timeNow > timeReturnTreat) {
+              this.overTimeReturnTreat = this.overTimeReturnTreat * 1 + 1
+            }
+          }
+          if (historys.category === 'วินิจฉัยและรักษา' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+            var timeReturnDiagnoseAndTreat = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+            if (timeNow > timeReturnDiagnoseAndTreat) {
+              this.overTimeReturnDiagnoseAndTreat = this.overTimeReturnDiagnoseAndTreat * 1 + 1
+            }
+          }
+          if (historys.category === 'สนับสนุน' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+            var timeReturnSupport = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+            if (timeNow > timeReturnSupport) {
+              this.overTimeReturnSupport = this.overTimeReturnSupport * 1 + 1
+            }
+          }
+        }
+      })
+      return this.overTimeReturnTreat
     }
   },
   watch: {
@@ -443,31 +492,22 @@ export default {
     },
     arrayNameEqmBarchart: function () {
       this.setHorizontalBar()
+    },
+    overTimeReturnDiagnose: function () {
+      this.setBarChart()
+    },
+    overTimeReturnSupport: function () {
+      this.setBarChart()
+    },
+    overTimeReturnDiagnoseAndTreat: function () {
+      this.setBarChart()
+    },
+    overTimeReturnTreat: function () {
+      this.setBarChart()
     }
   },
   methods: {
     test () {
-      var count = 0
-      var arry = []
-      var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'})
-      this.equipments.forEach(equipments => {
-        arry.push(equipments.countTopTen + ' ' + equipments.nameEqm)
-      })
-      // เรียงอันดับ 10 - 1
-      var arraySort = arry.sort(collator.compare)
-      for (let i = arraySort.length - 1; i > 0; i--) {
-        this.arryBarCharts.push(arraySort[i])
-        if (count++ === 9) {
-          break
-        }
-      }
-      // ซับจำนวน และซับชื่อ
-      for (let i = 0; i < this.arryBarCharts.length; i++) {
-        var str = this.arryBarCharts[i]
-        var n = str.indexOf(' ')
-        this.arryAmountBarChart.push(str.substring(0, n) * 1)
-        this.arrayNameEqmBarchart.push(str.substring(n + 1))
-      }
     },
     setPieCharts () {
       var ctx = document.getElementById('pieChart')
@@ -518,7 +558,7 @@ export default {
         data: {
           labels: [this.arrayNameEqmBarchart[9], this.arrayNameEqmBarchart[8], this.arrayNameEqmBarchart[7], this.arrayNameEqmBarchart[6], this.arrayNameEqmBarchart[5], this.arrayNameEqmBarchart[4], this.arrayNameEqmBarchart[3], this.arrayNameEqmBarchart[2], this.arrayNameEqmBarchart[1], this.arrayNameEqmBarchart[0]],
           datasets: [{
-            label: 'จำนวนอุปกรณ์',
+            label: 'จำนวนอุปกรณ์ที่ถูกยืม',
             backgroundColor: 'rgba(123,104,238,0.31)',
             borderColor: 'rgba(123,104,238,1)',
             borderWidth: 1,
@@ -597,10 +637,10 @@ export default {
           labels: ['สนับสนุน', 'วินิจฉัยและรักษา', 'รักษา', 'วินิจฉัย'],
           datasets: [{
             label: 'จำนวนอุปกรณ์',
-            backgroundColor: ['#26B99A', '#3498DB', '#455C73', '#BDC3C7'],
-            // borderColor: 'rgba(38, 185, 154, 0.7)',
+            backgroundColor: ['rgb(38, 185, 154)', 'rgb(52, 152, 219)', 'rgb(69, 92, 115)', 'rgb(189, 195, 199)'],
+            // borderColor: ['rgba(38, 185, 154, 0.5)', 'rgba(52, 152, 219, 0.5)', 'rgba(69, 92, 115, 0.5)', 'rgba(189, 195, 199, 0.5)'],
             borderWidth: 3,
-            data: [51, 30, 40, 28]
+            data: [this.overTimeReturnSupport, this.overTimeReturnDiagnoseAndTreat, this.overTimeReturnTreat, this.overTimeReturnDiagnose]
           }]
         },
 

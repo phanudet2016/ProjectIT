@@ -103,7 +103,7 @@
                         <td style="text-align: center;">{{scan.firstname}} {{scan.lastname}}</td>
                         <td style="text-align: center;">{{scan.amountLend}}</td>
                         <td style="text-align: center;">{{scan.accepted}}</td>
-                        <td v-if="scan.accepted !== scan.amountLend * 1" style="text-align: center;"><button @click="receiveItem(scan.nameLend, scan.keyRecive, scan.firstname, scan.lastname, scan.email, scan['.key'], scan.formIdlend)" class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="modal" data-target="#receiveItem" style="background:#5cb85c;">รับอุปกรณ์</button></td>
+                        <td v-if="scan.accepted !== scan.amountLend * 1" style="text-align: center;"><button @click="receiveItem(scan.nameLend, scan.keyRecive, scan.firstname, scan.lastname, scan.email, scan['.key'], scan.formIdlend, scan.dateCheckReturn)" class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="modal" data-target="#receiveItem" style="background:#5cb85c;">รับอุปกรณ์</button></td>
                         <td v-if="scan.accepted === scan.amountLend * 1" style="text-align: center;"><b>รับอุปกรณ์ครบแล้ว</b></td>
                         <td style="text-align: center;"><button class="BTNreturn" @click="setPushNoti(scan.email, scan.idLend, scan['.key'], scan.nameLend, scan.agree)" data-toggle="modal" data-target="#sendNoti" >แจ้งคืน</button></td>
                     </tr>
@@ -303,7 +303,8 @@ export default {
       borrowedTo: '',
       keyUpdateScan: '',
       arrayEqmScan: '',
-      indexUpdateScan: ''
+      indexUpdateScan: '',
+      dateCheckReturn: ''
     }
   },
   created () {
@@ -431,7 +432,7 @@ export default {
       auth.signOut()
       this.$router.push('/')
     },
-    receiveItem (nameEqm, keyRecive, firstname, lastname, email, key, formIdlend) {
+    receiveItem (nameEqm, keyRecive, firstname, lastname, email, key, formIdlend, dateCheckReturn) {
       this.nameEqm = nameEqm
       this.keyRecive = keyRecive // keyEqm
       this.firstnameScan = firstname
@@ -439,6 +440,7 @@ export default {
       this.keyScan = key
       this.email = email
       this.formIdlend = formIdlend
+      this.dateCheckReturn = dateCheckReturn
       if (this.formIdlend !== '') {
         this.arrayEqm = this.scans.find(scans => scans.idLend === this.formIdlend).number
       } else {
@@ -497,7 +499,8 @@ export default {
         number: this.eqmID,
         date: '',
         status: 'ยังไม่ส่งคืน',
-        indexReturn: this.indexCheck
+        indexReturn: this.indexCheck,
+        dateCheckReturn: this.dateCheckReturn
       }
       this.number.push(insertNumber)
 

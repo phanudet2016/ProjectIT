@@ -4,7 +4,6 @@
       <ul>
         <li class="topic">
           <p style="font-size:25px;border-bottom: 2px solid #ffffff;"><b>ประวัติการยืม</b></p>
-          <button @click="requestPermis()">Sub</button><button @click="showToken()">showToken</button><button @click="unSubscribe()">unSub</button>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">

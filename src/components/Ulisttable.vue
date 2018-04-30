@@ -94,7 +94,7 @@
                         <td style="text-align: center;color:black;" v-if="scan.updateTimeLength !== ''">{{scan.updateTimeLength}} <button v-bind:title="msg" @click="showUpdateTime(scan.dateLend, scan.timeLength, scan.updateTimeLength, scan.note, scan['.key'])" class="glyphicon glyphicon-exclamation-sign" data-toggle="modal" data-target="#updateTime" style="font-size:18px;border:none;background: #ffffff;"></button></td>
                         <td style="text-align: center;">{{scan.amountLend}}</td>
                         <td style="text-align: center;">{{scan.accepted}}</td>
-                        <td style="text-align: center;"><button @click="setDate(scan['.key'])" class="btn btn-primary dropdown-toggle BTNstatus" data-toggle="modal" data-target="#myModal">เลื่อนวัน</button></td>
+                        <td style="text-align: center;"><button @click="setDate(scan['.key'], scan.number, scan.idLend)" class="btn btn-primary dropdown-toggle BTNstatus" data-toggle="modal" data-target="#myModal">เลื่อนวัน</button></td>
                         <td style="text-align: center;"><button @click="forward(scan.idLend, scan.nameLend, scan.categoryLend, scan.keyRecive, scan.amountLend, scan.accepted, scan.forwardCound, scan['.key'])" class="glyphicon glyphicon-send" style="font-size:25px;background-color:#ffffff;border:none;color:rgb(79,195,247);" data-toggle="modal" data-target="#forward"></button></td>
                         <td style="text-align: center;" v-if="scan.agree !== ''">
                           <i @click="setAgree(scan['.key'], scan.email, scan.agree, scan.idLend, scan.nameLend, scan.noteReturn)" class="glyphicon glyphicon-list-alt" style="font-size:25px;background-color:#ffffff;border:none;color:rgb(79,195,247);" data-toggle="modal" data-target="#agree"></i>
@@ -349,7 +349,12 @@ export default {
       accepted: '',
       formIdlend: '',
       forwardCound: '',
-      forwardKey: ''
+      forwardKey: '',
+      arrayCheckReturn: '',
+      idLendHit: '',
+      arrayHit: [],
+      keyHit: '',
+      dateCheckReturn: ''
     }
   },
   created () {
@@ -499,12 +504,16 @@ export default {
       this.note = note
       this.key = key
     },
-    setDate (key) {
+    setDate (key, number, idLend) {
       this.today = new Date().toISOString().substr(0, 10)
       document.querySelector('#myDate').value = this.today
       document.getElementById('myDate').setAttribute('min', this.today)
       this.key = key
       this.note = ''
+      this.arrayCheckReturn = number
+      this.idLendHit = idLend
+      this.arrayHit = this.historys.find(historys => historys.idLend === this.idLendHit).returnedDate
+      this.keyHit = this.historys.find(historys => historys.idLend === this.idLendHit)['.key']
     },
     updateTimeLengthFn () {
       // setDate
@@ -512,11 +521,27 @@ export default {
       var mm = this.today.substr(5, 2)
       var yyyy = this.today.substr(0, 4)
       this.updateTimeLength = dd + '/' + mm + '/' + yyyy
+      this.dateCheckReturn = mm + '/' + dd + '/' + yyyy
       scanRef.child(this.key).update({
         updateTimeLength: this.updateTimeLength,
+        dateCheckReturn: this.dateCheckReturn,
         note: this.note,
         yessir: 'R'
       })
+      historyRef.child(this.keyHit).update({
+        timeLength: this.updateTimeLength
+      })
+
+      for (let i = 1; i < this.arrayCheckReturn.length; i++) {
+        scanRef.child(this.key + '/number/' + [i]).update({
+          dateCheckReturn: this.dateCheckReturn
+        })
+      }
+      for (let i = 1; i < this.arrayHit.length; i++) {
+        historyRef.child(this.keyHit + '/returnedDate/' + [i]).update({
+          dateCheckReturn: this.dateCheckReturn
+        })
+      }
     },
     submitEqm () {
       equipmentRef.push({
