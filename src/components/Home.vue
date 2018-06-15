@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>หน้าหลัก (Dashboard)</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>หน้าหลัก (Dashboard)</b></p>
           <a style="font-size:0px;">{{balanceStoreCal}}{{borrowedStoreCal}}{{repairStoreCal}}{{BarChartCal}}{{topTenBorrowed}}{{overDeadline}}</a>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
@@ -28,7 +28,7 @@
       <br><br><br><br><br>
       <ul>
         <li class="selected">
-          <i class="fa fa-pie-chart" style="color:#ffffff;font-size:25px;"></i>
+          <i class="fa fa-pie-chart" style="font-size:25px;"></i>
           <router-link to="/home">หน้าหลัก</router-link>
         </li>
         <li>
@@ -37,6 +37,9 @@
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
+          </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
@@ -48,16 +51,8 @@
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -96,19 +91,19 @@
       <ul>
         <li>
           <div class="title">อุปกรณ์ทั้งหมด</div>
-          <center><canvas id="pieChart" width="770" height="385" style="display: block; width: 770px; height: 385px;"></canvas></center>         
+          <center><canvas id="pieChart" width="770" height="360" style="display: block; width: 770px; height: 385px;"></canvas></center>         
         </li>
         <li>
           <div class="title">อุปกรณ์ทั้งหมด</div>
-          <center><canvas id="lineChart" width="770" height="385" style="display: block; width: 770px; height: 385px;"></canvas></center>
+          <center><canvas id="lineChart" width="770" height="360" style="display: block; width: 770px; height: 385px;"></canvas></center>
         </li>
         <li>
           <div class="title">10 อันดับอุปกรณ์ที่ถูกยืมมากที่สุด</div>
-          <center><canvas id="horizontalBar" width="770" height="385" style="display: block; width: 770px; height: 385px;"></canvas></center>       
+          <center><canvas id="horizontalBar" width="770" height="360" style="display: block; width: 770px; height: 385px;"></canvas></center>       
         </li>
         <li>
-          <div class="title">อุปกรณ์ที่เลยกำหนดการคืน</div>
-          <center><canvas id="mybarChart" width="770" height="385" style="display: block; width: 770px; height: 385px;"></canvas></center>
+          <div class="title">อุปกรณ์ที่ไม่ส่งคืนตามกำหนด</div>
+          <center><canvas id="mybarChart" width="770" height="360" style="display: block; width: 770px; height: 385px;"></canvas></center>
         </li>
       </ul>
     </div>
@@ -162,7 +157,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, historyRef} from './firebase'
+import {equipmentRef, auth, userRef, historyRef, notiRef} from './firebase'
 import Chart from 'chart.js'
 
 export default {
@@ -224,11 +219,11 @@ export default {
     }
   },
   mounted () {
-    // this.test()
+    /* this.test()
     this.setPieCharts()
     this.setHorizontalBar()
     this.setLineChart()
-    this.setBarChart()
+    this.setBarChart() */
   },
   components: {
   },
@@ -246,13 +241,18 @@ export default {
   firebase: {
     equipments: equipmentRef,
     historys: historyRef,
-    users: userRef
+    users: userRef,
+    notis: notiRef
   },
   computed: {
     balanceStoreCal: function () {
       this.sumAmount = 0
       this.balanceStore = 0
       this.balanceStorePercent = 0
+      this.borrowedStore = 0
+      this.borrowedStorePercent = 0
+      this.repairStore = 0
+      this.repairStorePercent = 0
       this.equipments.forEach(equipments => {
         // หาผลรวมอุปกรณ์ทั้งหมดในคลัง
         this.sumAmount = this.sumAmount * 1 + equipments.amountEqm * 1
@@ -261,12 +261,20 @@ export default {
           if (equipments.equipmentID[i].status === 'พร้อมใช้งาน') {
             this.balanceStore = this.balanceStore * 1 + 1
           }
+          if (equipments.equipmentID[i].status === 'ถูกยืม') {
+            this.borrowedStore = this.borrowedStore * 1 + 1
+          }
+          if (equipments.equipmentID[i].status === 'ส่งซ่อม') {
+            this.repairStore = this.repairStore * 1 + 1
+          }
         }
       })
       this.balanceStorePercent = this.balanceStore * 100 / this.sumAmount
+      this.borrowedStorePercent = this.borrowedStore * 100 / this.sumAmount
+      this.repairStorePercent = this.repairStore * 100 / this.sumAmount
       return this.balanceStorePercent
     },
-    borrowedStoreCal: function () {
+    /* borrowedStoreCal: function () {
       this.sumAmount = 0
       this.borrowedStore = 0
       this.borrowedStorePercent = 0
@@ -299,7 +307,7 @@ export default {
       })
       this.repairStorePercent = this.repairStore * 100 / this.sumAmount
       return this.repairStorePercent
-    },
+    }, */
     // หาจำนวน ที่อยู่ในคลัง ที่ถูกยืม ส่งซ่อม ของแต่ละประเภท
     BarChartCal: function () {
       this.borrowedBarChartTreat = 0
@@ -401,29 +409,31 @@ export default {
       this.overTimeReturnSupport = 0
       this.overTimeReturnDiagnose = 0
       this.historys.forEach(historys => {
-        for (let i = 0; i < historys.returnedDate.length; i++) {
-          if (historys.category === 'วินิจฉัย' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
-            var timeReturnDiagnose = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
-            if (timeNow > timeReturnDiagnose) {
-              this.overTimeReturnDiagnose = this.overTimeReturnDiagnose * 1 + 1
+        if (historys.status === 'ถูกยืม') {
+          for (let i = 0; i < historys.returnedDate.length; i++) {
+            if (historys.category === 'วินิจฉัย' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+              var timeReturnDiagnose = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+              if (timeNow > timeReturnDiagnose) {
+                this.overTimeReturnDiagnose = this.overTimeReturnDiagnose * 1 + 1
+              }
             }
-          }
-          if (historys.category === 'รักษา' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
-            var timeReturnTreat = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
-            if (timeNow > timeReturnTreat) {
-              this.overTimeReturnTreat = this.overTimeReturnTreat * 1 + 1
+            if (historys.category === 'รักษา' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+              var timeReturnTreat = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+              if (timeNow > timeReturnTreat) {
+                this.overTimeReturnTreat = this.overTimeReturnTreat * 1 + 1
+              }
             }
-          }
-          if (historys.category === 'วินิจฉัยและรักษา' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
-            var timeReturnDiagnoseAndTreat = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
-            if (timeNow > timeReturnDiagnoseAndTreat) {
-              this.overTimeReturnDiagnoseAndTreat = this.overTimeReturnDiagnoseAndTreat * 1 + 1
+            if (historys.category === 'วินิจฉัยและรักษา' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+              var timeReturnDiagnoseAndTreat = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+              if (timeNow > timeReturnDiagnoseAndTreat) {
+                this.overTimeReturnDiagnoseAndTreat = this.overTimeReturnDiagnoseAndTreat * 1 + 1
+              }
             }
-          }
-          if (historys.category === 'สนับสนุน' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
-            var timeReturnSupport = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
-            if (timeNow > timeReturnSupport) {
-              this.overTimeReturnSupport = this.overTimeReturnSupport * 1 + 1
+            if (historys.category === 'สนับสนุน' && historys.returnedDate[i].status === 'ยังไม่ส่งคืน') {
+              var timeReturnSupport = new Date(historys.returnedDate[i].dateCheckReturn).getTime()
+              if (timeNow > timeReturnSupport) {
+                this.overTimeReturnSupport = this.overTimeReturnSupport * 1 + 1
+              }
             }
           }
         }
@@ -515,9 +525,9 @@ export default {
         datasets: [{
           data: [this.balanceStorePercent.toFixed(2), this.borrowedStorePercent.toFixed(2), this.repairStorePercent.toFixed(2)],
           backgroundColor: [
-            '#BDC3C7',
-            '#9B59B6',
-            '#455C73'
+            'rgb(46,204,113)',
+            'rgb(52,152,219)',
+            'rgb(231,76,60)'
           ],
           label: 'My dataset' // for legend
         }],
@@ -554,25 +564,78 @@ export default {
     setHorizontalBar () {
       var ctx = document.getElementById('horizontalBar')
       var myChart = new Chart(ctx, {
-        type: 'horizontalBar',
+        type: 'bar',
         data: {
-          labels: [this.arrayNameEqmBarchart[9], this.arrayNameEqmBarchart[8], this.arrayNameEqmBarchart[7], this.arrayNameEqmBarchart[6], this.arrayNameEqmBarchart[5], this.arrayNameEqmBarchart[4], this.arrayNameEqmBarchart[3], this.arrayNameEqmBarchart[2], this.arrayNameEqmBarchart[1], this.arrayNameEqmBarchart[0]],
+          labels: [this.arrayNameEqmBarchart[0], this.arrayNameEqmBarchart[1], this.arrayNameEqmBarchart[2], this.arrayNameEqmBarchart[3], this.arrayNameEqmBarchart[4], this.arrayNameEqmBarchart[5], this.arrayNameEqmBarchart[6], this.arrayNameEqmBarchart[7], this.arrayNameEqmBarchart[8], this.arrayNameEqmBarchart[9]],
           datasets: [{
             label: 'จำนวนอุปกรณ์ที่ถูกยืม',
-            backgroundColor: 'rgba(123,104,238,0.31)',
-            borderColor: 'rgba(123,104,238,1)',
-            borderWidth: 1,
-            data: [this.arryAmountBarChart[9], this.arryAmountBarChart[8], this.arryAmountBarChart[7], this.arryAmountBarChart[6], this.arryAmountBarChart[5], this.arryAmountBarChart[4], this.arryAmountBarChart[3], this.arryAmountBarChart[2], this.arryAmountBarChart[1], this.arryAmountBarChart[0]]
+            backgroundColor: 'rgb(0,152,221)',
+            // borderColor: 'rgba(123,104,238,1)',
+            // borderWidth: 1,
+            data: [this.arryAmountBarChart[0], this.arryAmountBarChart[1], this.arryAmountBarChart[2], this.arryAmountBarChart[3], this.arryAmountBarChart[4], this.arryAmountBarChart[5], this.arryAmountBarChart[6], this.arryAmountBarChart[7], this.arryAmountBarChart[8], this.arryAmountBarChart[9]]
           }]
         },
 
         options: {
           scales: {
+            // xAxes: [{
+            //   ticks: {
+            //     beginAtZero: true,
+            //     // suggestedMax: 50
+            //     userCallback: function (label, index, labels) {
+            //       // when the floored value is the same as the value we have a whole number
+            //       if (Math.floor(label) === label) {
+            //         return label
+            //       }
+            //     }
+            //   }
+            // }],
+            // yAxes: [{
+            //   ticks: {
+            //     callback: function (value) {
+            //       if (value.length > 4) {
+            //         return value.substr(0, 8) + '...'
+            //       } else {
+            //         return value
+            //       }
+            //     }
+            //   }
+            // }]
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                userCallback: function (label, index, labels) {
+                  // when the floored value is the same as the value we have a whole number
+                  if (Math.floor(label) === label) {
+                    return label
+                  }
+                }
+              }
+            }],
             xAxes: [{
               ticks: {
-                beginAtZero: true
+                callback: function (value) {
+                  if (value.length > 4) {
+                    return value.substr(0, 8) + '...'
+                  } else {
+                    return value
+                  }
+                }
               }
             }]
+          },
+          tooltips: {
+            bodyFontSize: 12,
+            callbacks: {
+              title: function (tooltipItems, data) {
+                var idx = tooltipItems[0].index
+                return data.labels[idx]
+              },
+              label: function (tooltipItem, data) {
+                var label = data.datasets[0].data[tooltipItem.index]
+                return 'จำนวนที่ถูกยืม' + ' ' + label
+              }
+            }
           }
         }
       })
@@ -581,38 +644,38 @@ export default {
     setLineChart () {
       var ctx = document.getElementById('lineChart')
       var lineChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: ['สนับสนุน', 'วินิจฉัยและรักษา', 'รักษา', 'วินิจฉัย'],
           datasets: [{
             label: 'ในคลัง',
-            backgroundColor: 'rgba(38, 185, 154, 0.31)',
-            borderColor: 'rgba(38, 185, 154, 0.7)',
-            pointBorderColor: 'rgba(38, 185, 154, 0.7)',
-            pointBackgroundColor: 'rgba(38, 185, 154, 0.7)',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(22,22,22,1)',
-            pointBorderWidth: 3,
+            backgroundColor: 'rgb(46,204,113)',
+            // borderColor: 'rgba(38, 185, 154, 0.7)',
+            // pointBorderColor: 'rgba(38, 185, 154, 0.7)',
+            // pointBackgroundColor: 'rgba(38, 185, 154, 0.7)',
+            // pointHoverBackgroundColor: '#fff',
+            // pointHoverBorderColor: 'rgba(22,22,22,1)',
+            // pointBorderWidth: 3,
             data: [this.supportInStoreBarChart, this.diagnoseAndTreatInStoreBarChart, this.inStoreBarChartTreat, this.diagnoseInStoreBarChart]
           }, {
             label: 'ถูกยืม',
-            backgroundColor: 'rgba(3, 88, 106, 0.3)',
-            borderColor: 'rgba(3, 88, 106, 0.70)',
-            pointBorderColor: 'rgba(3, 88, 106, 0.70)',
-            pointBackgroundColor: 'rgba(3, 88, 106, 0.70)',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(151,187,205,1)',
-            pointBorderWidth: 1,
+            backgroundColor: 'rgb(52,152,219)',
+            // borderColor: 'rgba(3, 88, 106, 0.70)',
+            // pointBorderColor: 'rgba(3, 88, 106, 0.70)',
+            // pointBackgroundColor: 'rgba(3, 88, 106, 0.70)',
+            // pointHoverBackgroundColor: '#fff',
+            // pointHoverBorderColor: 'rgba(151,187,205,1)',
+            // pointBorderWidth: 1,
             data: [this.supportBorrowedBarChart, this.diagnoseAndTreatBorrowedBarChart, this.borrowedBarChartTreat, this.diagnoseBorrowedBarChart]
           }, {
             label: 'ซ่อมบำรุง',
-            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-            borderColor: 'rgba(255, 0, 0, 0.2)',
-            pointBorderColor: 'rgba(255, 0, 0, 0.2)',
-            pointBackgroundColor: 'rgba(255, 0, 0, 0.2)',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(151,187,205,1)',
-            pointBorderWidth: 1,
+            backgroundColor: 'rgb(231,76,60)',
+            // borderColor: 'rgba(255, 0, 0, 0.2)',
+            // pointBorderColor: 'rgba(255, 0, 0, 0.2)',
+            // pointBackgroundColor: 'rgba(255, 0, 0, 0.2)',
+            // pointHoverBackgroundColor: '#fff',
+            // pointHoverBorderColor: 'rgba(151,187,205,1)',
+            // pointBorderWidth: 1,
             data: [this.supportRepairBarChart, this.diagnoseAndTreatRepairBarChart, this.repairBarChartTreat, this.diagnoseRepairBarChart]
           }]
         },
@@ -637,7 +700,7 @@ export default {
           labels: ['สนับสนุน', 'วินิจฉัยและรักษา', 'รักษา', 'วินิจฉัย'],
           datasets: [{
             label: 'จำนวนอุปกรณ์',
-            backgroundColor: ['rgb(38, 185, 154)', 'rgb(52, 152, 219)', 'rgb(69, 92, 115)', 'rgb(189, 195, 199)'],
+            backgroundColor: 'rgb(239,78,73)',
             // borderColor: ['rgba(38, 185, 154, 0.5)', 'rgba(52, 152, 219, 0.5)', 'rgba(69, 92, 115, 0.5)', 'rgba(189, 195, 199, 0.5)'],
             borderWidth: 3,
             data: [this.overTimeReturnSupport, this.overTimeReturnDiagnoseAndTreat, this.overTimeReturnTreat, this.overTimeReturnDiagnose]
@@ -648,7 +711,13 @@ export default {
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero: true
+                beginAtZero: true,
+                userCallback: function (label, index, labels) {
+                  // when the floored value is the same as the value we have a whole number
+                  if (Math.floor(label) === label) {
+                    return label
+                  }
+                }
               }
             }]
           }
@@ -720,11 +789,12 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  /*border: 1px solid #dddddd;*/
   bottom: 0;
   position: fixed;
   top: 0;
   margin-top: -1px;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19); 
 }
 
 .nav-header ul li p {
@@ -778,6 +848,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {
@@ -896,11 +967,12 @@ nav ul li a:hover {
   list-style: none;
   float: left;
   width: 47%;
-  height: 470px;
+  height: 415px;
   background: white;
   margin: 40px 10px -10px 20px;
   box-sizing: border-box;
   border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .container ul li .title {
@@ -926,5 +998,17 @@ nav ul li a:hover {
     width: 100%;
     padding: 0px;
   }
+}
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
 }
 </style>

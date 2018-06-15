@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการอุปกรณ์</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>รายการอุปกรณ์</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -36,27 +36,22 @@
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
+          </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>       
         </li>
         <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -126,7 +121,7 @@
              <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
               <br>
-              <table class="table table-hover table-striped">
+              <table class="table">
                 <thead>
                   <tr>
                     <th width="500px">ชื่ออุปกรณ์</th>
@@ -167,11 +162,14 @@
                       <td>{{equipment.nameEqm}}</td>
                       <td style="text-align: center;">{{equipment.description}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                      <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
-                            <span class="caret"></span></button>                    
+                          <button v-if="equipment.statusLend === 'เปิด'" class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown">{{equipment.statusLend}}
+                            <span class="caret"></span></button>
+                          <button v-if="equipment.statusLend === 'ปิด'" class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background-color: #EF5350;">{{equipment.statusLend}}
+                            <span class="caret"></span></button>                  
                             <ul class="dropdown-menu">                             
                               <li><a @click="onOff('เปิด',equipment['.key'])" style="font-size:18px;">เปิด</a></li>
                               <li><a @click="onOff('ปิด',equipment['.key'])" style="font-size:18px;">ปิด</a></li>
@@ -179,20 +177,23 @@
                         </div>
                       </td>
                       <td style="text-align: center;">
-                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#deleteList" style="background:#5cb85c;font-size:20px;width:50px;">
+                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle BTNdelete" type="button" data-toggle="modal" data-target="#deleteList">
                           <span class="glyphicon glyphicon-trash"></span>
                         </button>
-                      </td>           
+                      </td>         
                   </tr>
                   <tr v-if="category === 'ทั้งหมด'" v-for="equipment of searchEqm" v-bind:key="equipment['.key']">
                       <td>{{equipment.nameEqm}}</td>
                       <td style="text-align: center;">{{equipment.description}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
+                      <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">
                         <div class="dropdown">
-                          <button class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background:#5cb85c;font-size:20px;width:100px;">{{equipment.statusLend}}
-                            <span class="caret"></span></button>                    
+                          <button v-if="equipment.statusLend === 'เปิด'" class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown">{{equipment.statusLend}}
+                            <span class="caret"></span></button>
+                          <button v-if="equipment.statusLend === 'ปิด'" class="btn btn-primary dropdown-toggle BTNstatus" type="button" data-toggle="dropdown" style="background-color: #EF5350;">{{equipment.statusLend}}
+                            <span class="caret"></span></button>                  
                             <ul class="dropdown-menu">                             
                               <li><a @click="onOff('เปิด',equipment['.key'])" style="font-size:18px;">เปิด</a></li>
                               <li><a @click="onOff('ปิด',equipment['.key'])" style="font-size:18px;">ปิด</a></li>
@@ -200,7 +201,7 @@
                         </div>
                       </td>
                       <td style="text-align: center;">
-                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle" type="button" data-toggle="modal" data-target="#deleteList" style="background:#5cb85c;font-size:20px;width:50px;">
+                        <button @click="sendDelete(equipment['.key'], equipment.nameEqm, equipment.categoryEqm)" class="btn btn-primary dropdown-toggle BTNdelete" type="button" data-toggle="modal" data-target="#deleteList">
                           <span class="glyphicon glyphicon-trash"></span>
                         </button>
                       </td>
@@ -335,7 +336,8 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, dataRef} from './firebase'
+import {equipmentRef, auth, userRef, dataRef, notiRef} from './firebase'
+import moment from 'moment'
 
 export default {
   name: 'datalist',
@@ -378,7 +380,11 @@ export default {
 
       nameRemove: '',
       categoryRemove: '',
-      keyRemove: ''
+      keyRemove: '',
+      dateCheckRepair: '',
+      dateCheckCalibrate: '',
+      dateCalibrate: '',
+      dateRepair: ''
     }
   },
   created () {
@@ -394,7 +400,8 @@ export default {
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    datas: dataRef
+    datas: dataRef,
+    notis: notiRef
   },
   methods: {
     submitEqm () {
@@ -499,16 +506,34 @@ export default {
                 } else { s = 'Etc' }
                 this.count = this.cells[6] * 1 + 1
                 for (var c = 1; c < this.count; c++) {
+                  var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
                   var insertID = {
-                    id: s + c,
+                    id: s + getRandomInt,
                     number: c,
                     lastnameLend: '',
                     nameLend: '',
-                    status: 'พร้อมใช้งาน'
+                    status: 'พร้อมใช้งาน',
+                    numberOfItem: ''
                   }
                   amount.push(insertID)
                 }
+                if (this.cells[7] === '' || this.cells[7] === '-') {
+                  this.dateCheckRepair = '-'
+                  this.dateRepair = '-'
+                } else {
+                  this.dateCheckRepair = moment(this.cells[7]).format('DD/MM/YYYY')
+                  this.dateRepair = this.cells[7]
+                }
 
+                if (this.cells[8] === '' || this.cells[8] === '-') {
+                  this.dateCheckCalibrate = '-'
+                  this.dateCalibrate = '-'
+                } else {
+                  this.dateCheckCalibrate = moment(this.cells[8]).format('DD/MM/YYYY')
+                  this.dateCalibrate = this.cells[8]
+                }
+
+                var x = this.cells[2].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 equipmentRef.push({
                   nameEqm: this.cells[0],
                   nameEng: this.cells[1],
@@ -518,10 +543,15 @@ export default {
                   unitEqm: this.cells[3],
                   categoryEqm: this.cells[5],
                   borrowedEqm: 0,
-                  priceUnit: this.cells[2],
+                  priceUnit: x,
                   equipmentID: amount,
                   statusLend: 'ปิด',
-                  countTopTen: 0
+                  countTopTen: 0,
+                  dateRepair: this.dateRepair,
+                  dateCalibrate: this.dateCalibrate,
+                  dateCheckRepair: this.dateCheckRepair,
+                  dateCheckCalibrate: this.dateCheckCalibrate,
+                  amountRepair: 0
                 })
               }
             }
@@ -594,7 +624,7 @@ export default {
   border-radius: 4px;
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -617,11 +647,12 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
   margin-top: -1px;
+  z-index: 1000;
 }
 
 .nav-header ul li p {
@@ -675,6 +706,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {
@@ -821,5 +853,18 @@ th {
   width: 85px;
   height: 35px;
   font-weight: bold; 
+}
+
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
 }
 </style>

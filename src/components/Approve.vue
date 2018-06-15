@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการรออนุมัติ</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>รายการรออนุมัติ</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -34,7 +34,7 @@
           <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/listtable">รายการอุปกรณ์</router-link>
         </li>
-        <li class="selected">
+        <li  class="selected">
           <i class="fa fa-check-square-o" style="font-size:25px;"></i>
           <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
             <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
@@ -43,23 +43,15 @@
         </li>
         <li>
           <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>      
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>       
         </li>
         <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/noti">การแจ้งเตือน</router-link>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -90,20 +82,20 @@
                     <th width="150px" style="text-align: center;">ผู้ยืม</th>
                     <th width="150px" style="text-align: center;">แผนก</th>
                     <!-- <th width="150px" style="text-align: center;">HN No.</th> !-->
-                    <th width="150px" style="text-align: center;">จำนวน</th>
+                    <th width="150px" style="text-align: center;">เลขเครื่อง</th>
                     <th width="150px" style="text-align: center;">สถานะการยืม</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(approvetable, index) of approvetables" v-bind:key="approvetable['.key']">
+                  <tr v-for="(approvetable, index) of approvetables.slice().reverse()" v-bind:key="approvetable['.key']">
                       <td>{{approvetable.nameLend}}</td>
                       <td style="text-align: center;">{{approvetable.idLend}}</td>
                       <td style="text-align: center;">{{approvetable.dateLend}}</td>
-                      <td style="text-align: center;">{{approvetable.timeLength}}</td>
+                      <td style="text-align: center;">{{approvetable.timeLength}} <i class="glyphicon glyphicon-calendar" style="font-size:16px;" data-toggle="modal" data-target="#calendar" @click="bookEqmFn(approvetable.number, approvetable.nameLend, approvetable.idLend)"></i></td>
                       <td style="text-align: center;">{{approvetable.firstname}} {{approvetable.lastname}}</td>
                       <td style="text-align: center;">{{approvetable.departmentLend}}</td>
                       <!-- <td style="text-align: center;">{{approvetable.HnNo}}</td> !-->
-                      <td style="text-align: center;">{{approvetable.amountLend}}</td>
+                      <td style="text-align: center;">{{approvetable.number}}</td>
                       <td v-if="approvetable.statusLend === 'รออนุมัติ'" style="text-align:center;">
                         <div class="dropdown">
                           <button class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="dropdown">{{approvetable.statusLend}}
@@ -115,10 +107,10 @@
                           </div>
                       </td>
                       <td v-if="approvetable.statusLend === 'อนุมัติ'" style="text-align:center;">  
-                        <button class="btn btn-primary dropdown-toggle BTNreturn" style="background-color:rgb(92, 184, 92);">{{approvetable.statusLend}}</button>                    
+                        <button class="btn btn-primary dropdown-toggle BTNreturn" style="background-color:rgb(92, 184, 92);"><span class="glyphicon glyphicon-ok" style="font-size:16px;"></span> {{approvetable.statusLend}}</button> 
                       </td>
                       <td v-if="approvetable.statusLend === 'ไม่อนุมัติ'" style="text-align:center;">
-                        <button class="btn btn-primary dropdown-toggle BTNreturn" style="background-color:#EF5350;">{{approvetable.statusLend}}</button>
+                        <button class="btn btn-primary dropdown-toggle BTNreturn" style="background-color:#EF5350;"><span class="glyphicon glyphicon-remove" style="font-size:16px;"></span>  {{approvetable.statusLend}}</button>
                       </td>
                   </tr>
                 </tbody>
@@ -194,6 +186,29 @@
                   </div>    
                   <!-- ADD ADMIN !-->
 
+                  <!-- Book (ช่วงเวลา) !-->
+              <div class="modal fade" id="calendar" role="dialog">
+                <div class="modal-dialog" style="width:1000px;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>เลือกช่วงวันที่</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="comp-full-calendar test-fc">
+                        <full-calendar ref="calendar" @event-created="eventCreated" :config="config" :events="events" :header="header" :defaultView="defaultView"></full-calendar>
+                      </div>
+                      <!-- <input id="myDate" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="today">  -->
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" style="width:85px;font-size: 16px;">ปิด</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Book (ช่วงเวลา)!-->
+
             </div>
           </div>
           </div>
@@ -204,7 +219,9 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, lendRef, scanRef, notiRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, lendRef, scanRef, notiRef, bookEqmRef} from './firebase'
+// import moment from 'moment'
+import 'fullcalendar/dist/locale/th'
 
 export default {
   name: 'approve',
@@ -218,6 +235,7 @@ export default {
       lastname: '',
       statusLend: '',
 
+      timeLengthTs: '',
       nameLendeqm: '',
       dateLendeqm: '',
       datetimeLength: '',
@@ -242,10 +260,28 @@ export default {
       idLend: '',
       sendMail: '',
 
+      dateLendTs: '',
+      numberShow: '',
       approveNoti: '',
       notiKeyUpdate: '',
       clearNotiApprove: '',
-      dateCheckReturn: ''
+      dateCheckReturn: '',
+      dateCheckRepair: '',
+      amountDate: '',
+      month: '',
+      year: '',
+      dateCheckCalibrate: '',
+      keyBook: '',
+      // fullCalendar
+      defaultView: 'month',
+      header: {
+        left: 'prev, next today',
+        center: 'title',
+        right: 'month'
+      },
+      events: [],
+      selected: [],
+      arrayEvent: []
     }
   },
   created () {
@@ -263,7 +299,8 @@ export default {
     users: userRef,
     approvetables: approvetableRef,
     lendeqm: lendRef,
-    notis: notiRef
+    notis: notiRef,
+    bookEqm: bookEqmRef
   },
   computed: {
     realtimeplus: function () {
@@ -271,6 +308,34 @@ export default {
     }
   },
   methods: {
+    bookEqmFn (number, nameEqm, idLend) {
+      this.numberEqm = number
+      this.events = []
+      this.arrayEvent = []
+      console.log(number, nameEqm)
+      for (let i = 0; i < this.bookEqm.length; i++) {
+        if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === nameEqm && idLend === this.bookEqm[i].idLend) {
+          this.arrayEvent.push({
+            title: 'ชื่อ-สกุล: ' + this.bookEqm[i].firstname + ' ' + this.bookEqm[i].lastname + ' แผนก: ' + this.bookEqm[i].department,
+            start: this.bookEqm[i].startEvent,
+            end: this.bookEqm[i].endEventMark,
+            editable: false,
+            backgroundColor: 'red',
+            borderColor: 'red'
+          })
+        } else if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === nameEqm) {
+          this.arrayEvent.push({
+            title: 'ชื่อ-สกุล: ' + this.bookEqm[i].firstname + ' ' + this.bookEqm[i].lastname + ' แผนก: ' + this.bookEqm[i].department,
+            start: this.bookEqm[i].startEvent,
+            end: this.bookEqm[i].endEventMark,
+            editable: false,
+            backgroundColor: 'rgb(3,155,229)',
+            borderColor: 'rgb(3,155,229)'
+          })
+        }
+      }
+      this.events = this.arrayEvent
+    },
     submitEqm () {
       equipmentRef.push({
         nameEqm: this.nameEqm,
@@ -298,10 +363,20 @@ export default {
       this.amountLendeqm = this.approvetables.find(approvetables => approvetables['.key'] === key).amountLend
       this.keyAppove = this.approvetables.find(approvetables => approvetables['.key'] === key).keyAppove
       this.dateCheckReturn = this.approvetables.find(approvetables => approvetables['.key'] === key).dateCheckReturn
+      this.dateCheckRepair = this.approvetables.find(approvetables => approvetables['.key'] === key).dateCheckRepair
+      this.dateCheckCalibrate = this.approvetables.find(approvetables => approvetables['.key'] === key).dateCheckCalibrate
+      this.amountDate = this.approvetables.find(approvetables => approvetables['.key'] === key).amountDate
+      this.month = this.approvetables.find(approvetables => approvetables['.key'] === key).month
+      this.year = this.approvetables.find(approvetables => approvetables['.key'] === key).year
+      this.numberShow = this.approvetables.find(approvetables => approvetables['.key'] === key).number
+      this.dateLendTs = this.approvetables.find(approvetables => approvetables['.key'] === key).dateLendTs
+      this.timeLengthTs = this.approvetables.find(approvetables => approvetables['.key'] === key).timeLengthTs
+      this.keyBook = this.bookEqm.find(bookEqm => bookEqm.idLend === this.idLend)['.key']
       if (status === 'อนุมัติ') {
         scanRef.push({
           HnNo: this.HnNoeqm,
           amountLend: this.amountLendeqm,
+          amountDate: this.amountDate,
           categoryLend: this.categoryLendeqm,
           dateLend: this.dateLendeqm,
           timeLength: this.datetimeLength,
@@ -320,20 +395,31 @@ export default {
           email: this.sendMail,
           agree: '',
           dateCheckReturn: this.dateCheckReturn,
+          dateCheckRepair: this.dateCheckRepair,
+          dateCheckCalibrate: this.dateCheckCalibrate,
+          month: this.month,
+          year: this.year,
+          numberShow: this.numberShow,
+          dateLendTs: this.dateLendTs,
+          timeLengthTs: this.timeLengthTs,
           number: [
             {number: ''}
           ]
         })
-      } else {
-        this.balanceEqm = this.equipments.find(equipments => equipments['.key'] === this.keyAppove).balanceEqm
-        this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === this.keyAppove).borrowedEqm
-        this.balanceEqm = this.balanceEqm * 1 + this.amountLendeqm * 1
-        this.borrowedLend = this.borrowedLend * 1 - this.amountLendeqm * 1
-        console.log(this.balanceEqm, this.borrowedLend)
-        equipmentRef.child(this.keyAppove).update({
-          balanceEqm: this.balanceEqm,
-          borrowedEqm: this.borrowedLend
+        bookEqmRef.child(this.keyBook).update({
+          status: status
         })
+      } else {
+        // this.balanceEqm = this.equipments.find(equipments => equipments['.key'] === this.keyAppove).balanceEqm
+        // this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === this.keyAppove).borrowedEqm
+        // this.balanceEqm = this.balanceEqm * 1 + this.amountLendeqm * 1
+        // this.borrowedLend = this.borrowedLend * 1 - this.amountLendeqm * 1
+        console.log(this.keyBook)
+        bookEqmRef.child(this.keyBook).remove()
+        // equipmentRef.child(this.keyAppove).update({
+        //   balanceEqm: this.balanceEqm,
+        //   borrowedEqm: this.borrowedLend
+        // })
       }
       this.approveNoti = this.notis.find(notis => notis).approveNoti
       this.notiKeyUpdate = this.notis.find(notis => notis['.key'])['.key']
@@ -392,6 +478,7 @@ export default {
 </script>
 
 <style scoped>
+@import '~fullcalendar/dist/fullcalendar.css';
 /*--------------------------------------- CONTENT ----------------------------------*/
 .card {
   padding: .75rem 1.25rem;
@@ -401,7 +488,7 @@ export default {
   border-radius: 4px;
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -424,7 +511,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -482,6 +569,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {
@@ -613,5 +701,30 @@ th {
   width: 85px;
   height: 35px;
   font-weight: bold;
+}
+
+.BTNcancel {
+  background-color: #EF5350;
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
+  margin-right: 28px;
+}
+
+.comp-full-calendar {
+  padding: 20px;
+  background: #fff;
+  max-width: 960px;
+  margin: 0 auto;
+  font-size: 18px;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการอุปกรณ์</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>รายการอุปกรณ์</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -36,27 +36,22 @@
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
+          </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>       
         </li>
         <li>
           <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -133,6 +128,14 @@
                   <tr>
                       <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">จำนวน</h4></td>
                       <td><input type="number" class="form-control" style="font-size:20px" v-model="amountEqm"/></td>
+                  </tr>
+                  <tr>
+                      <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">วันที่ซ่อมบำรุงของอุปกรณ์ (Maintenance)</h4></td>
+                      <td><input type="date" class="form-control" style="font-size:20px" v-model="dateRepair"/></td>
+                  </tr>
+                  <tr>
+                      <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">วันที่ตรวจเช็คความเรียบร้อยของอุปกรณ์ (Calibration)</h4></td>
+                      <td><input type="date" class="form-control" style="font-size:20px" v-model="dateCalibrate"/></td>
                   </tr>
                   <tr>
                       <td style="text-align:right;height:50px;"><h4 style="margin-right:10px;font-size:20px">ราคา (ต่อหน่วย)</h4></td>
@@ -275,7 +278,8 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef} from './firebase'
+import moment from 'moment'
 
 export default {
   name: 'addlist',
@@ -311,7 +315,13 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+      dateRepair: '',
+      pushDateRepair: '',
+      puahDateCheckRepair: '',
+      dateCalibrate: '',
+      pushDateCalibrate: '',
+      puahDateCheckCalibrate: ''
     }
   },
   created () {
@@ -326,7 +336,8 @@ export default {
   },
   firebase: {
     equipments: equipmentRef,
-    users: userRef
+    users: userRef,
+    notis: notiRef
   },
   methods: {
     submitEqm () {
@@ -343,12 +354,14 @@ export default {
       }
       this.countCSV = this.amountEqm * 1 + 1
       for (var i = 1; i < this.countCSV; i++) {
+        var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
         var insertID = {
-          id: ss + i,
+          id: ss + getRandomInt,
           number: i,
           lastnameLend: '',
           nameLend: '',
-          status: 'พร้อมใช้งาน'
+          status: 'พร้อมใช้งาน',
+          numberOfItem: '-'
         }
         id.push(insertID)
       }
@@ -358,6 +371,20 @@ export default {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
       } else {
         if (this.priceUnit === '') {
+          if (this.dateRepair === '') {
+            this.pushDateRepair = '-'
+            this.puahDateCheckRepair = '-'
+          } else {
+            this.pushDateRepair = moment(this.dateRepair).format('DD/MM/YYYY')
+            this.puahDateCheckRepair = moment(this.dateRepair).format('MM/DD/YYYY')
+          }
+          if (this.dateCalibrate === '') {
+            this.pushDateCalibrate = '-'
+            this.puahDateCheckCalibrate = '-'
+          } else {
+            this.pushDateCalibrate = moment(this.dateCalibrate).format('DD/MM/YYYY')
+            this.puahDateCheckCalibrate = moment(this.dateCalibrate).format('MM/DD/YYYY')
+          }
           equipmentRef.push({
             nameEqm: this.nameEqm,
             amountEqm: this.amountEqm,
@@ -368,11 +395,31 @@ export default {
             editEqm: false,
             equipmentID: id,
             priceUnit: '-',
-            statusLend: 'ปิด',
-            countTopTen: 0
+            statusLend: 'เปิด',
+            countTopTen: 0,
+            dateRepair: this.pushDateRepair,
+            dateCheckRepair: this.puahDateCheckRepair,
+            dateCheckCalibrate: this.puahDateCheckCalibrate,
+            dateCalibrate: this.pushDateCalibrate,
+            amountRepair: 0
           })
           this.$router.push('/listtable')
         } else {
+          if (this.dateRepair === '') {
+            this.pushDateRepair = '-'
+            this.puahDateCheckRepair = '-'
+          } else {
+            this.pushDateRepair = moment(this.dateRepair).format('DD/MM/YYYY')
+            this.puahDateCheckRepair = moment(this.dateRepair).format('MM/DD/YYYY')
+          }
+          if (this.dateCalibrate === '') {
+            this.pushDateCalibrate = '-'
+            this.puahDateCheckCalibrate = '-'
+          } else {
+            this.pushDateCalibrate = moment(this.dateCalibrate).format('DD/MM/YYYY')
+            this.puahDateCheckCalibrate = moment(this.dateCalibrate).format('MM/DD/YYYY')
+          }
+          var x = this.priceUnit.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
           equipmentRef.push({
             nameEqm: this.nameEqm,
             amountEqm: this.amountEqm,
@@ -382,9 +429,14 @@ export default {
             categoryEqm: this.categoryEqm,
             editEqm: false,
             equipmentID: id,
-            priceUnit: this.priceUnit,
-            statusLend: 'ปิด',
-            countTopTen: 0
+            priceUnit: x,
+            statusLend: 'เปิด',
+            countTopTen: 0,
+            dateRepair: this.pushDateRepair,
+            dateCheckRepair: this.puahDateCheckRepair,
+            dateCheckCalibrate: this.puahDateCheckCalibrate,
+            dateCalibrate: this.pushDateCalibrate,
+            amountRepair: 0
           })
           this.$router.push('/listtable')
         }
@@ -462,7 +514,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -485,7 +537,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -543,6 +595,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {
@@ -659,5 +712,16 @@ th {
   height: 40px;
   font-weight: bold;
 }
-
+.noti {
+  height:20px;
+  width:20px;
+  border-radius:60px;
+  border:1px solid #d9534f;
+  background:#d9534f;
+  color:#ffffff;
+  font-size:16px;
+  position:absolute;
+  margin-left:-10px;
+  margin-top:-5px;
+}
 </style>

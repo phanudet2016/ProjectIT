@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px;"><router-link to="/lendhistory" style="color:#ffffff;">รายการอุปกรณ์ / </router-link></p>
+          <p><router-link to="/lendhistory" style="font-size:25px;color:#ffffff;">ประวัติการยืม  </router-link></p>
         </li>
         <li class="topic" style="padding-left: 10px;">
           <p style="font-size:25px; border-bottom: 2px solid #ffffff"><b>{{nameEqm}}</b></p>
@@ -39,27 +39,22 @@
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="noti.approveNoti !== 0" v-for="noti of notis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{noti.approveNoti}}</b></p>
+          </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="	glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>       
         </li>
         <li class="selected">
           <i class="fa fa-clipboard" style="font-size:25px;"></i>
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -371,7 +366,7 @@ export default {
   border-radius: 4px;
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -394,7 +389,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -452,6 +447,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {

@@ -3,8 +3,11 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px;"><router-link to="/ulendhistory">ประวัติการยืม</router-link> / <b>{{nameEqm}}</b></p>
+          <p><router-link to="/ulendhistory" style="font-size:25px;color:#ffffff;">ประวัติการยืม</router-link> /</p>
         </li>
+        <li class="topic" style="padding-left: 10px;">
+          <p style="font-size:25px; border-bottom: 2px solid #ffffff"><b>{{nameEqm}}</b></p>
+        <li style="font-size:15px;color:#2c3e50;float:right;">
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
             <span class="dropbtn glyphicon glyphicon-chevron-down" style="color:#ffffff;"></span>
@@ -25,28 +28,32 @@
       <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
+        <!-- <li>
+          <i class="glyphicon glyphicon-wrench" style="font-size:25px;"></i>
+          <router-link to="/uhome">ยืมเครื่องมือแพทย์</router-link>
+        </li> -->
         <li>
-          <i class="glyphicon glyphicon-wrench" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/uhome">ยืมเครื่องแพทย์</router-link>
+          <i class="glyphicon glyphicon-wrench" style="font-size:25px;color:#ffffff;"></i>
+          <router-link to="/ubookeqm">ยืมเครื่องมือแพทย์</router-link>
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
           <router-link to="/uapprove">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <i class="glyphicon glyphicon-book" style="color:#ffffff;font-size:25px;"></i>
           <button v-if="user.noteNoti !== 0 && user.email === emailAuth" v-for="user of users" class="noti" style="margin-left:-12px;">
             <p style="margin-top: -4px;">{{user.noteNoti}}</p>
           </button>
           <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
+        <li>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/urequest">แจ้งความต้องการใช้อุปกรณ์</router-link>
+        </li>
         <li class="selected">
           <i class="fa fa-clipboard" style="font-size:25px;"></i>
           <router-link to="/ulendhistory">ประวัติการยืม</router-link>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="">การแจ้งเตือน</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -177,7 +184,7 @@ export default {
   border-radius: 4px;
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -200,7 +207,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -258,6 +265,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {

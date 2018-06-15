@@ -8,9 +8,9 @@
           <div class="panel-body">
             <div class="row">
               <div class="col-lg-12">
-                <p><center><img src="../assets/b.png" width="60%"></center></p>
+                <p><center><img src="../assets/b.png" width="55%"></center></p>
                 <form id="login-form" action="#" method="post" role="form" style="display: block;">
-                  <!--<h2>LOGIN</h2>!-->
+                  <!-- <h2>LOGIN</h2> -->
                   <br>
                   <div class="form-group">
                     <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Email" value="" v-model="email">
@@ -18,10 +18,10 @@
                   <div class="form-group">
                     <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password" v-model="password">
                   </div><br>
-                  <div class="col-xs-6 form-group pull-left checkbox">
+                  <!-- <div class="col-xs-6 form-group pull-left checkbox">
                     <input id="checkbox1" type="checkbox" name="remember">
                     <label for="checkbox1">Remember Me</label>
-                  </div>
+                  </div> -->
                   <div class="col-xs-6 form-group pull-right">
                         <button type="button" @click="submitLogin()" class="form-control btn btn-register">log in</button>
                   </div>
@@ -83,7 +83,7 @@ export default {
       if (status === 'admin') {
         this.$router.push('/listtable')
       } else if (status === 'user') {
-        this.$router.push('/uhome')
+        this.$router.push('/ubookeqm')
       }
     }
   }
@@ -96,16 +96,16 @@ export default {
   color: #ffffff;
 }
 .panel {
-  width: 555px;
+  width: 450px;
   margin: auto;
 }
 .container {
-  padding-top: 90px;
+  padding-top: 70px;
   background:#F7F7F7;
   color:#666666;
   font-family: 'Roboto', sans-serif;
   font-weight:100;
-  position: fixed;
+  /* position: fixed; */
   z-index: 1000;
   top: 0;
   bottom: 0;
@@ -113,11 +113,11 @@ export default {
 
 .container {
   width: 100%;
-  background: -webkit-linear-gradient(left, #22d686, #24d3d3, #22d686, #24d3d3);
+  /* background: -webkit-linear-gradient(left, #22d686, #24d3d3, #22d686, #24d3d3);
   background: linear-gradient(to right, #22d686, #24d3d3, #22d686, #24d3d3);
   background-size: 600% 100%;
   -webkit-animation: HeroBG 20s ease infinite;
-          animation: HeroBG 20s ease infinite;
+          animation: HeroBG 20s ease infinite; */
 }
 
 @-webkit-keyframes HeroBG {
@@ -316,9 +316,9 @@ label {
 }
 
 .btn-register {
-  background-color: #E8E9EC;
+  background-color: #57b846;
   outline: none;
-  color: #2D3B55;
+  color: #ffffff;
   font-size: 14px;
   height: auto;
   font-weight: normal;
@@ -327,10 +327,15 @@ label {
   border: none;
   border-radius: 0px;
   box-shadow: none;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
-.btn-register:hover,
+.btn-register:hover{
+  background: #2d3b55;
+  color: #ffffff;
+}
 .btn-register:focus {
   color: #fff;
   background-color: #2D3B55;
 }
+
 </style>

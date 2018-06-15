@@ -74,15 +74,26 @@ export default {
       phoneNumber: ''
     }
   },
+  created () {
+  },
   firebase: {
     users: userRef
   },
   methods: {
     submitRegister () {
+      var re = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/igm
+      var phoneNumber = /^\d{10}$/
+      var passCheck = this.password.length
       if (this.password !== this.confirmpassword) {
         alert('กรุณากรอกรหัสผ่านทั้ง 2 ช่องให้ตรงกัน')
       } else if (this.firstname === '' || this.lastname === '' || this.email === '' || this.password === '' || this.confirmpassword === '' || this.department === '' || this.phoneNumber === '') {
         alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+      } else if (re.test(this.email) === false) {
+        alert('รูปแบบ email ไม่ถูกต้อง')
+      } else if (phoneNumber.test(this.phoneNumber) === false) {
+        alert('รูปแบบเบอร์โทรไม่ถูกต้อง')
+      } else if (passCheck < 6) {
+        alert('ใส่รหัสผ่านอย่างน้อย 6 ตัวขึ้นไป')
       } else {
         userRef.push({
           firstname: this.firstname,
@@ -122,16 +133,16 @@ export default {
   color: #ffffff;
 }
 .panel {
-  width: 555px;
+  width: 450px;
   margin: auto;
 }
 .container {
-  padding-top: 90px;
+  padding-top: 70px;
   background:#F7F7F7;
   color:#666666;
   font-family: 'Roboto', sans-serif;
   font-weight:100;
-  position: fixed;
+  /* position: fixed; */
   z-index: 1000;
   top: 0;
   bottom: 0;
@@ -139,11 +150,11 @@ export default {
 
 .container {
   width: 100%;
-  background: -webkit-linear-gradient(left, #22d686, #24d3d3, #22d686, #24d3d3);
+  /* background: -webkit-linear-gradient(left, #22d686, #24d3d3, #22d686, #24d3d3);
   background: linear-gradient(to right, #22d686, #24d3d3, #22d686, #24d3d3);
   background-size: 600% 100%;
   -webkit-animation: HeroBG 20s ease infinite;
-          animation: HeroBG 20s ease infinite;
+          animation: HeroBG 20s ease infinite; */
 }
 
 @-webkit-keyframes HeroBG {
@@ -342,9 +353,9 @@ label {
 }
 
 .btn-register {
-  background-color: #E8E9EC;
+  background-color: #57b846;
   outline: none;
-  color: #2D3B55;
+  color: #ffffff;
   font-size: 14px;
   height: auto;
   font-weight: normal;
@@ -353,6 +364,7 @@ label {
   border: none;
   border-radius: 0px;
   box-shadow: none;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .btn-register:hover,
 .btn-register:focus {

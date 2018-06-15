@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>ยืมเครื่องมือแพทย์</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>จองเครื่องมือแพทย์</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -25,13 +25,13 @@
       <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
-        <li  class="selected">
+        <!-- <li>
           <i class="glyphicon glyphicon-wrench" style="font-size:25px;"></i>
           <router-link to="/uhome">ยืมเครื่องมือแพทย์</router-link>
-        </li>
-        <li>
-          <i class="glyphicon glyphicon-calendar" style="font-size:25px;"></i>
-          <router-link to="/ubookeqm">จองเครื่องมือแพทย์</router-link>
+        </li> -->
+        <li class="selected">
+          <i class="glyphicon glyphicon-wrench" style="font-size:25px;"></i>
+          <router-link to="/ubookeqm">ยืมเครื่องมือแพทย์</router-link>
         </li>
         <li>
           <i class="fa fa-check-square-o" style="color:#ffffff;font-size:25px;"></i>
@@ -88,7 +88,7 @@
                       <th width="300px">ชื่ออุปกรณ์</th>
                       <th width="150px" style="text-align: center;">จำนวน</th>
                       <th width="150px" style="text-align: center;">หน่วย</th>
-                      <th width="150px" style="text-align: center;">ยืม</th>
+                      <th width="150px" style="text-align: center;">ยืมอุปกรณ์</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -108,15 +108,15 @@
                         <td>{{equipment.nameEqm}}</td>
                         <td style="text-align: center;">{{equipment.balanceEqm}}</td>
                         <td style="text-align: center;">{{equipment.unitEqm}}</td>
-                        <td style="text-align: center;"><button class="BTNlend" style="color:#ffffff;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'], equipment.countTopTen, equipment.dateCheckRepair, equipment.dateCheckCalibrate), setDate()">ยืม</button></td>
+                        <td style="text-align: center;"><button class="BTNlend" style="color:#ffffff;" data-toggle="modal" data-target="#myModal" @click="lend(equipment['.key'], equipment.countTopTen, equipment.dateCheckRepair, equipment.dateCheckCalibrate)">ยืม</button></td>
                       </tr>
                     </tbody>
                   </table>
               <!--TABLE!-->
 
-              <!-- lend Device !-->
+              <!-- Book Device !-->
               <div class="modal fade" id="myModal" role="dialog">
-                <div class="modal-dialog">
+                <div class="modal-dialog" style="height:5000px;">
                   <!-- Modal content-->
                   <div class="modal-content">
                     <div class="modal-header">
@@ -126,25 +126,61 @@
                     <div class="modal-body">
                       <p style="color:#9A9A9A;font-size:20px;">ชื่ออุปกรณ์  </p><h4 style="font-size:21px">{{nameLend}}</h4> <br>
                       <p style="color:#9A9A9A;font-size:20px;">ประเภท  </p><h4 style="font-size:21px">{{categoryLend}}</h4><br>
-
-                      <!--<p style="color:#9A9A9A;font-size:20px;">HN No.</p>
-                      <input class="" type="text" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="HnNo"/><br><br> !-->
-
-                      <p style="color:#9A9A9A;font-size:20px;">จำนวน</p>
-                      <input class="" type="number" placeholder="" style="width:300px;border-radius:4px;border:1px solid #ccc;font-size:21px;" v-model="amountLend"/><br><br>
-
-                      <p style="color:#9A9A9A;font-size:20px;">ระยะเวลาการยืม</p>
-                      <input id="myDate" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="today">
+                      <center>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="700px" style="text-align:center;">หมายเลขเครื่อง</th>
+                            <th width="700px" style="text-align: center;">ยืม</th>
+                          </tr>
+                        </thead>
+                        <tbody v-for="equipment in equipments" v-if="equipment.nameEqm === nameLend">
+                          <tr v-for="(eqm, index) in equipment.equipmentID" v-if="eqm.status !== 'ส่งซ่อม'">
+                            <td style="text-align:center;">{{eqm.number}}</td>
+                            <td style="text-align:center;">
+                              <button @click="bookEqmFn(eqm.number, index)" type="button" class="btn btn-default BTNlend">
+                                ยืม
+                              </button>
+                              <i id="next" data-dismiss="modal" data-toggle="modal" data-target="#nextBookeqm"></i>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      </center>
+                      <!-- <p style="color:#9A9A9A;font-size:20px;">ระยะเวลาการยืม</p>
+                      <input id="myDate" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="today"> -->
                     </div>
                     <div class="modal-footer">
-                      <button @click="submitLend()" type="button" class="btn btn-default BTNlend" data-dismiss="modal"><span class="glyphicon glyphicon-floppy-disk" style="font-size:16px;"></span> ตกลง</button>
                       <button type="button" class="btn btn-default BTNcancel" data-dismiss="modal"><span class="glyphicon glyphicon-remove" style="font-size:16px;"></span> ยกเลิก</button>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- lend Device !-->
+              <!-- Book Device !-->
 
+              <!-- Book (ช่วงเวลา) !-->
+              <div class="modal fade" id="nextBookeqm" role="dialog">
+                <div class="modal-dialog" style="width:1000px;">
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title" style="font-size:25px"><b>จองช่วงวันที่ยืม</b></h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="comp-full-calendar test-fc">
+                        <full-calendar ref="calendar" @event-created="eventCreated" :config="config" :events="events" :header="header" :defaultView="defaultView"></full-calendar>
+                      </div>
+                      <!-- <input id="myDate" type="date" style="width:150px;border-radius:4px;border:none;font-size:21px;" min="" v-model="today">  -->
+                    </div>
+                    <div class="modal-footer">
+                      <button @click="submitBook()" type="button" class="btn btn-default" data-dismiss="modal" style="width:85px;font-size: 18px;">ตกลง</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal" style="width:85px;font-size: 18px;">ยกเลิก</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Book (ช่วงเวลา)!-->
               </div>
             </div>
           </div>
@@ -156,12 +192,13 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, scanRef, notiRef, yearRef, historyDepartmentRef, messaging, lendMaxRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef, notiRef, yearRef, historyDepartmentRef, messaging, lendMaxRef, bookEqmRef} from './firebase'
 import moment from 'moment'
 import dateFormat from 'dateformat'
+import 'fullcalendar/dist/locale/th'
 
 export default {
-  name: 'uhome',
+  name: 'ubookeqm',
   data () {
     return {
       user: '',
@@ -176,7 +213,7 @@ export default {
       nameLend: '',
       categoryLend: '',
       unitLend: '',
-      amountLend: '',
+      amountLend: 1,
       HnNo: '',
       statusLend: 'รออนุมัติ',
       department: '',
@@ -207,7 +244,28 @@ export default {
       arrayMaxDevice: [],
       arrayDevice: [],
       amountAAA: '',
-      dateCheckCalibrate: ''
+      dateCheckCalibrate: '',
+      // fullcalendar
+      defaultView: 'month',
+      header: {
+        left: 'prev, next today',
+        center: 'title',
+        right: 'month'
+      },
+      events: [],
+      selected: [],
+      startEvent: '',
+      endEvent: '',
+      numberEqm: '',
+      arrayEvent: [],
+      nameEqmCalen: '',
+      timestampStart: '',
+      timestampEnd: '',
+      timestamp: [],
+      checkMark: true,
+      checkPush: false,
+      todayCheck: '',
+      idLend: ''
     }
   },
   created () {
@@ -257,31 +315,170 @@ export default {
     notis: notiRef,
     years: yearRef,
     historyDepartment: historyDepartmentRef,
-    lendMax: lendMaxRef
+    lendMax: lendMaxRef,
+    bookEqm: bookEqmRef
   },
   methods: {
-    setDate () {
-      this.today = new Date().toISOString().substr(0, 10)
-      document.querySelector('#myDate').value = this.today
-      document.getElementById('myDate').setAttribute('min', this.today)
+    bookEqmFnn (nameEqm) {
+      console.log(nameEqm, 8888)
+      this.nameEqmCalen = nameEqm
     },
-    submitLend () {
+    bookEqmFn (number, index) {
+      this.numberEqm = number
+      this.events = []
+      this.arrayEvent = []
+      document.getElementById('next').click()
+
+      for (let i = 0; i < this.bookEqm.length; i++) {
+        if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === this.nameLend) {
+          this.arrayEvent.push({
+            title: 'ชื่อ-สกุล: ' + this.bookEqm[i].firstname + ' ' + this.bookEqm[i].lastname + ' แผนก: ' + this.bookEqm[i].department,
+            start: this.bookEqm[i].startEvent,
+            end: this.bookEqm[i].endEventMark,
+            editable: false,
+            backgroundColor: 'rgb(3,155,229)',
+            borderColor: 'rgb(3,155,229)'
+          })
+        }
+      }
+      this.events = this.arrayEvent
+    },
+    eventCreated (...test) {
+      this.checkMark = true
+      this.events = test
+      var arrayStart = []
+      this.arrayEvent = []
+      arrayStart = this.events[0].start
+      var arrayEnd = []
+      arrayEnd = this.events[0].end
+
+      this.todayCheck = dateFormat(new Date(), 'yyyy-mm-dd')
+      this.startEvent = dateFormat(arrayStart._d, 'yyyy-mm-dd')
+      this.endEvent = dateFormat(arrayEnd._d, 'yyyy-mm-dd')
+      this.timestampStart = arrayStart._i
+      this.timestampEnd = arrayEnd._i
+      // push Timestamp
+      this.timestamp = []
+      for (let i = this.timestampStart; i < this.timestampEnd; i += 86400000) {
+        this.timestamp.push({
+          timeS: i,
+          date: dateFormat(i, 'yyyy-mm-dd')
+        })
+      }
+      // แสดงช่วงเวลา เริ่มต้น - สิ้นสุด
+      for (let i = 0; i < this.bookEqm.length; i++) {
+        if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === this.nameLend) {
+          this.arrayEvent.push({
+            title: 'ชื่อ-สกุล: ' + this.bookEqm[i].firstname + ' ' + this.bookEqm[i].lastname + ' แผนก: ' + this.bookEqm[i].department,
+            start: this.bookEqm[i].startEvent,
+            end: this.bookEqm[i].endEventMark,
+            editable: false,
+            backgroundColor: 'rgb(3,155,229)',
+            borderColor: 'rgb(3,155,229)'
+          })
+        }
+      }
+      // ตรวจสอบวันซ้ำ
+      var breakLoop = true
+      console.log()
+      for (let i = 0; i < this.bookEqm.length; i++) {
+        if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === this.nameLend) {
+          for (let j = 0; j < this.timestamp.length; j++) {
+            if (breakLoop) {
+              for (let p = 0; p < this.bookEqm[i].timestamp.length; p++) {
+                console.log(this.timestamp[j].date, this.bookEqm[i].timestamp[p].date)
+                if (this.startEvent < this.todayCheck) {
+                  alert('กรุณาเลือกช่วงวันที่ตั้งแต่ ปัจจุบันเป็นต้นไป')
+                  this.checkMark = false
+                  this.checkPush = false
+                  breakLoop = false
+                  break
+                } else if (this.timestamp[j].date === this.bookEqm[i].timestamp[p].date) {
+                  alert('ช่วงวันที่นี้ มีการจองแล้ว')
+                  this.checkMark = false
+                  this.checkPush = false
+                  breakLoop = false
+                  break
+                }
+              }
+            }
+          }
+        }
+      }
+      // มาควัน
+      if (this.checkMark) {
+        this.arrayEvent.push({
+          title: 'หมายเลขเครื่อง: ' + this.numberEqm,
+          start: this.startEvent,
+          end: this.endEvent,
+          editable: false,
+          backgroundColor: '#61c419',
+          borderColor: '#61c419'
+        })
+        this.checkPush = true
+      }
+      this.events = this.arrayEvent
+      console.log()
+    },
+    submitBook () {
+      var iEnd = this.timestamp.length - 1
+      if (this.checkPush) {
+        var s = ''
+        if (this.categoryLend === 'สนับสนุน') {
+          s = 'SUP'
+        } else if (this.categoryLend === 'วินิจฉัยและรักษา') {
+          s = 'DXRX'
+        } else if (this.categoryLend === 'รักษา') {
+          s = 'RX'
+        } else if (this.categoryLend === 'วินิจฉัย') {
+          s = 'DX'
+        }
+
+        var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
+        var timestamp = new Date().getUTCMilliseconds()
+        var id = getRandomInt + timestamp
+        this.idLend = s + id
+        bookEqmRef.push({
+          idLend: this.idLend,
+          title: 'หมายเลขเครื่อง: ' + this.numberEqm,
+          number: this.numberEqm,
+          startEvent: this.startEvent,
+          endEventMark: this.endEvent,
+          endEvent: this.timestamp[iEnd].date,
+          nameEqm: this.nameLend,
+          timestampStart: this.timestampStart,
+          timestampEnd: this.timestamp[iEnd].timeS,
+          timestamp: this.timestamp,
+          status: 'รออนุมัติ',
+          firstname: this.firstname,
+          lastname: this.lastname,
+          department: this.department
+        })
+        this.submitLend(this.idLend, this.numberEqm)
+      }
+    },
+    setDate () {
+      // this.today = new Date().toISOString().substr(0, 10)
+      // document.querySelector('#myDate').value = this.today
+      // document.getElementById('myDate').setAttribute('min', this.today)
+    },
+    submitLend (idLend, numberEqm) {
       this.user = auth.currentUser
       this.firstname = this.users.find(users => users.email === this.user.email).firstname
       this.lastname = this.users.find(users => users.email === this.user.email).lastname
       this.department = this.users.find(users => users.email === this.user.email).department
       this.email = this.users.find(users => users.email === this.user.email).email
 
-      var s = ''
-      if (this.categoryLend === 'สนับสนุน') {
-        s = 'SUP'
-      } else if (this.categoryLend === 'วินิจฉัยและรักษา') {
-        s = 'DXRX'
-      } else if (this.categoryLend === 'รักษา') {
-        s = 'RX'
-      } else if (this.categoryLend === 'วินิจฉัย') {
-        s = 'DX'
-      }
+      // var s = ''
+      // if (this.categoryLend === 'สนับสนุน') {
+      //   s = 'SUP'
+      // } else if (this.categoryLend === 'วินิจฉัยและรักษา') {
+      //   s = 'DXRX'
+      // } else if (this.categoryLend === 'รักษา') {
+      //   s = 'RX'
+      // } else if (this.categoryLend === 'วินิจฉัย') {
+      //   s = 'DX'
+      // }
 
       if (this.amountLend < 0) {
         alert('กรุณากรอกข้อมูลให้ถูกต้อง')
@@ -291,10 +488,10 @@ export default {
         alert('กรอกจำนวนเกิน')
       } else if (this.amountLend <= this.balanceLend) {
         // สร้างเลขที่การยืม
-        var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
-        var timestamp = new Date().getUTCMilliseconds()
-        var id = getRandomInt + timestamp
-        var idLend = s + id
+        // var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
+        // var timestamp = new Date().getUTCMilliseconds()
+        // var id = getRandomInt + timestamp
+        // var idLend = s + id
 
         // setDate
         var dd = this.today.substr(8, 2)
@@ -304,25 +501,28 @@ export default {
         this.dateCheckReturn = mm + '/' + dd + '/' + yyyy
 
         // หาจำนวนวันว่ายืมไปกี่วัน
-        var y = dateFormat(this.dateCheckReturn, 'yyyy') * 1
-        var m = dateFormat(this.dateCheckReturn, 'm') * 1
-        var d = dateFormat(this.dateCheckReturn, 'd') * 1
-        var yNow = dateFormat(new Date(), 'yyyy') * 1
-        var mNow = dateFormat(new Date(), 'm') * 1
-        var dNow = dateFormat(new Date(), 'd') * 1
+        var ii = this.timestamp.length - 1
+
+        var y = dateFormat(this.timestamp[ii].timeS, 'yyyy') * 1
+        var m = dateFormat(this.timestamp[ii].timeS, 'm') * 1
+        var d = dateFormat(this.timestamp[ii].timeS, 'd') * 1
+        var yNow = dateFormat(this.timestamp[0].timeS, 'yyyy') * 1
+        var mNow = dateFormat(this.timestamp[0].timeS, 'm') * 1
+        var dNow = dateFormat(this.timestamp[0].timeS, 'd') * 1
         var a = moment([y, m, d])
         var b = moment([yNow, mNow, dNow])
         this.amountDate = a.diff(b, 'days') + 1
 
         // --------------
-        this.balanceLend = this.balanceLend * 1 - this.amountLend * 1
-        this.borrowedLend = this.borrowedLend * 1 + this.amountLend * 1
+        // this.balanceLend = this.balanceLend * 1 - this.amountLend * 1
+        // this.borrowedLend = this.borrowedLend * 1 + this.amountLend * 1
         approvetableRef.push({
           HnNo: '-',
           nameLend: this.nameLend,
           amountLend: this.amountLend,
           categoryLend: this.categoryLend,
-          dateLend: moment().format('DD/MM/YYYY'), // LTS
+          dateLend: dateFormat(this.timestamp[0].timeS, 'dd/mm/yyyy'), // LTS
+          dateBook: dateFormat(this.timestamp[ii].timeS, 'dd/mm/yyyy'),
           firstname: this.firstname,
           lastname: this.lastname,
           statusLend: this.statusLend,
@@ -330,13 +530,16 @@ export default {
           keyAppove: this.key,
           idLend: idLend,
           email: this.email,
-          timeLength: this.timeLength,
-          dateCheckReturn: this.dateCheckReturn,
+          timeLength: dateFormat(this.timestamp[ii].timeS, 'dd/mm/yyyy'),
+          dateCheckReturn: dateFormat(this.timestamp[ii].timeS, 'mm/dd/yyyy'),
           dateCheckRepair: this.dateCheckRepair,
           dateCheckCalibrate: this.dateCheckCalibrate,
           amountDate: this.amountDate,
-          month: moment().format('MM'),
-          year: moment().format('YYYY')
+          month: dateFormat(this.timestamp[0].timeS, 'mm'),
+          year: dateFormat(this.timestamp[0].timeS, 'yyyy'),
+          dateLendTs: this.timestamp[0].timeS,
+          timeLengthTs: this.timestamp[ii].timeS,
+          number: numberEqm
         })
 
         // year
@@ -370,40 +573,6 @@ export default {
           }
           this.lendMaxDepart()
         }
-        // End year
-        // for (let i = 0; i < this.historyDepartment.length; i++) {
-        //   if (this.historyDepartment[i].nameEqm === this.nameLend) {
-        //     this.keyUpdateDepart = this.historyDepartment[i]['.key']
-        //     this.amount = this.historyDepartment[i].amount * 1
-        //     historyDepartmentRef.child(this.keyUpdateDepart).update({
-        //       amount: this.amount + this.amountLend * 1
-        //     })
-        //     break
-        //   } else if (i === this.historyDepartment.length - 1 && this.nameLend !== this.historyDepartment[i].nameEqm) {
-        //     console.log(555, this.amountLend)
-        //     historyDepartmentRef.push({
-        //       department: this.department,
-        //       nameEqm: this.nameLend,
-        //       amount: this.amountLend
-        //     })
-        //     break
-        //   }
-        // }
-
-        // this.namefind = this.historyDepartment.find(historyDepartment => historyDepartment.nameEqm === this.nameLend).nameEqm
-        // if (this.namefind === null) {
-        //   historyDepartmentRef.push({
-        //     department: this.department,
-        //     nameEqm: this.nameLend,
-        //     amount: this.amountLend * 1
-        //   })
-        // }
-        // historyDepartmentRef.push({
-        //   department: this.department,
-        //   nameEqm: this.nameLend,
-        //   amount: this.amountLend * 1
-        // })
-        // year
         if (this.year === '') {
           console.log('GG')
           yearRef.push({
@@ -429,8 +598,8 @@ export default {
         }
         // EndNoti
 
-        equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
-        equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})
+        // equipmentRef.child(this.key).update({borrowedEqm: this.borrowedLend})
+        // equipmentRef.child(this.key).update({balanceEqm: this.balanceLend})
         this.countTopTen = this.countTopTen * 1 + 1
         equipmentRef.child(this.key).update({countTopTen: this.countTopTen})
       } else {
@@ -448,7 +617,7 @@ export default {
       this.dateCheckRepair = this.equipments.find(equipments => equipments['.key'] === key).dateCheckRepair
       this.dateCheckCalibrate = this.equipments.find(equipments => equipments['.key'] === key).dateCheckCalibrate
       this.key = key
-      this.amountLend = ''
+      // this.amountLend = ''
       this.HnNo = ''
       this.countTopTen = countTopTen
       this.approveNoti = this.notis.find(notis => notis).approveNoti
@@ -525,6 +694,7 @@ export default {
 </script>
 
 <style scoped>
+@import '~fullcalendar/dist/fullcalendar.css';
 /*--------------------------------------- CONTENT ----------------------------------*/
 .card {
   padding: .75rem 1.25rem;
@@ -775,5 +945,29 @@ th {
   height: 35px;
   font-weight: bold;
   margin-right: 28px;
+}
+
+.comp-full-calendar {
+  padding: 20px;
+  background: #fff;
+  max-width: 960px;
+  margin: 0 auto;
+  font-size: 18px;
+}
+
+.BTNstatus {
+  background-color: rgb(3,155,229);
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 85px;
+  height: 35px;
+  font-weight: bold;
 }
 </style>

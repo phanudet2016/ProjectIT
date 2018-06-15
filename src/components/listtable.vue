@@ -49,16 +49,8 @@
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -180,9 +172,13 @@
                     <th width="700px">ชื่ออุปกรณ์</th>
                     <th width="118px" style="text-align: center;">จำนวน</th>
                     <th width="118px" style="text-align: center;">ถูกยืม</th>
+                    <th width="118px" style="text-align: center;">ส่งซ่อม</th>
                     <th width="118px" style="text-align: center; background: rgb(3,155,229);; color: #ffffff;">คงเหลือ</th>
                     <th width="100px">หน่วย</th>
-                    <th width="100px">ราคา (ต่อหน่วย)</th>
+                    <th width="140px" style="text-align: center;">ประเภท</th>
+                    <th width="150px">ราคา (ต่อหน่วย)</th>
+                    <th width="100px">วันที่ซ่อมบำรุง (Maintenance)</th>
+                    <th width="200px">วันที่ตรวจเช็คความเรียบร้อย (Calibration)</th>
                     <th width="80px" style="text-align: center;">แก้ไข</th>
                   </tr>
                 </thead>
@@ -191,28 +187,40 @@
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                      <td style="text-align: center;">{{equipment.amountRepair}}</td>
                       <td style="text-align: center; background: rgb(3,155,229);; color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
+                      <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
-                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
+                      <td>{{equipment.dateRepair}}</td>
+                      <td>{{equipment.dateCalibrate}}</td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'], equipment.unitEqm, equipment.dateRepair, equipment.dateCheckRepair, equipment.dateCalibrate, equipment.dateCheckCalibrate)"></span></td>
                   </tr>
                   <tr v-if="equipment.categoryEqm == category && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                      <td style="text-align: center;">{{equipment.amountRepair}}</td>
                       <td style="text-align: center; background: rgb(3,155,229);rgb(3,155,229); color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
+                      <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
-                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
+                      <td>{{equipment.dateRepair}}</td>
+                      <td>{{equipment.dateCalibrate}}</td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'], equipment.unitEqm, equipment.dateRepair, equipment.dateCheckRepair, equipment.dateCalibrate, equipment.dateCheckCalibrate)"></span></td>
                   </tr>
                   <tr v-if="category === 'ทั้งหมด' && equipment.statusLend === 'เปิด'" v-for="(equipment, key) of searchEqm" v-bind:key="equipment['.key']">
                       <td><router-link :to="'/eqmtable/' + equipment['.key']">{{equipment.nameEqm}}</router-link></td>
                       <td style="text-align: center;">{{equipment.amountEqm}}</td>
                       <td style="text-align: center;">{{equipment.borrowedEqm}}</td>
+                      <td style="text-align: center;">{{equipment.amountRepair}}</td>
                       <td style="text-align: center; background: rgb(3,155,229); color: #ffffff;">{{equipment.balanceEqm}}</td>
                       <td>{{equipment.unitEqm}}</td>
+                      <td style="text-align: center;">{{equipment.categoryEqm}}</td>
                       <td style="text-align: center;">{{equipment.priceUnit}}</td>
-                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'])"></span></td>
+                      <td>{{equipment.dateRepair}}</td>
+                      <td>{{equipment.dateCalibrate}}</td>
+                      <td style="text-align: center;"><span class="glyphicon glyphicon-edit" style="color:#9968db;" data-toggle="modal" data-target="#myModall" @click="editEqm(equipment['.key'], equipment.unitEqm, equipment.dateRepair, equipment.dateCheckRepair, equipment.dateCalibrate, equipment.dateCheckCalibrate)"></span></td>
                   </tr>
                 </tbody>
               </table>
@@ -229,9 +237,14 @@
                     </div>
                     <div class="modal-body">
                       <input class="form-control" type="text" placeholder="ชื่ออุปกรณ์" style="font-size:20px" v-model="editName"/><br>
+                      <h4>วันที่ซ่อมบำรุงของอุปกรณ์ (Maintenance):</h4>
+                      <input id="myDate" type="date" class="form-control" min="" v-model="today" style="font-size:20px;"><br>
+                      <h4>วันที่ตรวจเช็คความเรียบร้อยของอุปกรณ์ (Calibration):</h4>
+                      <input id="myDate" type="date" class="form-control" min="" v-model="todayC" style="font-size:20px;"><br>
                       <select class="selectBox" v-model="editUnitEqm" style="font-size:16px">
                         <option disabled value="">หน่วย</option>
                         <option>เครื่อง</option>
+                        <option>ตัว</option>
                         <option>ชุด</option>
                       </select>
                       <!--<select class="selectBox" v-model="editCategory" style="font-size:16px">
@@ -263,7 +276,9 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, notiRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef, scanRef, historyRef} from './firebase'
+import moment from 'moment'
+import dateFormat from 'dateformat'
 
 export default {
   name: 'listtable',
@@ -299,7 +314,17 @@ export default {
       confirmpassword: '',
       department: '',
       phoneNumber: '',
-      statusCheck: ''
+      statusCheck: '',
+      today: '',
+      pushDateRepair: '',
+      pushDateCheckRepair: '',
+      dateRepair: '',
+      dateCheckRepairScanKey: '',
+      dateCheckRepairHitKey: '',
+      dateCalibrate: '',
+      todayC: '',
+      pushDateCalibrate: '',
+      pushDateCheckCalibrate: ''
     }
   },
   created () {
@@ -311,11 +336,16 @@ export default {
         console.log('not logged in')
       }
     })
+    console.log(new Date('5/5/2018').getTime())
+    console.log(new Date('5/10/2018').getTime())
+    console.log(new Date('5/7/2018').getTime() + 259200000)
   },
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    notis: notiRef
+    notis: notiRef,
+    scans: scanRef,
+    historys: historyRef
   },
   methods: {
     subm1itEqm () {
@@ -355,7 +385,7 @@ export default {
         editBalanceEqm: ''
       })
     },
-    editEqm (key) {
+    editEqm (key, unitEqm, dateRepair, dateCheckRepair, dateCalibrate, dateCheckCalibrate) {
       this.editName = this.equipments.find(equipments => equipments['.key'] === key).nameEqm
       this.editID = this.equipments.find(equipments => equipments['.key'] === key).equipmentID
       this.editAmountEqm = this.equipments.find(equipments => equipments['.key'] === key).amountEqm
@@ -365,16 +395,41 @@ export default {
       this.check = ''
       this.btnAddAmount = 'เพิ่มจำนวน'
       this.editCategory = ''
-      this.editUnitEqm = ''
+      this.editUnitEqm = unitEqm
       this.addAmount = ''
+      this.dateRepair = dateRepair
+      this.dateCalibrate = dateCalibrate
+      // this.today = new Date().toISOString().substr(0, 10)
+      if (dateRepair !== '-') {
+        this.today = ''
+        var day = new Date(dateCheckRepair)
+        this.today = dateFormat(day, 'yyyy-mm-dd')
+        document.querySelector('#myDate').value = this.today
+      } else {
+        this.today = ''
+        this.pushDateRepair = '-'
+        this.pushDateCheckRepair = '-'
+      }
+
+      if (dateCalibrate !== '-') {
+        this.todayC = ''
+        var dayC = new Date(dateCheckCalibrate)
+        this.todayC = dateFormat(dayC, 'yyyy-mm-dd')
+        document.querySelector('#myDate').value = this.todayC
+      } else {
+        this.todayC = ''
+        this.pushDateCalibrate = '-'
+        this.pushDateCheckCalibrate = '-'
+      }
     },
     submitEditEqm () {
       this.count = this.addAmount * 1 + 1
       this.num = this.editID.length + 1
       this.idDecive = this.editID.length + 1
       for (var i = 1; i < this.count; i++) {
+        var getRandomInt = Math.floor(Math.random() * (900000 - 100000 + 1)) + 100000
         var insertID = {
-          id: 'RX' + this.idDecive++,
+          id: 'RX' + getRandomInt,
           number: this.num++,
           lastnameLend: '',
           nameLend: '',
@@ -384,13 +439,25 @@ export default {
       }
       this.editAmountEqm = this.editAmountEqm * 1 + this.addAmount * 1
       this.editBalanceEqm = this.editBalanceEqm * 1 + this.addAmount * 1
+      if (this.dateRepair !== '-' || this.today !== '') {
+        this.pushDateRepair = moment(this.today).format('DD/MM/YYYY')
+        this.pushDateCheckRepair = moment(this.today).format('MM/DD/YYYY')
+      }
+      if (this.dateCalibrate !== '-' || this.todayC !== '') {
+        this.pushDateCalibrate = moment(this.todayC).format('DD/MM/YYYY')
+        this.pushDateCheckCalibrate = moment(this.todayC).format('MM/DD/YYYY')
+      }
       if (this.editUnitEqm !== '') {
         equipmentRef.child(this.key).update({
           nameEqm: this.editName,
           unitEqm: this.editUnitEqm,
           equipmentID: this.editID,
           amountEqm: this.editAmountEqm,
-          balanceEqm: this.editBalanceEqm
+          balanceEqm: this.editBalanceEqm,
+          dateRepair: this.pushDateRepair,
+          dateCheckRepair: this.pushDateCheckRepair,
+          dateCalibrate: this.pushDateCalibrate,
+          dateCheckCalibrate: this.pushDateCheckCalibrate
         })
       }
       equipmentRef.child(this.key).update({
@@ -398,6 +465,22 @@ export default {
         amountEqm: this.editAmountEqm,
         balanceEqm: this.editBalanceEqm
       })
+      for (let i = 0; i < this.scans.length; i++) {
+        if (this.scans[i].nameLend === this.editName) {
+          scanRef.child(this.scans[i]['.key']).update({
+            dateCheckRepair: this.pushDateCheckRepair,
+            dateCheckCalibrate: this.pushDateCheckCalibrate
+          })
+        }
+      }
+      for (let i = 0; i < this.historys.length; i++) {
+        if (this.historys[i].nameEqm === this.editName) {
+          historyRef.child(this.historys[i]['.key']).update({
+            dateCheckRepair: this.pushDateCheckRepair,
+            dateCheckCalibrate: this.pushDateCheckCalibrate
+          })
+        }
+      }
     },
     removeEqm (key) {
       equipmentRef.child(key).remove()
@@ -475,7 +558,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -499,11 +582,11 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
   bottom: 0;
   position: fixed;
   top: 0;
   margin-top: -1px;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .nav-header ul li p {
@@ -557,6 +640,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {

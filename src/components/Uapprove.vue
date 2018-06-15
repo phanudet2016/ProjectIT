@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการรออนุมัติ</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>รายการรออนุมัติ</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -25,28 +25,32 @@
       <p class="navbar-brand">ระบบจัดการ<br>อุปกรณ์ทางการแพทย์</p>
       <br><br><br><br><br>
       <ul>
+        <!-- <li>
+          <i class="glyphicon glyphicon-wrench" style="font-size:25px;"></i>
+          <router-link to="/uhome">ยืมเครื่องมือแพทย์</router-link>
+        </li> -->
         <li>
-          <i class="glyphicon glyphicon-wrench" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/uhome">ยืมเครื่องแพทย์</router-link>
+          <i class="glyphicon glyphicon-wrench" style="font-size:25px;color:#ffffff;"></i>
+          <router-link to="/ubookeqm">ยืมเครื่องมือแพทย์</router-link>
         </li>
         <li class="selected">
           <i class="fa fa-check-square-o" style="font-size:25px;"></i>
           <router-link to="/uapprove">รายการรออนุมัติ</router-link>
         </li>
         <li>
-          <i class="fa fa-list-alt" style="color:#ffffff;font-size:25px;"></i>
+          <i class="glyphicon glyphicon-book" style="color:#ffffff;font-size:25px;"></i>
           <button v-if="user.noteNoti !== 0 && user.email === emailAuth" v-for="user of users" class="noti" style="margin-left:-12px;">
             <p style="margin-top: -4px;">{{user.noteNoti}}</p>
           </button>
           <router-link to="/ulisttable">รายการเครื่องมือที่ยืมมา</router-link>
         </li>
         <li>
-          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/ulendhistory">ประวัติการยืม</router-link>
+          <i class="glyphicon glyphicon-send" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/urequest">แจ้งความต้องการใช้อุปกรณ์</router-link>
         </li>
         <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="">การแจ้งเตือน</router-link>
+          <i class="fa fa-clipboard" style="color:#ffffff;font-size:25px;"></i>
+          <router-link to="/ulendhistory">ประวัติการยืม</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -71,27 +75,27 @@
                     <tr>
                       <th width="300px">ชื่ออุปกรณ์</th>
                       <th width="150px" style="text-align: center;">เลขที่การยืม</th>
-                      <th width="150px" style="text-align: center;">จำนวน</th>
+                      <th width="150px" style="text-align: center;">หมายเลขเครื่อง</th>
                       <th width="150px" style="text-align: center;">วันที่ยืม</th>
                       <th width="150px" style="text-align: center;">ยืมถึงวันที่</th>
                       <th width="150px" style="text-align: center;">สถานะการยืม</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-if="approvetable.firstname == firstname && approvetable.lastname == lastname" v-for="approvetable of approvetables" v-bind:key="approvetable['.key']">
+                    <tr v-if="approvetable.firstname == firstname && approvetable.lastname == lastname" v-for="approvetable of approvetables.slice().reverse()" v-bind:key="approvetable['.key']">
                         <td>{{approvetable.nameLend}}</td>
                         <td style="text-align: center;">{{approvetable.idLend}}</td>
-                        <td style="text-align: center;">{{approvetable.amountLend}}</td>
+                        <td style="text-align: center;">{{approvetable.number}}</td>
                         <td style="text-align: center;">{{approvetable.dateLend}}</td>
                         <td style="text-align: center;">{{approvetable.timeLength}}</td>
                         <td style="text-align: center;" v-if="approvetable.statusLend === 'รออนุมัติ'">
                           <button class="btn btn-primary dropdown-toggle BTNstatus">{{approvetable.statusLend}}</button>                         
                         </td>
                         <td style="text-align: center;" v-if="approvetable.statusLend === 'อนุมัติ'">
-                          <button class="btn btn-primary dropdown-toggle BTNstatus" style="background-color:rgb(92, 184, 92);">{{approvetable.statusLend}}</button>                         
+                          <button class="btn btn-primary dropdown-toggle BTNstatus" style="background-color:rgb(92, 184, 92);"><span class="glyphicon glyphicon-ok" style="font-size:16px;"></span> {{approvetable.statusLend}}</button>                         
                         </td>
                         <td style="text-align: center;" v-if="approvetable.statusLend === 'ไม่อนุมัติ'">
-                          <button class="btn btn-primary dropdown-toggle BTNstatus" style="background-color:#EF5350;">{{approvetable.statusLend}}</button>                         
+                          <button class="btn btn-primary dropdown-toggle BTNstatus" style="background-color:#EF5350;"><span class="glyphicon glyphicon-remove" style="font-size:16px;"></span>  {{approvetable.statusLend}}</button>                         
                         </td>
                     </tr>
                   </tbody>
@@ -185,7 +189,7 @@ export default {
   border-radius: 4px;
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -208,7 +212,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -266,6 +270,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {

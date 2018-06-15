@@ -50,16 +50,8 @@
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <router-link to="/noti">การแจ้งเตือน</router-link>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -78,12 +70,16 @@
                 ประวัติการยืม
                 <div class="button-add">
                   <input type="text" v-model="search" placeholder="ค้นหา..." v-on:keypress="" style="" class="searchEqm">
+                  <select class="selectBox" v-model="lendhistory" style="font-size:20px">
+                    <option>ถูกยืม</option>
+                    <option>ส่งซ่อม</option>
+                  </select>
                 </div>
               </h4>
               <!-- <p class="card-text">รวม : {{realtimeplus}} รายการ</p> !-->
               <!--TABLE!-->
               <br>
-              <table class="table">
+              <table class="table" v-if="lendhistory === 'ถูกยืม'">
                 <thead>
                   <tr scope="row">
                     <th style="text-align: left;width:300px;">ชื่ออุปกรณ์</th>
@@ -92,32 +88,64 @@
                     <th style="text-align: center;width:150px;">ยืมถึงวันที่</th>
                     <th style="text-align: center;width:150px;">ชื่อผู้ยืม</th>
                     <th style="text-align: center;width:150px;">แผนก</th>
-                    <th style="text-align: center;width:150px;">จำนวนที่ยืม</th>
-                    <th style="text-align: center;width:150px;">คืนแล้ว</th>
+                    <th style="text-align: center;width:150px;">หมายเลขเครื่อง</th>
+                    <!-- <th style="text-align: center;width:150px;">สถานะ</th> -->
                     <th style="text-align: center;width:150px;">ถูกยืมต่อ</th>
-                    <th style="text-align: center;width:150px;">แจ้งกําหนดการคืน</th>
+                    <th style="text-align: center;width:150px;">ผู้มารับอุปกรณ์</th>
+                    <!-- <th style="text-align: center;width:150px;">แจ้งกําหนดการคืน</th> !-->
                     <th style="text-align: center;width:150px;">คืนอุปกรณ์</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(history, index) of searchEqm" v-bind:key="history['.key']">
+                  <tr v-for="(history, index) of searchEqm" v-bind:key="history['.key']" v-if="history.status === 'ถูกยืม'">
                     <td style="text-align: left;"><router-link :to="'/lendhistoryeqm/' + history['.key']">{{history.nameEqm}}</router-link></td>
                     <td style="text-align: center;">{{history.idLend}}</td>
                     <td style="text-align: center;">{{history.date}}</td>
                     <td style="text-align: center;">{{history.timeLength}}</td>
                     <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>
                     <td style="text-align: center;">{{history.department}}</td>
-                    <td style="text-align: center;">{{history.amount}}</td>
-                    <td style="text-align: center;">{{history.returnedEqm}}</td>
+                    <td style="text-align: center;">{{history.numberShow}}</td>
+                    <!-- <td style="text-align: center;">{{history.returnedEqm}}</td> -->
                     <td style="text-align: center;">{{history.borrowedTo}}</td>
-                    <td style="text-align: center;">
+                    <td style="text-align: center;">{{history.recipient}}</td>
+                    <!-- <td style="text-align: center;">
                       <button class="BTNreturn" style="color:#ffffff;" data-toggle="modal" data-target="#sendEmail" @click="setDate(history['.key']), setDatatoEmail(history.email, history.nameEqm, history.firstname, history.lastname, history.department, history.idLend)">แจ้ง</button>
                     
                     {{tokensss}}
-                    </td>
-                    <td v-if="history.amount !== history.returnedEqm + history.borrowedTo * 1" style="text-align: center;"><button @click="returnItem(history['.key'], history.nameEqm, history.returnKey)" class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="modal" data-target="#returnItem" style="background:rgb(92, 184, 92);;width:100px;">คืนอุปกรณ์</button></td>
-                    <td v-if="history.amount === history.returnedEqm + history.borrowedTo * 1" style="text-align: center;"><b>คืนอุปกรณ์ครบแล้ว</b></td>
+                    </td>  !-->
+                    <td v-if="history.amount !== history.returnedEqm + history.borrowedTo * 1" style="text-align: center;"><button @click="returnItem(history['.key'], history.nameEqm, history.returnKey, history.idLend)" class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="modal" data-target="#returnItem" style="background:rgb(92, 184, 92);;width:100px;">คืนอุปกรณ์</button></td>
+                    <td v-if="history.amount === history.returnedEqm + history.borrowedTo * 1" style="text-align: center;"><b>คืนอุปกรณ์แล้ว</b></td>
                   </tr>
+                </tbody>
+              </table>
+              <table class="table"  v-if="lendhistory === 'ส่งซ่อม'">
+                <thead>
+                  <tr scope="row">
+                    <th style="text-align: left;width:300px;">ชื่ออุปกรณ์</th>
+                    <th style="text-align: center;width:150px;">เลขที่ทำรายการ</th>
+                    <th style="text-align: center;width:150px;">หมายเลขเครื่อง</th>
+                    <th style="text-align: center;width:150px;">ประเภท</th>
+                    <th style="text-align: center;width:150px;">วันที่ส่งซ่อม</th>
+                    <th style="text-align: center;width:150px;">วันที่ส่งคืน</th>
+                    <th style="text-align: center;width:150px;">ชื่อผู้ส่งซ่อม</th>
+                    <th style="text-align: center;width:150px;">แผนก</th>
+                    <!-- <th style="text-align: center;width:150px;">จำนวน</th> !-->
+                    <th style="text-align: center;width:150px;">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(history, index) of searchEqm" v-bind:key="history['.key']" v-if="history.status === 'ส่งซ่อม'">
+                    <td style="text-align: left;">{{history.nameEqm}}</td>
+                    <td style="text-align: center;">{{history.idLend}}</td>
+                    <td style="text-align: center;">{{history.numberEqm}}</td>
+                    <td style="text-align: center;">{{history.category}}</td>
+                    <td style="text-align: center;">{{history.date}}</td>
+                    <td style="text-align: center;">{{history.dateReturn}}</td>
+                    <td style="text-align: center;">{{history.firstname}} {{history.lastname}}</td>
+                    <td style="text-align: center;">{{history.department}}</td>
+                    <!-- <td style="text-align: center;">{{history.amount}}</td> !-->
+                    <td style="text-align: center;">{{history.statuscheck}}</td>
+                  </tr> 
                 </tbody>
               </table>
               <!--TABLE!-->
@@ -255,8 +283,9 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, historyRef, notiRef, messaging} from './firebase'
+import {equipmentRef, auth, userRef, historyRef, notiRef, messaging, scanRef, bookEqmRef} from './firebase'
 import PostsService from '@/services/PostsService'
+import moment from 'moment'
 
 export default {
   name: 'lendhistory',
@@ -303,7 +332,10 @@ export default {
       sendNameEqm: '',
       sendFirstname: '',
       sendLastname: '',
-      sendDepartment: ''
+      sendDepartment: '',
+      lendhistory: 'ถูกยืม',
+      forwardCound: '',
+      idLendRemoveBook: ''
     }
   },
   created () {
@@ -323,7 +355,9 @@ export default {
     equipments: equipmentRef,
     users: userRef,
     historys: historyRef,
-    notis: notiRef
+    notis: notiRef,
+    scans: scanRef,
+    bookEqm: bookEqmRef
   },
   methods: {
     async sendEmail () {
@@ -478,11 +512,15 @@ export default {
         location.reload()
       }
     },
-    returnItem (key, nameEqm, returnKey) {
+    returnItem (key, nameEqm, returnKey, idLend) {
       this.nameEqm = nameEqm
       this.returnKey = returnKey
       this.keyEqm = key
+      this.idLendRemoveBook = idLend
       this.arrayReturnItem = this.historys.find(historys => historys['.key'] === key).returnedDate
+
+      this.keyUpdateforwardCound = this.scans.find(scan => scan.idLend === idLend)['.key']
+      this.forwardCound = this.scans.find(scan => scan.idLend === idLend).forwardCound
     },
     getReturnItem (index, indexReturn) {
       equipmentRef.child(this.returnKey + '/equipmentID/' + [indexReturn]).update({
@@ -495,9 +533,15 @@ export default {
       this.returnedScan = this.historys.find(history => history['.key'] === this.keyEqm).returnedEqm
       this.balanceReturn = this.equipments.find(equipments => equipments['.key'] === this.returnKey).balanceEqm
       this.borrowedReturn = this.equipments.find(equipments => equipments['.key'] === this.returnKey).borrowedEqm
+      this.keyRemoveBook = this.bookEqm.find(bookEqm => bookEqm.idLend === this.idLendRemoveBook)['.key']
+
+      this.forwardCound = this.forwardCound * 1 - 1
+      scanRef.child(this.keyUpdateforwardCound).update({
+        forwardCound: this.forwardCound
+      })
       historyRef.child(this.keyEqm + '/returnedDate/' + [index]).update({
         // number: this.eqmID,
-        date: new Date().toLocaleString(),
+        date: moment().format('DD/MM/YYYY LTS'),
         status: 'ส่งคืนแล้ว'
       })
       this.borrowedReturn = this.borrowedReturn * 1 - 1
@@ -512,6 +556,7 @@ export default {
           balanceEqm: this.balanceReturn,
           borrowedEqm: this.borrowedReturn
         })
+        bookEqmRef.child(this.keyRemoveBook).remove()
       }
     }
   },
@@ -534,7 +579,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -558,7 +603,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -616,6 +661,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {

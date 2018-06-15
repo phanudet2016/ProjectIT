@@ -21,11 +21,41 @@ import Borrowedlist from '@/components/Borrowedlist'
 import Noti from '@/components/Noti'
 import Posts from '@/components/Posts'
 import NewPost from '@/components/NewPost'
+import Report from '@/components/Report'
+import Reportrepair from '@/components/Reportrepair'
+import Reportlack from '@/components/Reportlack'
+import Reportmax from '@/components/Reportmax'
+import Ubookeqm from '@/components/Ubookeqm'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/ubookeqm',
+      name: 'ubookeqm',
+      component: Ubookeqm
+    },
+    {
+      path: '/reportmax',
+      name: 'reportmax',
+      component: Reportmax
+    },
+    {
+      path: '/reportlack',
+      name: 'reportlack',
+      component: Reportlack
+    },
+    {
+      path: '/reportrepair',
+      name: 'reportrepair',
+      component: Reportrepair
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: Report
+    },
     {
       path: '/posts',
       name: 'Posts',

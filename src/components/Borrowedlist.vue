@@ -3,7 +3,7 @@
     <div class="nav-header">
       <ul>
         <li class="topic">
-          <p style="font-size:25px"><b>รายการอุปกรณ์ที่ถูกยืมไป</b></p>
+          <p style="font-size:25px;border-bottom: 2px solid #ffffff"><b>รายการอุปกรณ์ที่ถูกยืมไป</b></p>
         </li>
         <li style="font-size:15px;color:#2c3e50;float:right;">
           <div class="dropdown" style="float:right;">
@@ -40,7 +40,7 @@
           </button>
           <router-link to="/approve">รายการรออนุมัติ</router-link>
         </li>
-        <li class="selected">
+        <li  class="selected">
           <i class="glyphicon glyphicon-send" style="font-size:25px;"></i>
           <router-link to="/borrowedlist">รายการอุปกรณ์ที่ถูกยืมไป</router-link>       
         </li>
@@ -49,16 +49,8 @@
           <router-link to="/lendhistory">ประวัติการยืม</router-link>
         </li>
         <li>
-          <i class="material-icons" style="color:#ffffff;font-size:25px;">pin_drop</i>
-          <a href="#">Locations</a>
-        </li>
-        <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">สถิติ</a>
-        </li>
-        <li>
-          <i class="fa fa-bell-o" style="color:#ffffff;font-size:25px;"></i>
-          <a href="#">การแจ้งเตือน</a>
+          <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
           <i class="glyphicon glyphicon-off" style="color:red;font-size:25px;"></i>
@@ -85,9 +77,10 @@
                       <th width="150px" style="text-align: center;">เลขที่การยืม</th>
                       <th width="150px" style="text-align: center;">วันที่ยืม</th>
                       <th width="150px" style="text-align: center;">ยืมถึงวันที่</th>
+                      <!-- <th width="150px" style="text-align: center;">ปฏิทิน</th> -->
                       <th width="150px" style="text-align: center;">ชื่อผู้ยืม</th>
-                      <th width="150px" style="text-align: center;">ยืม</th>
-                      <th width="150px" style="text-align: center;">รับแล้ว</th>
+                      <th width="150px" style="text-align: center;">หมายเลขเครื่อง</th>
+                      <!-- <th width="150px" style="text-align: center;">รับแล้ว</th> -->
                       <th width="150px" style="text-align: center;">รับอุปกรณ์</th>
                       <th width="150px" style="text-align: center;">แจ้งคืนอุปกรณ์</th>
                     </tr>
@@ -97,15 +90,24 @@
                         <td style="text-align: left;">{{scan.nameLend}}</td>
                         <td style="text-align: center;">{{scan.idLend}}</td>
                         <td style="text-align: center;">{{scan.dateLend}}</td>
-                        <td style="text-align: center;" v-if="scan.updateTimeLength === ''">{{scan.timeLength}}</td>
+                        <td style="text-align: center;" v-if="scan.updateTimeLength === ''">{{scan.timeLength}} </td>
                         <td style="text-align: center;color:red;" v-if="scan.updateTimeLength !== '' && scan.yessir === 'R'">{{scan.updateTimeLength}} <button v-bind:title="msg" @click="showUpdateTime(scan.dateLend, scan.timeLength, scan.updateTimeLength, scan.note, scan['.key'])" class="glyphicon glyphicon-exclamation-sign" data-toggle="modal" data-target="#updateTime" style="font-size:18px;border:none;background: #ffffff;"></button></td>
                         <td style="text-align: center;color:black;" v-if="scan.updateTimeLength !== '' && scan.yessir ==='B'">{{scan.updateTimeLength}} <button v-bind:title="msg" @click="showUpdateTime(scan.dateLend, scan.timeLength, scan.updateTimeLength, scan.note, scan['.key'])" class="glyphicon glyphicon-exclamation-sign" data-toggle="modal" data-target="#updateTime" style="font-size:18px;border:none;background: #ffffff;"></button></td>
+                        <!-- <td style="text-align: center;"><i class="glyphicon glyphicon-calendar" style="font-size:16px;" data-toggle="modal" data-target="#calendar" @click="bookEqmFn(scan.numberShow, scan.nameLend, scan.idLend)"></i></td> -->
                         <td style="text-align: center;">{{scan.firstname}} {{scan.lastname}}</td>
-                        <td style="text-align: center;">{{scan.amountLend}}</td>
-                        <td style="text-align: center;">{{scan.accepted}}</td>
-                        <td v-if="scan.accepted !== scan.amountLend * 1" style="text-align: center;"><button @click="receiveItem(scan.nameLend, scan.keyRecive, scan.firstname, scan.lastname, scan.email, scan['.key'], scan.formIdlend, scan.dateCheckReturn)" class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="modal" data-target="#receiveItem" style="background:#5cb85c;">รับอุปกรณ์</button></td>
-                        <td v-if="scan.accepted === scan.amountLend * 1" style="text-align: center;"><b>รับอุปกรณ์ครบแล้ว</b></td>
-                        <td style="text-align: center;"><button class="BTNreturn" @click="setPushNoti(scan.email, scan.idLend, scan['.key'], scan.nameLend, scan.agree)" data-toggle="modal" data-target="#sendNoti" >แจ้งคืน</button></td>
+                        <td style="text-align: center;">{{scan.numberShow}}</td>
+                        <!-- <td style="text-align: center;"><p v-if="scan.accepted === 0">ยังไม่รับ</p><p v-if="scan.accepted !== 0">รับแล้ว</p></td> -->
+                        <td v-if="scan.accepted !== scan.amountLend * 1" style="text-align: center;">
+                          <button v-if="todayCheckTs < scan.dateLendTs" class="btn btn-primary dropdown-toggle BTNnotGet" type="button">ยังไม่ถึงวันรับ</button>
+                          <button v-else-if="todayCheckTs > scan.timeLengthTs" class="btn btn-primary dropdown-toggle BTNnotGet" type="button" style="width:110px;">ไม่มารับอุปกรณ์</button>
+                          <button v-else-if="todayCheckTs >= scan.dateLendTs" @click="receiveItem(scan.nameLend, scan.keyRecive, scan.firstname, scan.lastname, scan.email, scan['.key'], scan.formIdlend, scan.dateCheckReturn, scan.dateCheckRepair, scan.dateCheckCalibrate, scan.numberShow)" class="btn btn-primary dropdown-toggle BTNreturn" type="button" data-toggle="modal" data-target="#receiveItem" style="background:#5cb85c;">รับอุปกรณ์</button>
+                        </td>
+
+                        <td v-if="scan.accepted === scan.amountLend * 1" style="text-align: center;">
+                           <!-- <button class="btn btn-primary dropdown-toggle BTNnotGet" type="button" v-if="todayCheckTs > scan.timeLengthTs && scan.accepted !== scan.amountLend * 1">ยังไม่ส่งคืน</button> -->
+                           <b>รับอุปกรณ์แล้ว</b>
+                        </td>
+                        <td style="text-align: center;"><button class="BTNreturn" @click="setPushNoti(scan.email, scan.idLend, scan['.key'], scan.nameLend, scan.agree, scan.firstname, scan.lastname)" data-toggle="modal" data-target="#sendNoti" >แจ้งคืน</button></td>
                     </tr>
                   </tbody>
                 </table>
@@ -117,8 +119,10 @@
       </div>
     </div>
 
-    <div class="modal fade" id="receiveItem" role="dialog">
-      <div class="modal-dialog">
+
+   
+    <div class="modal fade" role="dialog" id="receiveItem">
+      <div class="modal-dialog" style="width:700px;">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -128,17 +132,23 @@
             <table class="table" v-if="formIdlend === ''">
               <thead>
                 <tr>
-                  <th width="700px">รหัสอุปกรณ์</th>
-                  <th width="700px">หมายเลขเครื่อง</th>
+                  <th width="300px">รหัสอุปกรณ์</th>
+                  <th width="700px" style="text-align: center;">หมายเลขเครื่อง</th>
                   <th width="700px">สถานะ</th>
-                  <th width="700px" style="text-align: center;">รับ</th>
+                  <th width="400px">ผู้รับ (กรณีมารับแทน) <i @click="cancelRecipient()" class="glyphicon glyphicon-remove-circle" style="color:red;" v-if="removeIcon"></i></th>
+                  <th width="300px" style="text-align: center;">รับ</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(arrayEqms, index) in arrayEqm">
+                <tr v-for="(arrayEqms, index) in arrayEqm" v-if="arrayEqms.number === numberShow">
                   <td>{{arrayEqms.id}}</td>
-                  <td>{{arrayEqms.number}}</td>
+                  <td style="text-align: center;">{{arrayEqms.number}}</td>
                   <td>{{arrayEqms.status}}</td>
+                  <td>
+                    <button v-if="hideButton" @click="recipientCheck()" class="btn btn-primary BTNreturn" type="button" style="background:#5cb85c;margin-left:20px;">คลิก</button>
+                    <input type="text" class="form-control" style="font-size:20px;width:150px;" v-if="recipientBox" v-model="recipient">
+                    <!-- <input type="text" class="form-control" style="font-size:20px" v-model="recipient" v-else-if="recipientBox"> -->
+                  </td>
                   <td style="text-align: center;" v-if="arrayEqms.status === 'พร้อมใช้งาน'">
                     <button @click="getItem(index)" class="btn btn-primary BTNreturn" type="button" style="background:#5cb85c;" data-dismiss="modal">รับ</button>
                   </td>
@@ -175,7 +185,7 @@
         </div>
       </div>
     </div> 
-
+ 
     <!-- เลื่อนวันยืม !-->
               <div class="modal fade" id="updateTime" role="dialog">
                 <div class="modal-dialog">
@@ -190,8 +200,8 @@
                       <h4 style="font-size:21px">{{dateLend}} ถึง {{timeLength}}</h4>
                       <p style="color:#9A9A9A;font-size:20px;">เป็นวันที่: </p><h4 style="font-size:21px"></h4>
                       <h4 style="font-size:21px">{{dateLend}} ถึง {{updateTimeLength}}</h4><br>
-                      <p style="color:#9A9A9A;font-size:20px;">เหตุผล:</p>
-                      <textarea disabled style="width:300px;height:100px;font-size:20px;" v-model="note"></textarea>
+                      <!-- <p style="color:#9A9A9A;font-size:20px;">เหตุผล:</p>
+                      <textarea disabled style="width:300px;height:100px;font-size:20px;" v-model="note"></textarea> -->
                       <br><br>
                     </div>
                     <div class="modal-footer">
@@ -216,6 +226,10 @@
                       <h4 style="font-size:21px"></h4><br>
                       <p style="color:#9A9A9A;font-size:20px;">ชื่ออุปกรณ์: </p><h4 style="font-size:21px">{{nameLend}}</h4>
                       <h4 style="font-size:21px"></h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">ชื่อผู้ยืม: </p><h4 style="font-size:21px">{{firstnameCont}} {{lastnameCont}}</h4>
+                      <h4 style="font-size:21px"></h4><br>
+                      <p style="color:#9A9A9A;font-size:20px;">เบอร์ติดต่อ: </p><h4 style="font-size:21px">{{phoneNumber}}</h4>
+                      <h4 style="font-size:21px"></h4><br>
                       <p style="color:#9A9A9A;font-size:20px;">ข้อความ:</p><h4 style="font-size:21px"></h4>
                       <textarea style="width:300px;height:100px;font-size:20px;" v-model="noteReturn"></textarea>
                       <p style="color:#9A9A9A;font-size:20px;">สถานะ: </p><h4 style="font-size:21px">
@@ -232,18 +246,22 @@
                 </div>
               </div>
               <!-- แจ้งคืนอุปกรณ์ !-->
+                  <!-- Book (ช่วงเวลา) !-->
 
   </div>
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, scanRef, historyRef, notiRef, messaging} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef, historyRef, notiRef, messaging, bookEqmRef} from './firebase'
 import moment from 'moment'
+import dateFormat from 'dateformat'
+import 'fullcalendar/dist/locale/th'
 
 export default {
   name: 'ulisttable',
   data () {
     return {
+      check: '',
       category: '',
       unitEqm: '',
       categoryEqm: '',
@@ -272,6 +290,7 @@ export default {
       succus: '',
       idLend: '',
       email: '',
+      numberShow: '',
 
       dateLend: '',
       timeLength: '',
@@ -304,7 +323,37 @@ export default {
       keyUpdateScan: '',
       arrayEqmScan: '',
       indexUpdateScan: '',
-      dateCheckReturn: ''
+      dateCheckReturn: '',
+      dateCheckRepair: '',
+      amountDate: '',
+      mouth: '',
+      year: '',
+      dateCheckCalibrate: '',
+      phoneNumber: '',
+      firstnameCont: '',
+      lastnameCont: '',
+      balanceLend: '',
+      borrowedLend: '',
+      keyRemoveBook: '',
+      dateLendC: '08/08/2018',
+      todayCheck: '',
+      todayCheckTs: '',
+      recipient: '',
+      recipientBox: false,
+      removeIcon: false,
+      hideButton: true,
+      // fullCalendar
+      defaultView: 'month',
+      header: {
+        left: 'prev, next today',
+        center: 'title',
+        right: 'month'
+      },
+      events: [],
+      selected: [],
+      arrayEvent: [],
+      dateLendTs: '',
+      timeLengthTs: ''
     }
   },
   created () {
@@ -316,6 +365,18 @@ export default {
         console.log('not logged in')
       }
     })
+    this.todayCheck = dateFormat(new Date(), 'yyyy-mm-dd')
+    this.todayCheckTs = new Date(this.todayCheck).getTime()
+    // this.todayCheckTs = 1529848000000
+    console.log(this.todayCheckTs)
+
+    // ยกเลิกรายการจองแล้วไม่มารับ
+    for (let i = 0; i < this.bookEqm.length; i++) {
+      if (this.todayCheckTs > this.bookEqm[i].timestampEnd && this.bookEqm[i].status === 'อนุมัติ') {
+        var key = this.bookEqm[i]['.key']
+        bookEqmRef.child(key).remove()
+      }
+    }
   },
   firebase: {
     equipments: equipmentRef,
@@ -323,7 +384,8 @@ export default {
     approvetables: approvetableRef,
     scans: scanRef,
     historys: historyRef,
-    notis: notiRef
+    notis: notiRef,
+    bookEqm: bookEqmRef
   },
   computed: {
     realtimeplus: function () {
@@ -331,7 +393,38 @@ export default {
     }
   },
   methods: {
-    setPushNoti (email, idLend, key, nameLend, agree) {
+    test () {
+      this.check = 'open'
+    },
+    bookEqmFn (number, nameEqm, idLend) {
+      this.numberEqm = number
+      this.events = []
+      this.arrayEvent = []
+      console.log(number, nameEqm)
+      for (let i = 0; i < this.bookEqm.length; i++) {
+        if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === nameEqm && idLend === this.bookEqm[i].idLend) {
+          this.arrayEvent.push({
+            title: 'ชื่อ-สกุล: ' + this.bookEqm[i].firstname + ' ' + this.bookEqm[i].lastname + ' แผนก: ' + this.bookEqm[i].department,
+            start: this.bookEqm[i].startEvent,
+            end: this.bookEqm[i].endEventMark,
+            editable: false,
+            backgroundColor: 'red',
+            borderColor: 'red'
+          })
+        } else if (this.bookEqm[i].number === this.numberEqm && this.bookEqm[i].nameEqm === nameEqm) {
+          this.arrayEvent.push({
+            title: 'ชื่อ-สกุล: ' + this.bookEqm[i].firstname + ' ' + this.bookEqm[i].lastname + ' แผนก: ' + this.bookEqm[i].department,
+            start: this.bookEqm[i].startEvent,
+            end: this.bookEqm[i].endEventMark,
+            editable: false,
+            backgroundColor: 'rgb(3,155,229)',
+            borderColor: 'rgb(3,155,229)'
+          })
+        }
+      }
+      this.events = this.arrayEvent
+    },
+    setPushNoti (email, idLend, key, nameLend, agree, firstname, lastname) {
       this.emailNoteNoti = email
       this.emailNoti = this.users.find(users => users.email === email).keyPushNoti
       this.body = 'เลขที่การยืม: ' + idLend + ' ได้ยืมครบกำหนดแล้ว กรุณานำอุปกรณ์มาส่งคืนที่ศูนย์กลางเครื่องมือแพทย์'
@@ -341,6 +434,9 @@ export default {
       this.nameLend = nameLend
       this.showIdLend = idLend
       this.statusAgree = agree
+      this.phoneNumber = this.users.find(users => users.email === email).phoneNumber
+      this.firstnameCont = firstname
+      this.lastnameCont = lastname
     },
     sendNoti () {
       // sendNoti to webpage
@@ -432,7 +528,7 @@ export default {
       auth.signOut()
       this.$router.push('/')
     },
-    receiveItem (nameEqm, keyRecive, firstname, lastname, email, key, formIdlend, dateCheckReturn) {
+    receiveItem (nameEqm, keyRecive, firstname, lastname, email, key, formIdlend, dateCheckReturn, dateCheckRepair, dateCheckCalibrate, numberShow) {
       this.nameEqm = nameEqm
       this.keyRecive = keyRecive // keyEqm
       this.firstnameScan = firstname
@@ -441,11 +537,19 @@ export default {
       this.email = email
       this.formIdlend = formIdlend
       this.dateCheckReturn = dateCheckReturn
+      this.dateCheckRepair = dateCheckRepair
+      this.dateCheckCalibrate = dateCheckCalibrate
+      this.numberShow = numberShow
+
       if (this.formIdlend !== '') {
         this.arrayEqm = this.scans.find(scans => scans.idLend === this.formIdlend).number
       } else {
         this.arrayEqm = this.equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID
       }
+      this.recipientBox = false
+      this.removeIcon = false
+      this.hideButton = true
+      this.recipient = ''
     },
     getItem (index, number) {
       console.log(index)
@@ -469,6 +573,11 @@ export default {
       this.timeLengthHit = this.scans.find(scan => scan['.key'] === this.keyScan).timeLength
       this.idLend = this.scans.find(scan => scan['.key'] === this.keyScan).idLend
       this.email = this.scans.find(scan => scan['.key'] === this.keyScan).email
+      this.amountDate = this.scans.find(scan => scan['.key'] === this.keyScan).amountDate
+      this.month = this.scans.find(scan => scan['.key'] === this.keyScan).month
+      this.year = this.scans.find(scan => scan['.key'] === this.keyScan).year
+      this.dateLendTs = this.scans.find(scan => scan['.key'] === this.keyScan).dateLendTs
+      this.timeLengthTs = this.scans.find(scan => scan['.key'] === this.keyScan).timeLengthTs
 
       if (this.formIdlend !== '') {
         this.keyFormIdlen = this.historys.find(historys => historys.idLend === this.formIdlend)['.key']
@@ -504,6 +613,14 @@ export default {
       }
       this.number.push(insertNumber)
 
+      // ////////////////////////////////////////////////////////////
+      if (this.recipient === '') {
+        this.recipient = this.firstnameScan + ' ' + this.lastnameScan
+      } else {
+        this.recipient = this.recipient
+      }
+      // ////////////////////////////////////////////////////////////
+
       this.amountScan = this.amountScan * 1
       this.acceptedScan = this.acceptedScan + 1
       this.balanceScan = this.balanceScan * 1 - 1
@@ -525,7 +642,18 @@ export default {
           returnKey: this.keyRecive,
           idLend: this.idLend,
           email: this.email,
-          timeLength: this.timeLengthHit
+          timeLength: this.timeLengthHit,
+          dateCheckReturn: this.dateCheckReturn,
+          dateCheckRepair: this.dateCheckRepair,
+          dateCheckCalibrate: this.dateCheckCalibrate,
+          status: 'ถูกยืม',
+          amountDate: this.amountDate,
+          month: this.month,
+          year: this.year,
+          numberShow: this.numberShow,
+          recipient: this.recipient,
+          dateLendTs: this.dateLendTs,
+          timeLengthTs: this.timeLengthTs
         })
       }
       if (this.acceptedScan <= this.amountScan) {
@@ -536,6 +664,29 @@ export default {
           forwardCound: this.forwardCoundScan
         })
       }
+      var keyUpdate = this.keyRecive
+      this.balanceLend = this.equipments.find(equipments => equipments['.key'] === keyUpdate).balanceEqm
+      this.borrowedLend = this.equipments.find(equipments => equipments['.key'] === keyUpdate).borrowedEqm
+      this.keyRemoveBook = this.bookEqm.find(bookEqm => bookEqm.idLend === this.idLend)['.key']
+      if (this.formIdlend === '') {
+        this.balanceLend = this.balanceLend * 1 - 1
+        this.borrowedLend = this.borrowedLend * 1 + 1
+        equipmentRef.child(keyUpdate).update({borrowedEqm: this.borrowedLend})
+        equipmentRef.child(keyUpdate).update({balanceEqm: this.balanceLend})
+      }
+      bookEqmRef.child(this.keyRemoveBook).update({status: 'รับแล้ว'})
+    },
+    recipientCheck () {
+      this.recipientBox = true
+      this.removeIcon = true
+      this.hideButton = false
+      this.recipient = ''
+    },
+    cancelRecipient () {
+      this.recipientBox = false
+      this.removeIcon = false
+      this.hideButton = true
+      this.recipient = this.firstnameScan + ' ' + this.lastnameScan
     }
   }
 }
@@ -550,7 +701,7 @@ export default {
   border-bottom: 1px solid rgba(0,0,0,.125);
   margin-left: 48px;
   margin-right: 24px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .button-add {
@@ -573,7 +724,7 @@ export default {
   padding-left: 20px;
   display: inline-block;
   line-height: 60px;
-  border: 1px solid #dddddd;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
   bottom: 0;
   position: fixed;
   top: 0;
@@ -629,6 +780,7 @@ nav {
   z-index: 1000;
   top: 0;
   bottom: 0;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.5), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 nav a {
@@ -778,5 +930,13 @@ mark {
   width: 85px;
   height: 35px;
   font-weight: bold;
+}
+
+.comp-full-calendar {
+  padding: 20px;
+  background: #fff;
+  max-width: 960px;
+  margin: 0 auto;
+  font-size: 18px;
 }
 </style>
