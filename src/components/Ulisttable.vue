@@ -73,7 +73,7 @@
                 <table class="table">
                   <thead>
                     <tr>
-                      <th width="300px">ชื่ออุปกรณ์</th>
+                      <th width="900px">ชื่ออุปกรณ์</th>
                       <th width="300px"  style="text-align: center;">เลขที่การยืม</th>
                       <th width="300px" style="text-align: center;">วันที่ยืม</th>
                       <th width="300px" style="text-align: center;">ยืมถึงวันที่</th>
@@ -161,9 +161,6 @@
                       <h4 style="font-size:21px">{{dateLend}} ถึง {{timeLength}}</h4>
                       <p style="color:#9A9A9A;font-size:20px;">เป็นวันที่: </p><h4 style="font-size:21px"></h4>
                       <h4 style="font-size:21px">{{dateLend}} ถึง {{updateTime}}</h4><br>
-                      <p style="color:#9A9A9A;font-size:20px;">เหตุผล:</p>
-                      <textarea disabled style="width:300px;height:100px;font-size:20px;" v-model="note"></textarea>
-                      <br><br>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default BTNstatus" data-dismiss="modal">ปิด</button>
@@ -236,7 +233,7 @@
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                       <h4 class="modal-title" style="font-size:25px" v-if="accepted === 0"><b>หมายเหตุ</b></h4>
-                      <h4 class="modal-title" style="font-size:25px" v-if="accepted !== 0"><b>ระบุจำนวน</b></h4>
+                      <h4 class="modal-title" style="font-size:25px" v-if="accepted !== 0"><b>ส่งต่อให้กับผู้ใช้อื่น</b></h4>
                     </div>
                     <div class="modal-body">
                       <h4 class="modal-title" style="font-size:25px" v-if="accepted === 0"><b>กรุณารับอุปกรณ์ก่อน ถึงจะทำการส่งต่ออุปกรณ์ได้</b></h4>

@@ -128,7 +128,7 @@
                     <td>{{equipmentID.numberOfItem}}</td>
                     <td width="150px"><i class="glyphicon glyphicon-edit" @click="editNumberOfItem(index, equipmentID.numberOfItem)" v-if="editCheck" data-toggle="modal" data-target="#numberOfItem"></i></td>
                     <td style="text-align: center;"><i class="glyphicon glyphicon-calendar" style="font-size:20px;" data-toggle="modal" data-target="#calendar" @click="bookEqmFn(equipmentID.number)"></i></td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index, equipmentID.number)"></span></td>
+                    <td style="text-align: center;"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index, equipmentID.number, equipmentID.id)"></span></td>
                     <td>{{equipmentID.status}}</td>
                     <td>
                       <button @click="printSalup(equipmentID.id, equipmentID.number, equipmentID.numberOfItem)" type="button" class="BTNstatus" style="color:#ffffff;font-size:18px;width:100px;">
@@ -151,7 +151,7 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h4 class="modal-title" style="font-size:25px"><b>{{nameEqm}} <br>หมายเลข: {{numberQR}}</b></h4>
+                      <h4 class="modal-title" style="font-size:25px"><b>{{nameEqm}} <br>รหัสอุปกรณ์: {{idEqm}} <br> หมายเลข: {{numberQR}}</b><br></h4>
                     </div>
                     <div class="modal-body" style="text-align:center;">
                       <qrcode-vue :value="valueQR" :size="250" level="H" id="myCanvas"></qrcode-vue>
@@ -349,7 +349,7 @@
         <tr v-for="history in historys" v-if="history.numberShow === numberPrint && history.nameEqm === nameEqm && history.status === 'ถูกยืม'">
           <td style="width:80;text-align: center;">{{history.idLend}}</td>
           <td style="width:80;text-align: center;">{{history.firstname}} {{history.lastname}}</td>
-          <th style="width:80px;text-align: center;">{{history.recipient}}</th>
+          <td style="width:80px;text-align: center;">{{history.recipient}}</td>
           <td style="width:80;text-align: center;">{{history.date}}</td>
           <td style="width:80;text-align: center;">{{history.timeLength}}</td>
           <td style="width:80;text-align: center;">{{history.amountDate}}</td>
@@ -392,6 +392,7 @@ export default {
   data () {
     return {
       sumLend: '',
+      idEqm: '',
       sumRepaRepair: '',
       print: 'page',
       name: '',
@@ -632,9 +633,10 @@ export default {
       auth.signOut()
       this.$router.push('/')
     },
-    genQrCode (index, number) {
+    genQrCode (index, number, id) {
       this.valueQR = index + ' ' + this.$route.params.id
       this.numberQR = number
+      this.idEqm = id
     },
     submitRegisterAdmin () {
       if (this.password !== this.confirmpassword) {
