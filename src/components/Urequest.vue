@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, requestRef, yearRef, messaging} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, requestRef, yearRef, messaging, notiRef, requestNotiRef} from './firebase'
 import moment from 'moment'
 
 export default {
@@ -173,7 +173,8 @@ export default {
       noteRequest: '',
       department: '',
       phoneNumber: '',
-      year: ''
+      year: '',
+      requestNoti: ''
     }
   },
   created () {
@@ -194,7 +195,9 @@ export default {
     users: userRef,
     approvetables: approvetableRef,
     requests: requestRef,
-    years: yearRef
+    years: yearRef,
+    notis: notiRef,
+    requestNotis: requestNotiRef
   },
   computed: {
     realtimeplus: function () {
@@ -209,6 +212,11 @@ export default {
       document.getElementById('myAmount').setAttribute('min', 1)
       this.phoneNumber = this.users.find(users => users.email === this.emailAuth).phoneNumber
       this.year = this.years[this.years.length - 1].year
+
+      this.requestNoti = this.requestNotis[0].requestNoti
+      this.requestNoti = this.requestNoti * 1
+      // this.notiKeyUpdate = this.notis.find(notis => notis['.key'])['.key']
+      console.log(this.requestNoti)
     },
     submitReuest () {
       console.log(this.nameRequest)
@@ -248,6 +256,7 @@ export default {
           lastname: this.lastname,
           email: this.emailAuth,
           contact: this.phoneNumber,
+          status: 'ยังไม่รับทราบ',
           check: 0
         })
       }
@@ -285,6 +294,17 @@ export default {
       }
        // End year
       this.year = 0
+
+      if (this.requestNoti === '') {
+        requestNotiRef.child('requestNoti').set({
+          requestNoti: this.requestNoti + 1
+        })
+      } else {
+        requestNotiRef.child('requestNoti').set({
+          requestNoti: this.requestNoti + 1
+        })
+      }
+        // EndNoti
     },
     submitEqm () {
       equipmentRef.push({

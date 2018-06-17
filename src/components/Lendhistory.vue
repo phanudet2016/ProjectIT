@@ -51,6 +51,9 @@
         </li>
         <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+          </button>
           <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
@@ -283,7 +286,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, historyRef, notiRef, messaging, scanRef, bookEqmRef} from './firebase'
+import {equipmentRef, auth, userRef, historyRef, notiRef, messaging, scanRef, bookEqmRef, requestNotiRef} from './firebase'
 import PostsService from '@/services/PostsService'
 import moment from 'moment'
 
@@ -357,7 +360,8 @@ export default {
     historys: historyRef,
     notis: notiRef,
     scans: scanRef,
-    bookEqm: bookEqmRef
+    bookEqm: bookEqmRef,
+    requestNotis: requestNotiRef
   },
   methods: {
     async sendEmail () {

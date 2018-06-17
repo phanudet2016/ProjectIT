@@ -52,6 +52,9 @@
         </li>
         <li class="selected">
           <i class="fa fa-bar-chart" style="font-size:25px;"></i>
+          <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+          </button>
           <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
@@ -81,6 +84,9 @@
               <button style="margin-left:2px;background:#ffffff;border:1px solid #dddddd;height:40px;background:#ffffff;width:180px;color:#000000;font-size:16px">
                 <span></span>
                 <b>รายงานการขาดแคลนอุปกรณ์</b>
+                <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:2px;margin-top:-15px;">
+                  <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+                </button>
               </button>
             </router-link>
             <router-link to="/reportmax">
@@ -206,6 +212,7 @@
                       <th width="150px" style="text-align: center;">แผนก</th>
                       <th width="150px" style="text-align: center;">หมายเหตุ</th>
                       <th width="150px" style="text-align: center;">เบอร์ติดต่อ</th>
+                      <th width="80px" style="text-align: center;">สถานะ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -219,6 +226,18 @@
                       <td width="150px" style="text-align: center;">{{request.department}}</td>
                       <td width="150px" style="text-align: center;">{{request.note}}</td>
                       <td width="150px" style="text-align: center;">{{request.contact}}</td>
+                      <td width="80px" style="text-align: center;" v-if="request.status === 'ยังไม่รับทราบ'">
+                        <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle BTNstatusR" type="button" data-toggle="dropdown">{{request.status}}
+                            <span class="caret"></span></button>                    
+                            <ul class="dropdown-menu">                             
+                              <li><a @click="statusRequest('รับทราบ',request['.key'])" style="font-size:18px;">รับทราบ</a></li>
+                            </ul>
+                          </div>
+                      </td>
+                      <td v-if="request.status === 'รับทราบ'" style="text-align:center;">  
+                        <button class="btn btn-primary dropdown-toggle BTNstatus" style="background-color:rgb(92, 184, 92);"><span class="glyphicon glyphicon-ok" style="font-size:16px;"></span> {{request.status}}</button> 
+                      </td>
                     </tr>
                 </tbody>
               </table>
@@ -310,7 +329,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, notiRef, scanRef, historyRef, requestRef, yearRef, reportLackRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef, scanRef, historyRef, requestRef, yearRef, reportLackRef, requestNotiRef} from './firebase'
 // import moment from 'moment'
 import dateFormat from 'dateformat'
 
@@ -365,9 +384,19 @@ export default {
     historys: historyRef,
     years: yearRef,
     requests: requestRef,
-    reportLack: reportLackRef
+    reportLack: reportLackRef,
+    requestNotis: requestNotiRef
   },
   methods: {
+    statusRequest (status, key) {
+      requestRef.child(key).update({status: status})
+
+      this.requestNoti = this.requestNotis[0].requestNoti
+      this.requestNoti = this.requestNoti * 1 - 1
+      requestNotiRef.child('requestNoti').set({
+        requestNoti: this.requestNoti
+      })
+    },
     printFn () {
       this.print = 'print'
       if (this.search === '01') {
@@ -736,6 +765,23 @@ th {
   cursor: pointer;
   border-radius: 2px;
   width: 85px;
+  height: 35px;
+  font-weight: bold;
+}
+
+.BTNstatusR{
+  /* background-color: rgb(3,155,229); */
+  background-color: #EF5350;
+  border: none;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 2px;
+  width: 100px;
   height: 35px;
   font-weight: bold;
 }

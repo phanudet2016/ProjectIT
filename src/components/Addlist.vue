@@ -51,6 +51,9 @@
         </li>
         <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+          </button>
           <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
@@ -278,7 +281,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, notiRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef, requestNotiRef} from './firebase'
 import moment from 'moment'
 
 export default {
@@ -337,7 +340,8 @@ export default {
   firebase: {
     equipments: equipmentRef,
     users: userRef,
-    notis: notiRef
+    notis: notiRef,
+    requestNotis: requestNotiRef
   },
   methods: {
     submitEqm () {

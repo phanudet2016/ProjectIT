@@ -50,6 +50,9 @@
         </li>
         <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+          </button>
           <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
@@ -252,7 +255,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, approvetableRef, scanRef, historyRef, notiRef, messaging, bookEqmRef} from './firebase'
+import {equipmentRef, auth, userRef, approvetableRef, scanRef, historyRef, notiRef, messaging, bookEqmRef, requestNotiRef} from './firebase'
 import moment from 'moment'
 import dateFormat from 'dateformat'
 import 'fullcalendar/dist/locale/th'
@@ -385,7 +388,8 @@ export default {
     scans: scanRef,
     historys: historyRef,
     notis: notiRef,
-    bookEqm: bookEqmRef
+    bookEqm: bookEqmRef,
+    requestNotis: requestNotiRef
   },
   computed: {
     realtimeplus: function () {

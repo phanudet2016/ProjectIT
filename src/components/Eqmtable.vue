@@ -55,6 +55,9 @@
         </li>
         <li>
           <i class="fa fa-bar-chart" style="color:#ffffff;font-size:25px;"></i>
+          <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+          </button>
           <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
@@ -97,35 +100,22 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th width="200px">รหัสอุปกรณ์</th>
-                    <th width="200px">หมายเลขเครื่อง</th>
-                    <th width="200px" colspan="2">หมายเลขครุภัณฑ์</th>
-                    <th width="200px" style="text-align: center;">ปฏิทิน</th>
-                    <th width="200px" style="text-align: center;">QR Code</th>
-                    <th width="200px">สถานะ</th>
+                    <th width="150px">รหัสอุปกรณ์</th>
+                    <th width="300px" style="text-align: center;">หมายเลขเครื่อง</th>
+                    <th width="800px" colspan="2">หมายเลขครุภัณฑ์</th>
+                    <th width="300px" style="text-align: center;">ปฏิทิน</th>
+                    <th width="300px" style="text-align: center;">QR Code</th>
+                    <th width="300px">สถานะ</th>
                     <th width="250px">สรุปการถูกยืมไปใช้งาน</th>
-                    <th width="200px" style="text-align: center;">ผู้ยืม</th>
+                    <th width="300px" style="text-align: center;">ผู้ยืม</th>
                     <th width="200px" style="text-align: center;">ตำแหน่ง</th>
                   </tr>
                 </thead>
-                <!-- <tbody>
-                  <tr v-for="(arrayEqms, index) in arrayEqm">
-                    <td>{{arrayEqms.id}}</td>
-                    <td>{{arrayEqms.number}}</td>
-                    <td>{{arrayEqms.status}}</td>
-                    <td>{{arrayEqms.numberOfItem}}</td>
-                    <td style="text-align: center;"><i class="glyphicon glyphicon-calendar" style="font-size:20px;" data-toggle="modal" data-target="#calendar" @click="bookEqmFn(arrayEqms.number)"></i></td>
-                    <td style="text-align: center;"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index)"></span></td>
-                    <td style="text-align: center;">{{arrayEqms.nameLend}} {{arrayEqms.lastnameLend}}</td>
-                    <td style="text-align: center;"><i v-if="nameEqm === 'เครื่องช่วยหายใจชนิดควบคุมด้วยปริมาตรและความดันเคลื่อนย้ายได้'"><button v-if="arrayEqms.number === 1 || arrayEqms.number === 2" style="background: #ffffff;border:none;" @click="showMap(arrayEqms.number, arrayEqms.nameLend, arrayEqms.lastnameLend, arrayEqms.status)"><i class="glyphicon glyphicon-map-marker" style="font-size:25px;color:red" data-toggle="modal" data-target="#myMap"></i></button></i>
-                    </td>
-                  </tr>
-                </tbody> -->
                 <tbody v-for="equipment in equipments" v-if="equipment.nameEqm === nameEqm">
                   <tr v-for="(equipmentID, index) in equipment.equipmentID">
                     <td>{{equipmentID.id}}</td>
-                    <td>{{equipmentID.number}}</td>
-                    <td>{{equipmentID.numberOfItem}}</td>
+                    <td style="text-align: center;">{{equipmentID.number}}</td>
+                    <td width="800px">{{equipmentID.numberOfItem}}</td>
                     <td width="150px"><i class="glyphicon glyphicon-edit" @click="editNumberOfItem(index, equipmentID.numberOfItem)" v-if="editCheck" data-toggle="modal" data-target="#numberOfItem"></i></td>
                     <td style="text-align: center;"><i class="glyphicon glyphicon-calendar" style="font-size:20px;" data-toggle="modal" data-target="#calendar" @click="bookEqmFn(equipmentID.number)"></i></td>
                     <td style="text-align: center;"><span class="glyphicon glyphicon-qrcode" data-toggle="modal" data-target="#myModall" @click="genQrCode(index, equipmentID.number, equipmentID.id)"></span></td>
@@ -291,7 +281,7 @@
 
               <!-- หมายเลขครุภัณฑ์ !-->
               <div class="modal fade" id="numberOfItem" role="dialog">
-                <div class="modal-dialog" style="width:500px;">
+                <div class="modal-dialog" style="width:600px;">
                   <!-- Modal content-->
                   <div class="modal-content">
                     <div class="modal-header">
@@ -299,7 +289,7 @@
                       <h4 class="modal-title" style="font-size:25px"><b>กรอกหมายเลขครุภัณฑ์</b></h4>
                     </div>
                     <div class="modal-body">
-                      <input type="text" class="form-control" style="font-size:20px;width:150px;" v-model="addNumberOfItem"/>
+                     <center><input type="text" class="form-control" style="font-size:20px;width:500px;" v-model="addNumberOfItem"/></center>
                     </div>
                     <div class="modal-footer">
                       <button @click="saveNumberOfItem()" type="button" class="btn btn-default" data-dismiss="modal" style="width:85px;font-size: 16px;">ตกลง</button>
@@ -310,20 +300,42 @@
               </div>
               <!-- หมายเลขครุภัณฑ์!-->
       </div>
-      <div class="print" v-if="print === 'print'">
+      <!-- <div class="print" v-if="print === 'print'"> -->
+        <!-- <div class="print" v-if="print === 'print'">
         <h1><b>{{nameEqm}}</b></h1><br>
-          <div class="row" v-for="i in Math.ceil(araryQR.length / 3)" style="margin-left:85px;"><br><br><br>
-            <table border="0">
+          <div class="row" v-for="i in Math.ceil(araryQR.length / 2)"><br><br><br>
+          <center>
+            <table border="1" style="width:1000px;">
               <tr>
-                <td v-for="item in araryQR.slice((i - 1) * 3, i * 3)" style="width:200px;">
-                  <p style="font-size:25px;margin-left:-30px;">หมายเลขเครื่อง: {{equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID[item.substring(0, 1)].number}} </p>
-                  <p style="font-size:20px;margin-left:-20px;margin-top:-21px;">รหัสอุปกรณ์: {{equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID[item.substring(0, 1)].id}} </p>
-                  <qrcode-vue :value="item" :size="150" level="H" id="myCanvas"></qrcode-vue>
+                <td v-for="item in araryQR.slice((i - 1) * 2, i * 2)" style="width:1300px;">
+                  <p style="font-size:25px;">หมายเลขเครื่อง: {{equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID[item.substring(0, 1)].number}} </p>
+                  <p style="font-size:20px;margin-top:-21px;"> </p>
+                  <center><qrcode-vue :value="item" :size="150" level="H" id="myCanvas"></qrcode-vue></center>
                 </td>
               </tr>
             </table>
+            </center>
           </div>
-      </div>
+      </div> -->
+
+      <table class="table print" v-if="print === 'print'">
+        <tbody>
+          <tr>
+            <th colspan="2" style="font-size:25px;text-align:center;">
+              <br><br>
+              <b>{{nameEqm}}</b>
+              <br><br>
+            </th>
+          <tr>
+          <tr v-for="i in Math.ceil(araryQR.length / 2)">
+            <td width="200px" height="200px" v-for="item in araryQR.slice((i - 1) * 2, i * 2)" style="border: 2px dashed #cccccc">
+              หมายเลขเครื่อง: {{equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID[item.substring(0, 1)].number}}<br>
+              หมายเลขครุภัณฑ์: {{equipments.find(equipments => equipments.nameEqm === nameEqm).equipmentID[item.substring(0, 1)].numberOfItem}}
+              <center><qrcode-vue :value="item" :size="150" level="H" id="myCanvas"></qrcode-vue></center>
+            </td>
+          </tr>      
+        </tbody>
+      </table>
 
       <div class="print" v-if="print === 'printSalup'">
       <p style="text-align:right;font-size:16px;"></p>
@@ -382,7 +394,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, notiRef, locationRef, bookEqmRef, historyRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef, locationRef, bookEqmRef, historyRef, requestNotiRef} from './firebase'
 import QrcodeVue from 'qrcode.vue'
 import axios from 'axios'
 import 'fullcalendar/dist/locale/th'
@@ -503,7 +515,8 @@ export default {
     notis: notiRef,
     locations: locationRef,
     bookEqm: bookEqmRef,
-    historys: historyRef
+    historys: historyRef,
+    requestNotis: requestNotiRef
   },
   mounted () {
     // device 1
@@ -698,18 +711,18 @@ export default {
 <style scoped>
 @import '~fullcalendar/dist/fullcalendar.css';
 /*--------------------------------------- CONTENT ----------------------------------*/
-.row {
+/* .row {
   width: 80%;
-}
+} */
 .card {
   padding: .75rem 1.25rem;
   margin-bottom: 0;
   background-color: #ffffff;
   border-bottom: 1px solid rgba(0,0,0,.125);
+  margin-right: 24px;
   margin-left: 48px;
-  border: 1px solid #dddddd;
   box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 1px 20px 0 rgba(0, 0, 0, 0.19);
-  width: 1300px;
+  /* width: 1300px; */
   z-index: 1;
 }
 
@@ -721,7 +734,7 @@ export default {
 .content {
   margin-top: 60px;
   margin-left: 275px;
-  /* width: 100%; */
+  width: 100%;
   padding: 20px 0px;
 }
 /*----------------------------------------------------------------------------------*/

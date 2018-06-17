@@ -51,6 +51,9 @@
         </li>
         <li class="selected">
           <i class="fa fa-bar-chart" style="font-size:25px;"></i>
+          <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:-12px;">
+            <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+          </button>
           <router-link to="/report">รายงานสถิติ</router-link>
         </li>
         <li class="active-loguot">
@@ -80,6 +83,9 @@
               <button style="margin-left:2px;background:#E0E0E0;border:1px solid #dddddd;height:40px;width:180px;color:#000000;font-size:16px">
                 <span></span>
                 <b>รายงานการขาดแคลนอุปกรณ์</b>
+                <button v-if="requestNoti.requestNoti !== 0" v-for="requestNoti of requestNotis" class="noti" style="margin-left:2px;margin-top:-15px;">
+                  <p style="margin-top: -4px;"><b>{{requestNoti.requestNoti}}</b></p>
+                </button>
               </button>
             </router-link>
             <router-link to="/reportmax">
@@ -269,7 +275,7 @@
 </template>
 
 <script>
-import {equipmentRef, auth, userRef, notiRef, scanRef, historyRef, yearRef, historyDepartmentRef, lendMaxRef} from './firebase'
+import {equipmentRef, auth, userRef, notiRef, scanRef, historyRef, yearRef, historyDepartmentRef, lendMaxRef, requestNotiRef} from './firebase'
 // import moment from 'moment'
 import dateFormat from 'dateformat'
 
@@ -318,7 +324,8 @@ export default {
     historys: historyRef,
     years: yearRef,
     historyDepartments: historyDepartmentRef,
-    lendMaxs: lendMaxRef
+    lendMaxs: lendMaxRef,
+    requestNotis: requestNotiRef
   },
   // mounted () {
   //   this.test()
