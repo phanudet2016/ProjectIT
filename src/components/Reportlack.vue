@@ -291,7 +291,7 @@
           <th style="width:80px;text-align: center;">จำนวน</th>
         </tr>
         <tr v-for="reportLack in reportLack">
-          <td style="text-align: center;">{{reportLack.nameEqm}}</td>
+          <td style="padding-left:10px;">{{reportLack.nameEqm}}</td>
           <td style="width:80;text-align: center;">{{reportLack.amountEqm}}</td>
         </tr>
       </table>
